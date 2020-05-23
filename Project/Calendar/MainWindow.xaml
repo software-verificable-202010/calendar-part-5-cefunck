@@ -7,6 +7,6 @@
         mc:Ignorable="d"
         Title="Calendar" Height="450" Width="800">
     <Grid>
-        <local:CalendarLayout></local:CalendarLayout>
+        <local:CalendarLayout/>
     </Grid>
 </Window>

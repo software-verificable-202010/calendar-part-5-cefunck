@@ -21,10 +21,6 @@ namespace Calendar
     public partial class MonthBody : UserControl
     {
         #region Constants
-        private const string dayElementNamePrefix = "dayElement";
-        private const string dayNumberResourceKeyPrefix = "dayResource";
-        private const string displayedDateResourceName = "displayedDate";
-        private const string dayNumberResourceBlankValue = "";
         private const int iterationIndexOffset = 1;
         private const int gridRowIndexOffset = 1;
         private const int gridColumnIndexOffset = 1;
@@ -36,92 +32,162 @@ namespace Calendar
 
         #region Fields
         private readonly Brush highlightColor = Brushes.Red;
+        private List<MonthDayElement> dayElements = new List<MonthDayElement>();
+        private List<Appointment> monthAppointmens;
         #endregion
 
         #region Properties
+        public List<Appointment> MonthAppointments 
+        {
+            get 
+            {
+                return monthAppointmens;
+            }
+            set 
+            {
+                monthAppointmens = value;
+            }
+        }
         #endregion
 
         #region Methods
         public MonthBody()
         {
             InitializeComponent();
-            GenerateDayNumberResources();
-            AssingValuesToDayNumberResources(GetDisplayedDateResourceValue());
-            List<TextBlock> dayElements = CreateDayElements();
-            InsertDayElementsToGrid(dayElements);
+        }
+        public void Refresh() 
+        {
+            GenerateDayElements();
+            InsertBodyElements();
+            RefreshDayElements();
             HighLightWeekends();
         }
-
-        private void GenerateDayNumberResources()
+        private void GenerateDayElements()
         {
+            dayElements = new List<MonthDayElement>();
             for (int i = 0; i < numberOfCellsInGrid; i++)
             {
-                string dayNumberResourceKey = dayNumberResourceKeyPrefix + i.ToString();
-                string dayNumberResourceValue = dayNumberResourceBlankValue;
-                if (App.Current.Resources[dayNumberResourceKey] == null)
-                {
-                    App.Current.Resources.Add(dayNumberResourceKey, dayNumberResourceValue);
-                }
-            }
-        }
-
-        private void AssingValuesToDayNumberResources(DateTime displayedDate)
-        {
-            for (int i = 0; i < numberOfCellsInGrid; i++)
-            {
-                string dayNumberResourceKey = dayNumberResourceKeyPrefix + i.ToString();
-                string dayNumberResourceValue = dayNumberResourceBlankValue;
                 int candidateDayNumber = i - GetfirstDayGridColumnIndex() + iterationIndexOffset;
                 Point dayElementGridCoordinates = GetGridCoordinatesByIterationIndex(i);
                 if (IsDayNumberInDisplayedMonth(candidateDayNumber, dayElementGridCoordinates))
                 {
-                    dayNumberResourceValue = candidateDayNumber.ToString();
+                    int year = Utilities.GetDisplayedDate().Year;
+                    int month = Utilities.GetDisplayedDate().Month;
+                    int day = candidateDayNumber;
+                    DateTime dayElementDate = new DateTime(year, month, day);
+                    MonthDayElement dayElement = new MonthDayElement(dayElementDate);
+                    dayElement.SetValue(Grid.ColumnProperty, (int)dayElementGridCoordinates.X);
+                    dayElement.SetValue(Grid.RowProperty, (int)dayElementGridCoordinates.Y);
+                    dayElements.Add(dayElement);
                 }
-                App.Current.Resources[dayNumberResourceKey] = dayNumberResourceValue;
+                else 
+                {
+                    MonthDayElement dayElementBlank = new MonthDayElement();
+                    dayElementBlank.SetValue(Grid.ColumnProperty, (int)dayElementGridCoordinates.X);
+                    dayElementBlank.SetValue(Grid.RowProperty, (int)dayElementGridCoordinates.Y);
+                    dayElements.Add(dayElementBlank);
+                }
             }
         }
-
-        private List<TextBlock> CreateDayElements()
+        private void InsertBodyElements() 
         {
-            List<TextBlock> dayElements = new List<TextBlock>();
-            for (int i = 0; i < numberOfCellsInGrid; i++)
+            BodyGrid.Children.Clear();
+            InsertWeekDaysToGrid();
+            InsertDayElementsToGrid();
+        }
+        private void InsertWeekDaysToGrid() 
+        {
+            for (int i = 0; i < 7; i++)
             {
-                TextBlock dayElement = new TextBlock();
-                dayElement.Name = dayElementNamePrefix + i.ToString();
-                string dayNumberResourceKey = dayNumberResourceKeyPrefix + i.ToString();
-                dayElement.SetResourceReference(TextBlock.TextProperty, dayNumberResourceKey);
-                Point dayElementGridCoordinates = GetGridCoordinatesByIterationIndex(i);
-                dayElement.SetValue(Grid.ColumnProperty, (int)dayElementGridCoordinates.X);
-                dayElement.SetValue(Grid.RowProperty, (int)dayElementGridCoordinates.Y);
-                dayElements.Add(dayElement);
+                List<string> dayNames = Utilities.GetDayNames();
+                TextBlock textBlockDayName = new TextBlock
+                {
+                    Text = dayNames[i]
+                };
+                Border borderDayName = new Border();
+                textBlockDayName.SetValue(Grid.ColumnProperty, i);
+                borderDayName.SetValue(Grid.ColumnProperty, i);
+                BodyGrid.Children.Add(textBlockDayName);
+                BodyGrid.Children.Add(borderDayName);
             }
-            return dayElements;
         }
-
-        private void InsertDayElementsToGrid(List<TextBlock> dayElements)
+        private void InsertDayElementsToGrid()
         {
-            foreach (TextBlock dayElement in dayElements)
+            foreach (MonthDayElement dayElement in dayElements)
             {
                 BodyGrid.Children.Add(dayElement);
             }
         }
-
         private void HighLightWeekends()
         {
-            foreach (TextBlock dayElement in BodyGrid.Children)
+            foreach (var children in BodyGrid.Children)
             {
-                int dayElementGridColumnIndex = (int)dayElement.GetValue(Grid.ColumnProperty);
-                if (dayElementGridColumnIndex == saturdayGridColumnIndex || dayElementGridColumnIndex == sundayGridColumnIndex)
+                if (IsDayElement(children))
                 {
-                    dayElement.Foreground = highlightColor;
+                    int childrenColumnIndex = (int)(children as MonthDayElement).GetValue(Grid.ColumnProperty);
+                    if (IsInWeekendColumn(childrenColumnIndex))
+                    {
+                        (children as MonthDayElement).Foreground = highlightColor;
+                    }
+                }
+                else if(IsWeekDayNameElement(children))
+                {
+                    int childrenColumnIndex = (int)(children as TextBlock).GetValue(Grid.ColumnProperty);
+                    if (IsInWeekendColumn(childrenColumnIndex))
+                    {
+                        (children as TextBlock).Foreground = highlightColor;
+                    }
                 }
             }
         }
-
+        private void RefreshDayElements()
+        {
+            foreach (MonthDayElement dayElement in dayElements)
+            {
+                dayElement.DayAppointments = GetDayAppointments(dayElement);
+                dayElement.Refresh();
+            }
+        }
+        private List<Appointment> GetDayAppointments(MonthDayElement dayElement) 
+        {
+            List<Appointment> dayElementAppointments = new List<Appointment>();
+            foreach (Appointment appointment in monthAppointmens)
+            {
+                if (IsAppointmentOfDay(appointment, dayElement))
+                {
+                    dayElementAppointments.Add(appointment);
+                }
+            }
+            return dayElementAppointments;
+        }
+        private bool IsInWeekendColumn(int childrenColumnIndex)
+        {
+            if (childrenColumnIndex == saturdayGridColumnIndex || childrenColumnIndex == sundayGridColumnIndex)
+            {
+                return true;
+            }
+            return false;
+        }
+        private bool IsDayElement(object children)
+        {
+            if (children.GetType() == typeof(MonthDayElement))
+            {
+                return true;
+            }
+            return false;
+        }
+        private bool IsWeekDayNameElement(object children)
+        {
+            if (children.GetType() == typeof(TextBlock))
+            {
+                return true;
+            }
+            return false;
+        }
         private bool IsDayNumberInDisplayedMonth(int candidateDayNumber, Point dayElementGridCoordinates)
         {
             const int firstDayRowIndex = 1;
-            DateTime displayedDate = GetDisplayedDateResourceValue();
+            DateTime displayedDate = Utilities.GetDisplayedDate();
             bool isFirstDayRow = dayElementGridCoordinates.Y == firstDayRowIndex;
             bool isNotFirstDayRow = dayElementGridCoordinates.Y > firstDayRowIndex;
             bool isFirstDayColumnOrLater = dayElementGridCoordinates.X >= GetfirstDayGridColumnIndex();
@@ -130,27 +196,29 @@ namespace Calendar
             bool isDisplayableDayElementOfRemainsRows = isNotFirstDayRow && isCandidateDayNumberInDisplayedMonth;
             return (isDisplayableDayElementOfFirstRow || isDisplayableDayElementOfRemainsRows);
         }
-
+        private bool IsAppointmentOfDay(Appointment appointment, MonthDayElement dayElement) 
+        {
+            int appointmentDay = appointment.Start.Day;
+            int dayElementDay = dayElement.Date.Day;
+            if ( appointmentDay == dayElementDay)
+            {
+                return true;
+            }
+            return false;
+        }
         private int GetNumberOfDaysOfMonth(DateTime date)
         {
             DateTime displayedDate = date;
             int numberOfDaysOfDisplayedMonth = DateTime.DaysInMonth(displayedDate.Year, displayedDate.Month);
             return numberOfDaysOfDisplayedMonth;
         }
-
         private int GetfirstDayGridColumnIndex()
         {
-            DateTime displayedDate = GetDisplayedDateResourceValue();
+            DateTime displayedDate = Utilities.GetDisplayedDate();
             DateTime firstDayOfDisplayedMonth = new DateTime(displayedDate.Year, displayedDate.Month, firstDayNumberInMonth);
             int firstDayGridColumnIndex = Utilities.GetDayNumberInWeek(firstDayOfDisplayedMonth) - gridColumnIndexOffset;
             return firstDayGridColumnIndex;
         }
-
-        private DateTime GetDisplayedDateResourceValue()
-        {
-            return (DateTime)App.Current.Resources[displayedDateResourceName];
-        }
-
         private Point GetGridCoordinatesByIterationIndex(int iterationIndex)
         {
             int gridColumn = (iterationIndex) % Utilities.daysInWeek;

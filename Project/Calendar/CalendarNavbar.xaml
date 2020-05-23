@@ -29,7 +29,7 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <Button Grid.Column="0" Content="3" Click="PreviousMonth_Click"/>
+        <Button Grid.Column="0" Content="3" Click="BackwardNavigation_Click"/>
         <TextBox Grid.Column="1" Text="{DynamicResource monthAndYear}"/>
         <ComboBox Grid.Column="2"
                   x:Name="CurrentCalendarViewOptions"
@@ -37,6 +37,6 @@
             <ComboBoxItem Content="Vista Mensual" IsSelected="True"/>
             <ComboBoxItem Content="Vista Semanal"/>
         </ComboBox>
-        <Button Grid.Column="3" Content="4" Click="NextMonth_Click"/>
+        <Button Grid.Column="3" Content="4" Click="ForwardNavigation_Click"/>
     </Grid>
 </UserControl>

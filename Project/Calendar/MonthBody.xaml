@@ -8,43 +8,33 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <sys:String x:Key="firstDayOfWeek">Lunes</sys:String>
-        <sys:String x:Key="secondDayOfWeek">Martes</sys:String>
-        <sys:String x:Key="thirdDayOfWeek">Miércoles</sys:String>
-        <sys:String x:Key="fourthDayOfWeek">Jueves</sys:String>
-        <sys:String x:Key="fifthDayOfWeek">Viernes</sys:String>
-        <sys:String x:Key="sixthDayOfWeek">Sábado</sys:String>
-        <sys:String x:Key="seventhDayOfWeek">Domingo</sys:String>
         <Style TargetType="TextBlock">
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
         </Style>
+        <Style TargetType="Border">
+            <Setter Property="BorderThickness" Value="0.1"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+        </Style>
     </UserControl.Resources>
     <Grid Name="BodyGrid">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Column="0" Grid.Row="0" Text="{StaticResource firstDayOfWeek}"></TextBlock>
-        <TextBlock Grid.Column="1" Grid.Row="0" Text="{StaticResource secondDayOfWeek}"></TextBlock>
-        <TextBlock Grid.Column="2" Grid.Row="0" Text="{StaticResource thirdDayOfWeek}"></TextBlock>
-        <TextBlock Grid.Column="3" Grid.Row="0" Text="{StaticResource fourthDayOfWeek}"></TextBlock>
-        <TextBlock Grid.Column="4" Grid.Row="0" Text="{StaticResource fifthDayOfWeek}"></TextBlock>
-        <TextBlock Grid.Column="5" Grid.Row="0" Text="{StaticResource sixthDayOfWeek}"></TextBlock>
-        <TextBlock Grid.Column="6" Grid.Row="0" Text="{StaticResource seventhDayOfWeek}"></TextBlock>
     </Grid>
 </UserControl>

@@ -21,9 +21,6 @@ namespace Calendar
     public partial class CalendarLayout : UserControl
     {
         #region Constants
-        private const int bodyGridRow = 1;
-        private const int bodyGridColumn = 0;
-        private const string dayNumberResourceKey = "bodyContentResourceKey";
         #endregion
 
         #region Fields
@@ -36,26 +33,7 @@ namespace Calendar
         public CalendarLayout()
         {
             InitializeComponent();
-            ContentControl calendarBody = CreateBodyContentControl();
-            InsertBodyContentControlToGrid(calendarBody);
-        }
-
-        public ContentControl CreateBodyContentControl()
-        {
-
-            ContentControl bodyContentControl = new ContentControl();
-            bodyContentControl.SetValue(Grid.ColumnProperty, bodyGridColumn);
-            bodyContentControl.SetValue(Grid.RowProperty, bodyGridRow);
-            bodyContentControl.SetResourceReference(ContentControl.ContentProperty, dayNumberResourceKey);
-            return bodyContentControl;
-        }
-
-        public void InsertBodyContentControlToGrid(ContentControl calendarBody)
-        {
-            LayoutGrid.Children.Add(calendarBody);
         }
         #endregion
-
-
     }
 }

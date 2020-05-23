@@ -17,7 +17,6 @@
         </Grid.RowDefinitions>
         <local:CalendarNavbar Grid.Column="0" Grid.Row="0"></local:CalendarNavbar>
         <ContentControl Grid.Column="0" Grid.Row="1" x:Name="BodyContent" Content="{DynamicResource bodyContent}"/>
-        
     </Grid>
 
 </UserControl>

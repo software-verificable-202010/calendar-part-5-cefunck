@@ -13,5 +13,16 @@ namespace Calendar
     /// </summary>
     public partial class App : Application
     {
+        #region Constants
+        #endregion
+
+        #region Fields
+        #endregion
+
+        #region Properties
+        #endregion
+
+        #region Methods
+        #endregion
     }
 }

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Calendar
 {
@@ -27,6 +27,8 @@ namespace Calendar
         public const int negativeMultiplier = -1;
         public const int daysInWeek = 7;
         public const int systemEnumSundayNumber = 0;
+        private const string displayedDateResourceName = "displayedDate";
+        private const string appointmentsDataFilePath = "applicationAppointmentData";
         #endregion
 
         #region Fields
@@ -45,7 +47,14 @@ namespace Calendar
             }
             return dayNumber;
         }
-
+        public static List<string> GetDayNames() 
+        {
+            List<string> dayNames = new List<string> 
+            {
+            mondayName,tuesdayName,wednesdayName,thursdayName,fridayName,saturdayName,sundayName
+            };
+            return dayNames;
+        }
         public static string GetNameOfDayInSpanish(DateTime date)
         {
             string spanishDayName;
@@ -60,7 +69,7 @@ namespace Calendar
                 case wednesdayNumberInweek:
                     spanishDayName = wednesdayName;
                     break;
-                case Utilities.thursdayNumberInweek:
+                case thursdayNumberInweek:
                     spanishDayName = thursdayName;
                     break;
                 case fridayNumberInweek:
@@ -75,9 +84,46 @@ namespace Calendar
             }
             return spanishDayName;
         }
+        public static void SetDisplayedDate(DateTime dateToDisplay)
+        {
+            App.Current.Resources[displayedDateResourceName] = dateToDisplay;
+        }
+        public static void SetDisplayedDateToNow()
+        {
+            SetDisplayedDate(DateTime.Now);
+        }
+        public static DateTime GetDisplayedDate()
+        {
+            return (DateTime)App.Current.Resources[displayedDateResourceName];
+        }
+        public static void SaveAppointments(List<Appointment> appointments)
+        {
+            using (FileStream file = new FileStream(appointmentsDataFilePath, FileMode.Create))
+            {
+                BinaryFormatter bf = new BinaryFormatter();
+                bf.Serialize(file, appointments);
+                file.Flush();
+            }
+        }
+        public static List<Appointment> LoadAppointments()
+        {
+            List<Appointment> appointments;
+            try
+            {
+                using (FileStream file = new FileStream(appointmentsDataFilePath, FileMode.Open))
+                {
+                    BinaryFormatter bf = new BinaryFormatter();
+                    object obj = bf.Deserialize(file);
+                    appointments = obj as List<Appointment>;
+                }
+            }
+            catch (FileNotFoundException e)
+            {
+                appointments = new List<Appointment>();
+            }
+            
+            return appointments;
+        }
         #endregion
-
-
-
     }
 }

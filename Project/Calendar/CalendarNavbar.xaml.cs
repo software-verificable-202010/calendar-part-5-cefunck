@@ -21,25 +21,19 @@ namespace Calendar
     public partial class CalendarNavbar : UserControl
     {
         #region Constants
-        private const string monthViewOption = "Vista Mensual";
         private const string weekViewOption = "Vista Semanal";
         private const string currentBodyContentResourceName = "bodyContent";
         private const string navBarMonthFormat = "MMMM yyyy";
-        private const string dayNumberResourceKeyPrefix = "dayResource";
-        private const string columnTitleResourceKeyPrefix = "WeekColumnTitle";
         private const string monthAndYearResourceName = "monthAndYear";
-        private const string displayedDateResourceName = "displayedDate";
-        private const string dayNumberResourceBlankValue = "";
-        private const int iterationIndexOffset = 1;
-        private const int gridRowIndexOffset = 1;
-        private const int firstDayNumberInMonth = 1;
-        private const int gridColumnIndexOffset = 1;
-        private const int numberOfCellsInGrid = 42;
-        private const int numberOfMonthsToAdvance = 1;
-        private const int numberOfMonthToGoBack = -1;
+        private const int numberToAdvance = 1;
+        private const int numberToGoBack = -1;
         #endregion
 
         #region Fields
+        private List<Appointment> calendarAppointments;
+        private string selectedCalendarViewOption;
+        private MonthBody monthBody;
+        private WeekBody weekBody;
         #endregion
 
         #region Properties
@@ -48,150 +42,107 @@ namespace Calendar
         #region Methods
         public CalendarNavbar()
         {
+            Utilities.SetDisplayedDateToNow();
+            RefreshCalendar();
             InitializeComponent();
-            SetDisplayedDateResourceValue(DateTime.Now);
-            AssignValueToMonthAndYearResource(GetDisplayedDateResourceValue());
         }
-
         private void CurrentCalendarViewOption_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string selectedCalendarViewOption = GetSelectedCalendarView();
-            SetBodyContentResourceValue(selectedCalendarViewOption);
+            selectedCalendarViewOption = GetSelectedCalendarView();
+            RefreshCalendarBody();
         }
-
-        private void PreviousMonth_Click(object sender, RoutedEventArgs e)
+        private void BackwardNavigation_Click(object sender, RoutedEventArgs e)
         {
+            MoveCalendar(numberToGoBack);
+        }
+        private void ForwardNavigation_Click(object sender, RoutedEventArgs e)
+        {
+            MoveCalendar(numberToAdvance);
+        }
+        private void MoveCalendar(int amountToMove)
+        {
+            DateTime newDisplayedDate = Utilities.GetDisplayedDate();
             string currentSelectedCalendarViewOption = GetSelectedCalendarView();
-            DateTime dateToDisplay = GetDisplayedDateResourceValue();
-            if (currentSelectedCalendarViewOption == monthViewOption)
+            switch (currentSelectedCalendarViewOption)
             {
-                dateToDisplay = dateToDisplay.AddMonths(numberOfMonthToGoBack);
+                case weekViewOption:
+                    newDisplayedDate = newDisplayedDate.AddDays(amountToMove * Utilities.daysInWeek);
+                    break;
+                default:
+                    newDisplayedDate = newDisplayedDate.AddMonths(amountToMove);
+                    break;
             }
-            else if (currentSelectedCalendarViewOption == weekViewOption)
-            {
-                dateToDisplay = dateToDisplay.AddDays(numberOfMonthToGoBack * Utilities.daysInWeek);
-            }
-            SetDisplayedDateAndAssingAllResources(dateToDisplay);
+            Utilities.SetDisplayedDate(newDisplayedDate);
+            RefreshCalendar();
         }
-
-        private void NextMonth_Click(object sender, RoutedEventArgs e)
+        private void RefreshCalendar()
         {
-            string currentSelectedCalendarViewOption = GetSelectedCalendarView();
-            DateTime dateToDisplay = GetDisplayedDateResourceValue();
-            if (currentSelectedCalendarViewOption == monthViewOption)
-            {
-                dateToDisplay = dateToDisplay.AddMonths(numberOfMonthsToAdvance);
-            }
-            else if (currentSelectedCalendarViewOption == weekViewOption)
-            {
-                dateToDisplay = dateToDisplay.AddDays(Utilities.daysInWeek);
-            }
-            SetDisplayedDateAndAssingAllResources(dateToDisplay);
-        }
-
-        private void SetDisplayedDateAndAssingAllResources(DateTime date)
+            RefreshCalendarAppointments();
+            RefreshDisplayedNavbarDate();
+            RefreshCalendarBody();
+        }        
+        private void RefreshDisplayedNavbarDate()
         {
-            SetDisplayedDateResourceValue(date);
-            AssignValueToMonthAndYearResource(GetDisplayedDateResourceValue());
-            AssingValuesToDayNumberResources();
-            AssingValuesToDayColumnTitleResources();
+            DateTime displayedDate = Utilities.GetDisplayedDate();
+            App.Current.Resources[monthAndYearResourceName] = displayedDate.ToString(navBarMonthFormat);
         }
-
-        private void AssignValueToMonthAndYearResource(DateTime date)
-        {
-            App.Current.Resources[monthAndYearResourceName] = date.ToString(navBarMonthFormat);
-        }
-
-        private void AssingValuesToDayNumberResources()
-        {
-            for (int i = 0; i < numberOfCellsInGrid; i++)
-            {
-                string dayNumberResourceKey = dayNumberResourceKeyPrefix + i.ToString();
-                string dayNumberResourceValue = dayNumberResourceBlankValue;
-                int candidateDayNumber = i - GetfirstDayGridColumnIndex() + iterationIndexOffset;
-                Point dayElementGridCoordinates = GetGridCoordinatesByIterationIndex(i);
-                if (IsDayNumberInDisplayedMonth(candidateDayNumber, dayElementGridCoordinates))
-                {
-                    dayNumberResourceValue = candidateDayNumber.ToString();
-                }
-                App.Current.Resources[dayNumberResourceKey] = dayNumberResourceValue;
-            }
-        }
-
-        private void AssingValuesToDayColumnTitleResources()
-        {
-            for (int i = 1; i <= Utilities.daysInWeek; i++)
-            {
-                DateTime displayedDate = GetDisplayedDateResourceValue();
-                int dayOfWeek = Utilities.GetDayNumberInWeek(displayedDate);
-                displayedDate = displayedDate.AddDays(Utilities.negativeMultiplier * dayOfWeek + i);
-                string columnTitleResourceKey = columnTitleResourceKeyPrefix + i.ToString();
-                string columnTitleResourceValue = Utilities.GetNameOfDayInSpanish(displayedDate) + Utilities.blankSpace + displayedDate.Day.ToString();
-                App.Current.Resources[columnTitleResourceKey] = columnTitleResourceValue;
-            }
-        }
-
-        private bool IsDayNumberInDisplayedMonth(int candidateDayNumber, Point dayElementGridCoordinates)
-        {
-            const int firstDayRowIndex = 1;
-            DateTime displayedDate = GetDisplayedDateResourceValue();
-            bool isFirstDayRow = dayElementGridCoordinates.Y == firstDayRowIndex;
-            bool isNotFirstDayRow = dayElementGridCoordinates.Y > firstDayRowIndex;
-            bool isFirstDayColumnOrLater = dayElementGridCoordinates.X >= GetfirstDayGridColumnIndex();
-            bool isDisplayableDayElementOfFirstRow = isFirstDayRow && isFirstDayColumnOrLater;
-            bool isCandidateDayNumberInDisplayedMonth = candidateDayNumber <= GetNumberOfDaysOfMonth(displayedDate);
-            bool isDisplayableDayElementOfRemainsRows = isNotFirstDayRow && isCandidateDayNumberInDisplayedMonth;
-            return (isDisplayableDayElementOfFirstRow || isDisplayableDayElementOfRemainsRows);
-        }
-
-        private int GetNumberOfDaysOfMonth(DateTime date)
-        {
-            DateTime displayedDate = date;
-            int numberOfDaysOfDisplayedMonth = DateTime.DaysInMonth(displayedDate.Year, displayedDate.Month);
-            return numberOfDaysOfDisplayedMonth;
-        }
-
-        private int GetfirstDayGridColumnIndex()
-        {
-            DateTime displayedDate = GetDisplayedDateResourceValue();
-            DateTime firstDayOfDisplayedMonth = new DateTime(displayedDate.Year, displayedDate.Month, firstDayNumberInMonth);
-            int firstDayGridColumnIndex = Utilities.GetDayNumberInWeek(firstDayOfDisplayedMonth) - gridColumnIndexOffset;
-            return firstDayGridColumnIndex;
-        }
-
-        private Point GetGridCoordinatesByIterationIndex(int iterationIndex)
-        {
-            int gridColumn = (iterationIndex) % Utilities.daysInWeek;
-            int gridRow = (iterationIndex / Utilities.daysInWeek) + gridRowIndexOffset;
-            return new Point(gridColumn, gridRow);
-        }
-
-        private DateTime GetDisplayedDateResourceValue()
-        {
-            return (DateTime)App.Current.Resources[displayedDateResourceName];
-        }
-
-        private void SetDisplayedDateResourceValue(DateTime dateToDisplay)
-        {
-            App.Current.Resources[displayedDateResourceName] = dateToDisplay;
-        }
-
-        private void SetBodyContentResourceValue(string selectedCalendarViewOption)
+        private void RefreshCalendarBody() 
         {
             switch (selectedCalendarViewOption)
             {
                 case weekViewOption:
-                    WeekBody weekBody = new WeekBody();
-                    App.Current.Resources[currentBodyContentResourceName] = weekBody;
+                    RefreshWeekBody();
                     break;
                 default:
-                    MonthBody monthBody = new MonthBody();
-                    App.Current.Resources[currentBodyContentResourceName] = monthBody;
+                    RefreshMonthBody();
                     break;
             }
-
         }
-
+        private void RefreshMonthBody()
+        {
+            monthBody = new MonthBody
+            {
+                MonthAppointments = GetMonthAppointments()
+            };
+            monthBody.Refresh();
+            App.Current.Resources[currentBodyContentResourceName] = monthBody;
+        }
+        private void RefreshWeekBody() 
+        {
+            weekBody = new WeekBody();
+            weekBody.Refresh();
+            App.Current.Resources[currentBodyContentResourceName] = weekBody;
+        }
+        private void RefreshCalendarAppointments() 
+        {
+            //calendarAppointments = Utilities.LoadAppointments();
+            calendarAppointments = new List<Appointment>()
+            {
+                new Appointment("agregado para probar","",DateTime.Now,DateTime.Now)
+            };
+        }
+        private List<Appointment> GetMonthAppointments()
+        {
+            List<Appointment> monthAppointmens = new List<Appointment>();
+            foreach (Appointment appointment in calendarAppointments)
+            {
+                if (IsAppointmentOfDisplayedMonth(appointment))
+                {
+                    monthAppointmens.Add(appointment);
+                }
+            }
+            return monthAppointmens;
+        }
+        private bool IsAppointmentOfDisplayedMonth(Appointment appointment)
+        {
+            int displayedMonth = Utilities.GetDisplayedDate().Month;
+            int appointmentMonth = appointment.Start.Month;
+            if (appointmentMonth == displayedMonth)
+            {
+                return true;
+            }
+            return false;
+        }
         private string GetSelectedCalendarView()
         {
             const int initOfValueSubstring = 38;

@@ -21,6 +21,7 @@ namespace Calendar
     public partial class WeekBody : UserControl
     {
         #region Constants
+        private const string columnTitleResourceKeyPrefix = "WeekColumnTitle";
         private const int firstColumnIndex = 1;
         private const int lastColumnIndex = 7;
         #endregion
@@ -38,6 +39,22 @@ namespace Calendar
             List<WeekColumn> dayColumnElements = CreateDayColumnElements();
             InsertDayColumnElementsToWeekBody(dayColumnElements);
 
+        }
+        public void Refresh() 
+        {
+            RefreshWeekBodyDayColumnTitles();
+        }
+        private void RefreshWeekBodyDayColumnTitles()
+        {
+            for (int i = 1; i <= Utilities.daysInWeek; i++)
+            {
+                DateTime displayedDate = Utilities.GetDisplayedDate();
+                int dayOfWeek = Utilities.GetDayNumberInWeek(displayedDate);
+                displayedDate = displayedDate.AddDays(Utilities.negativeMultiplier * dayOfWeek + i);
+                string columnTitleResourceKey = columnTitleResourceKeyPrefix + i.ToString();
+                string columnTitleResourceValue = Utilities.GetNameOfDayInSpanish(displayedDate) + Utilities.blankSpace + displayedDate.Day.ToString();
+                App.Current.Resources[columnTitleResourceKey] = columnTitleResourceValue;
+            }
         }
         public List<WeekColumn> CreateDayColumnElements()
         {

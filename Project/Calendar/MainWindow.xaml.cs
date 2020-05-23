@@ -32,6 +32,7 @@ namespace Calendar
         #region Methods
         public MainWindow()
         {
+            Utilities.SetDisplayedDateToNow();
             InitializeComponent();
         }
 

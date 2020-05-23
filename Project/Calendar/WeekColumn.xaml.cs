@@ -29,13 +29,32 @@ namespace Calendar
         #endregion
 
         #region Fields
+        private string title;
+        private int index;
         #endregion
 
         #region Properties
+        public string Title 
+        {
+            get
+            {
+                return title;
+            }
+            set
+            {
+                title = value;
+            }
+        }
         public int Index
         {
-            get;
-            set;
+            get 
+            {
+                return index;
+            }
+            set 
+            {
+                index = value;
+            }
         }
         #endregion
 
@@ -46,8 +65,7 @@ namespace Calendar
             Index = columnIndex;
             GenerateTitleResource();
             AssingValuesToTitleResource();
-            TextBlock title = CreateTitleElement();
-            InsertTitleElementToColumn(title);
+            InsertTitleElementToColumn();
         }
         private void GenerateTitleResource()
         {
@@ -60,20 +78,16 @@ namespace Calendar
         {
             App.Current.Resources[GetTitleResourceKey()] = GetTitleResourceValue();
         }
-        private TextBlock CreateTitleElement()
+        private void InsertTitleElementToColumn()
         {
-            TextBlock titleElement = new TextBlock();
-            titleElement.Name = columnTitleNamePrefix + Index.ToString();
-            titleElement.SetResourceReference(TextBlock.TextProperty, GetTitleResourceKey());
-            titleElement.SetValue(Grid.ColumnProperty, 0);
-            titleElement.SetValue(Grid.RowProperty, 0);
-            titleElement.SetValue(Grid.ColumnSpanProperty, 2);
-            titleElement.SetValue(Grid.RowSpanProperty, 2);
-            return titleElement;
-        }
-        private void InsertTitleElementToColumn(TextBlock titleElement)
-        {
-            WeekColumnGrid.Children.Add(titleElement);
+            TextBlock textBlockTitle = new TextBlock();
+            textBlockTitle.Name = columnTitleNamePrefix + Index.ToString();
+            textBlockTitle.SetResourceReference(TextBlock.TextProperty, GetTitleResourceKey());
+            textBlockTitle.SetValue(Grid.ColumnProperty, 0);
+            textBlockTitle.SetValue(Grid.RowProperty, 0);
+            textBlockTitle.SetValue(Grid.ColumnSpanProperty, 2);
+            textBlockTitle.SetValue(Grid.RowSpanProperty, 2);
+            WeekColumnGrid.Children.Add(textBlockTitle);
         }
         private DateTime GetDisplayedDateResourceValue()
         {
@@ -116,10 +130,9 @@ namespace Calendar
             // TODO: to complete
             Button pressedCellOfWeekColumn = (Button)sender;
             int pressedCellRow = (int)pressedCellOfWeekColumn.GetValue(Grid.RowProperty);
-            Window addAppointment = new Window();
-            AddEditAppointment windowContent = new AddEditAppointment();
-            addAppointment.Content = windowContent;
-            addAppointment.Show();
+            Appointment appointment = new Appointment("","",DateTime.Now,DateTime.Now);
+            AppointmentWindow appointmenWindow = new AppointmentWindow(appointment);
+            appointmenWindow.ShowDialog();
         }
         private string GetDayName()
         {
