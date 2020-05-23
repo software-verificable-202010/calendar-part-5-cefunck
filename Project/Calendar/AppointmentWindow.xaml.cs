@@ -27,7 +27,7 @@ namespace Calendar
 
         #region Fields
         private Appointment appointment;
-        private List<string> ValidationMessages = new List<string>();
+        private readonly List<string> validationMessages = new List<string>();
         private bool canSaveAppointment = false;
         private string candidateTitle;
         private string candidateDescription;
@@ -56,9 +56,51 @@ namespace Calendar
             InitializeComponent();
             InsertTimeOptions();
             SelectDefaultTimeOptions();
-            RefreshFormFields();
+            RefreshForm();
         }
-        public void RefreshFormFields() 
+        private void RefreshDeleteButton() 
+        {
+            if (IsUpdatingApponinment())
+            {
+                MinimizeSaveButton();
+                InsertDeleteButton();
+            }
+        }
+        private void MinimizeSaveButton() 
+        {
+            const int newSaveButtonColumnSpan = 3;
+            buttonSave.SetValue(Grid.ColumnSpanProperty, newSaveButtonColumnSpan);
+        }
+        private void InsertDeleteButton() 
+        {
+            const int deleteButtonColumnSpan = 3;
+            const int deleteButtonColumn = 3;
+            const int deleteButtonRow = 3;
+            const string deleteButtonContent = "Eliminar";
+            Button buttonDelete = new Button
+            {
+                Content = deleteButtonContent
+            };
+            buttonDelete.SetValue(Grid.ColumnSpanProperty, deleteButtonColumnSpan);
+            buttonDelete.SetValue(Grid.ColumnProperty, deleteButtonColumn);
+            buttonDelete.SetValue(Grid.RowProperty, deleteButtonRow);
+            buttonDelete.Click += DeleteButton_Click;
+            grid.Children.Add(buttonDelete);
+        }
+        private bool IsUpdatingApponinment() 
+        {
+            if (appointment.Title.Trim().Length != 0)
+            {
+                return true;
+            }
+            return false;
+        }
+        private void RefreshForm() 
+        {
+            RefreshFields();
+            RefreshDeleteButton();
+        }
+        private void RefreshFields() 
         {
             string title = appointment.Title;
             string description = appointment.Description;
@@ -73,7 +115,7 @@ namespace Calendar
             comboBoxEndHour.SelectedIndex = endHour;
             comboBoxEndMinute.SelectedIndex = endMinute;
         }
-        public void InsertTimeOptions() 
+        private void InsertTimeOptions() 
         {
             InsertHoursOptions();
             InsertMinutesOptions();
@@ -117,8 +159,9 @@ namespace Calendar
             comboBoxEndHour.SelectedIndex = 0;
             comboBoxEndMinute.SelectedIndex = 0;
         }
-        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
+            appointment.IsInGarbage = true;
             this.Close();
         }
         private void SaveButton_Click(object sender, RoutedEventArgs e) 
@@ -150,7 +193,7 @@ namespace Calendar
         private void ShowValidations() 
         {
             string validationMessage = "";
-            foreach (string message in ValidationMessages)
+            foreach (string message in validationMessages)
             {
                 validationMessage += message + "\n";
             }
@@ -165,18 +208,18 @@ namespace Calendar
         }
         private void ResetValidations() 
         {
-            ValidationMessages.Clear();
+            validationMessages.Clear();
             this.canSaveAppointment = IsNotBlankTitle() & IsValidEndTime();
         }
         private void RefreshValidationMessages()
         {
             if (!IsNotBlankTitle())
             {
-                ValidationMessages.Add(blankTitleMessage);
+                validationMessages.Add(blankTitleMessage);
             }
             if (!IsValidEndTime())
             {
-                ValidationMessages.Add(invalidEndTimeMessage);
+                validationMessages.Add(invalidEndTimeMessage);
             }
         }
         private bool IsNotBlankTitle() 

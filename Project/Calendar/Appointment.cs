@@ -19,6 +19,7 @@ namespace Calendar
         private string description;
         private DateTime start;
         private DateTime end;
+        private bool isInGarbage;
         #endregion
 
         #region Properties
@@ -66,6 +67,17 @@ namespace Calendar
                 end = value;
             }
         }
+        public bool IsInGarbage
+        {
+            get 
+            {
+                return isInGarbage;
+            }
+            set 
+            {
+                isInGarbage = value;
+            }
+        }
         #endregion
 
         #region Methods
@@ -75,6 +87,7 @@ namespace Calendar
             Description = description;
             Start = start;
             End = end;
+            isInGarbage = false;
         }
         #endregion
     }

@@ -28,6 +28,7 @@ namespace Calendar
         #region Fields
         private List<Appointment> dayAppointments = new List<Appointment>();
         private DateTime date;
+        private Appointment selectedAppointment;
         #endregion
 
         #region Properties
@@ -110,50 +111,93 @@ namespace Calendar
         }
         private void EditAppointmentButton_Click(object sender, RoutedEventArgs e)
         {
-            int appointmentIndexInDayAppointents = stackPanelMonthDayElement.Children.IndexOf(sender as UIElement);
-            Appointment selectedAppointment = dayAppointments[appointmentIndexInDayAppointents];
-            AppointmentWindow newAppointmentWindow = new AppointmentWindow(selectedAppointment);
-            newAppointmentWindow.ShowDialog();
-            SaveValidAppointment(selectedAppointment, appointmentIndexInDayAppointents);
+            RefreshSelectedAppointment(sender);
+            ShowAppointmentForm();
+            SaveAppointmentChanges();
             Refresh();
         }
         private void NewAppointmentButton_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshSelectedAppointmentAsNew();
+            ShowAppointmentForm();
+            SaveNewAppointment();
+            Refresh();
+        }
+        private void RefreshSelectedAppointment(object sender)
+        {
+            int appointmentIndexInDayAppointents = stackPanelMonthDayElement.Children.IndexOf(sender as UIElement);
+            selectedAppointment = dayAppointments[appointmentIndexInDayAppointents];
+        }
+        private void RefreshSelectedAppointmentAsNew()
         {
             string emptyTextField = Utilities.blankSpace;
             int appointmentYear = this.date.Year;
             int appointmentMonth = this.date.Month;
             int appointmentDay = this.date.Day;
-            DateTime appointmentDate = new DateTime(appointmentYear,appointmentMonth,appointmentDay) + DateTime.Now.TimeOfDay;
-            Appointment appointment = new Appointment(emptyTextField, emptyTextField, appointmentDate, appointmentDate);
-            AppointmentWindow newAppointmentWindow = new AppointmentWindow(appointment);
+            DateTime appointmentDate = new DateTime(appointmentYear, appointmentMonth, appointmentDay) + DateTime.Now.TimeOfDay;
+            selectedAppointment = new Appointment(emptyTextField, emptyTextField, appointmentDate, appointmentDate);
+        }
+        private void ShowAppointmentForm()
+        {
+            AppointmentWindow newAppointmentWindow = new AppointmentWindow(selectedAppointment);
             newAppointmentWindow.ShowDialog();
-            SaveValidAppointment(appointment);
-            Refresh();
         }
-        private void SaveValidAppointment(Appointment updatedAppointment, int appointmentIndexInDayAppointments)
+        private void SaveAppointmentChanges()
         {
-            if (IsValidAppointment(updatedAppointment))
+            if (IsValidAppointment())
             {
-                List<Appointment> calendarAppointments = Utilities.GetCalendarAppointments();
-                int appointmentIndexInCalendarAppointments = calendarAppointments.IndexOf(updatedAppointment);
-                dayAppointments[appointmentIndexInDayAppointments] = updatedAppointment;
-                calendarAppointments[appointmentIndexInCalendarAppointments] = updatedAppointment;
+                UpdateCalendarAppointments();
+                UpdateDayAppointments();
             }
         }
-        private void SaveValidAppointment(Appointment newAppointment) 
+        private void UpdateDayAppointments() 
         {
-            if (IsValidAppointment(newAppointment))
+            if (dayAppointments.Contains(selectedAppointment))
             {
-                dayAppointments.Add(newAppointment);
-                SaveAsPersistenAppointment(newAppointment);
+                if (selectedAppointment.IsInGarbage)
+                {
+                    dayAppointments.Remove(selectedAppointment);
+                }
+                else 
+                {
+                    int appointmentIndexInDayAppointments = dayAppointments.IndexOf(selectedAppointment);
+                    dayAppointments[appointmentIndexInDayAppointments] = selectedAppointment;
+                }
+            }
+            else
+            {
+                dayAppointments.Add(selectedAppointment);
             }
         }
-        private void SaveAsPersistenAppointment(Appointment newAppointment) 
+        private void UpdateCalendarAppointments() 
         {
             List<Appointment> calendarAppointments = Utilities.GetCalendarAppointments();
-            calendarAppointments.Add(newAppointment);
+            if (calendarAppointments.Contains(selectedAppointment))
+            {
+                if (selectedAppointment.IsInGarbage)
+                {
+                    calendarAppointments.Remove(selectedAppointment);
+                }
+                else 
+                {
+                    int appointmentIndexInCalendarAppointments = calendarAppointments.IndexOf(selectedAppointment);
+                    calendarAppointments[appointmentIndexInCalendarAppointments] = selectedAppointment;
+                }
+            }
+            else 
+            {
+                calendarAppointments.Add(selectedAppointment);
+            }
             Utilities.SetCalendarAppointments(calendarAppointments);
             Utilities.SaveAppointments();
+        }
+        private void SaveNewAppointment() 
+        {
+            if (IsValidAppointment())
+            {
+                UpdateDayAppointments();
+                UpdateCalendarAppointments();
+            }
         }
         private bool IsNotBlankDayElement()
         {
@@ -163,9 +207,9 @@ namespace Calendar
             }
             return false;
         }
-        private bool IsValidAppointment(Appointment appointment) 
+        private bool IsValidAppointment() 
         {
-            if (appointment.Title.Trim().Length != 0)
+            if (selectedAppointment.Title.Trim().Length != 0)
             {
                 return true;
             }

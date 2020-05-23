@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Calendar"
         mc:Ignorable="d"
         Title="AppointmentWindow" Height="150" Width="500">
-    <Grid>
+    <Grid x:Name="grid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.9*"/>
             <ColumnDefinition Width="*"/>
@@ -37,7 +37,6 @@
         </ComboBox>
         <ComboBox x:Name="comboBoxEndMinute" Grid.Row="1" Grid.Column="5">
         </ComboBox>
-        <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Content="Guardar" Click="SaveButton_Click"/>
-        <Button Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="3" Content="Cancelar" Click="CancelButton_Click"/>
+        <Button x:Name="buttonSave" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="6" Content="Guardar" Click="SaveButton_Click"/>
     </Grid>
 </Window>
