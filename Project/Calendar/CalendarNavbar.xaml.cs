@@ -115,11 +115,8 @@ namespace Calendar
         }
         private void RefreshCalendarAppointments() 
         {
-            //calendarAppointments = Utilities.LoadAppointments();
-            calendarAppointments = new List<Appointment>()
-            {
-                new Appointment("agregado para probar","",DateTime.Now,DateTime.Now)
-            };
+            Utilities.LoadPersistentAppointments();
+            calendarAppointments = Utilities.GetCalendarAppointments();
         }
         private List<Appointment> GetMonthAppointments()
         {

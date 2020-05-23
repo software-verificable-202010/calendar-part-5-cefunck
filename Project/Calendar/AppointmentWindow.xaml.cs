@@ -54,9 +54,8 @@ namespace Calendar
         {
             this.appointment = appointment;
             InitializeComponent();
-            InsertHoursOptions();
-            InsertMinutesOptions();
-            SelectDefaultHourAndMinuteOptions();
+            InsertTimeOptions();
+            SelectDefaultTimeOptions();
             RefreshFormFields();
         }
         public void RefreshFormFields() 
@@ -73,6 +72,11 @@ namespace Calendar
             comboBoxStartMinute.SelectedIndex = startMinute;
             comboBoxEndHour.SelectedIndex = endHour;
             comboBoxEndMinute.SelectedIndex = endMinute;
+        }
+        public void InsertTimeOptions() 
+        {
+            InsertHoursOptions();
+            InsertMinutesOptions();
         }
         private void InsertHoursOptions()
         {
@@ -106,7 +110,7 @@ namespace Calendar
                 comboBoxEndMinute.Items.Add(comboBoxItemEndMinute);
             }
         }
-        private void SelectDefaultHourAndMinuteOptions()
+        private void SelectDefaultTimeOptions()
         {
             comboBoxStartHour.SelectedIndex = 0;
             comboBoxStartMinute.SelectedIndex = 0;

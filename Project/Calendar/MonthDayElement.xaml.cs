@@ -110,34 +110,50 @@ namespace Calendar
         }
         private void EditAppointmentButton_Click(object sender, RoutedEventArgs e)
         {
-            int appointmentIndex = stackPanelMonthDayElement.Children.IndexOf(sender as UIElement);
-            Appointment selectedAppointment = dayAppointments[appointmentIndex];
+            int appointmentIndexInDayAppointents = stackPanelMonthDayElement.Children.IndexOf(sender as UIElement);
+            Appointment selectedAppointment = dayAppointments[appointmentIndexInDayAppointents];
             AppointmentWindow newAppointmentWindow = new AppointmentWindow(selectedAppointment);
             newAppointmentWindow.ShowDialog();
-            SaveValidUpdatedAppointment(selectedAppointment, appointmentIndex);
+            SaveValidAppointment(selectedAppointment, appointmentIndexInDayAppointents);
             Refresh();
         }
         private void NewAppointmentButton_Click(object sender, RoutedEventArgs e)
         {
-            Appointment appointment = new Appointment("","",DateTime.Now, DateTime.Now);
+            string emptyTextField = Utilities.blankSpace;
+            int appointmentYear = this.date.Year;
+            int appointmentMonth = this.date.Month;
+            int appointmentDay = this.date.Day;
+            DateTime appointmentDate = new DateTime(appointmentYear,appointmentMonth,appointmentDay) + DateTime.Now.TimeOfDay;
+            Appointment appointment = new Appointment(emptyTextField, emptyTextField, appointmentDate, appointmentDate);
             AppointmentWindow newAppointmentWindow = new AppointmentWindow(appointment);
             newAppointmentWindow.ShowDialog();
-            SaveValidCreatedAppointment(appointment);
+            SaveValidAppointment(appointment);
             Refresh();
         }
-        private void SaveValidUpdatedAppointment(Appointment appointment, int appointmentIndex)
+        private void SaveValidAppointment(Appointment updatedAppointment, int appointmentIndexInDayAppointments)
         {
-            if (IsValidAppointment(appointment))
+            if (IsValidAppointment(updatedAppointment))
             {
-                dayAppointments[appointmentIndex] = appointment;
+                List<Appointment> calendarAppointments = Utilities.GetCalendarAppointments();
+                int appointmentIndexInCalendarAppointments = calendarAppointments.IndexOf(updatedAppointment);
+                dayAppointments[appointmentIndexInDayAppointments] = updatedAppointment;
+                calendarAppointments[appointmentIndexInCalendarAppointments] = updatedAppointment;
             }
         }
-        private void SaveValidCreatedAppointment(Appointment appointment) 
+        private void SaveValidAppointment(Appointment newAppointment) 
         {
-            if (IsValidAppointment(appointment))
+            if (IsValidAppointment(newAppointment))
             {
-                dayAppointments.Add(appointment);
+                dayAppointments.Add(newAppointment);
+                SaveAsPersistenAppointment(newAppointment);
             }
+        }
+        private void SaveAsPersistenAppointment(Appointment newAppointment) 
+        {
+            List<Appointment> calendarAppointments = Utilities.GetCalendarAppointments();
+            calendarAppointments.Add(newAppointment);
+            Utilities.SetCalendarAppointments(calendarAppointments);
+            Utilities.SaveAppointments();
         }
         private bool IsNotBlankDayElement()
         {

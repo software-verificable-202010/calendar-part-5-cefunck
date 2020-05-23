@@ -29,6 +29,7 @@ namespace Calendar
         public const int systemEnumSundayNumber = 0;
         private const string displayedDateResourceName = "displayedDate";
         private const string appointmentsDataFilePath = "applicationAppointmentData";
+        private const string appointmentsDataResourceName = "calendarAppointments";
         #endregion
 
         #region Fields
@@ -96,33 +97,39 @@ namespace Calendar
         {
             return (DateTime)App.Current.Resources[displayedDateResourceName];
         }
-        public static void SaveAppointments(List<Appointment> appointments)
+        public static void SaveAppointments()
         {
+            List<Appointment> calendarAppointments = GetCalendarAppointments();
             using (FileStream file = new FileStream(appointmentsDataFilePath, FileMode.Create))
             {
                 BinaryFormatter bf = new BinaryFormatter();
-                bf.Serialize(file, appointments);
+                bf.Serialize(file, calendarAppointments);
                 file.Flush();
             }
         }
-        public static List<Appointment> LoadAppointments()
+        public static void LoadPersistentAppointments()
         {
-            List<Appointment> appointments;
             try
             {
                 using (FileStream file = new FileStream(appointmentsDataFilePath, FileMode.Open))
                 {
                     BinaryFormatter bf = new BinaryFormatter();
-                    object obj = bf.Deserialize(file);
-                    appointments = obj as List<Appointment>;
+                    object calendarAppointments = bf.Deserialize(file);
+                    SetCalendarAppointments(calendarAppointments as List<Appointment>);
                 }
             }
-            catch (FileNotFoundException e)
+            catch (FileNotFoundException)
             {
-                appointments = new List<Appointment>();
+                SetCalendarAppointments(new List<Appointment>());
             }
-            
-            return appointments;
+        }
+        public static List<Appointment> GetCalendarAppointments()
+        {
+            return App.Current.Resources[appointmentsDataResourceName] as List<Appointment>;
+        }
+        public static void SetCalendarAppointments(List<Appointment> calendarAppointments)
+        {
+            App.Current.Resources[appointmentsDataResourceName] = calendarAppointments;
         }
         #endregion
     }

@@ -198,9 +198,7 @@ namespace Calendar
         }
         private bool IsAppointmentOfDay(Appointment appointment, MonthDayElement dayElement) 
         {
-            int appointmentDay = appointment.Start.Day;
-            int dayElementDay = dayElement.Date.Day;
-            if ( appointmentDay == dayElementDay)
+            if (appointment.Start.Date == dayElement.Date.Date)
             {
                 return true;
             }

@@ -9,13 +9,12 @@ using System.Threading.Tasks;
 namespace Calendar
 {
     [Serializable]
-    public class Appointment : INotifyPropertyChanged
+    public class Appointment
     {
         #region Constants
         #endregion
 
         #region Fields
-        public event PropertyChangedEventHandler PropertyChanged;
         private string title;
         private string description;
         private DateTime start;
@@ -32,7 +31,6 @@ namespace Calendar
             set 
             { 
                 title = value;
-                NotifyPropertyChanged();
             }
         }
         public string Description
@@ -41,10 +39,9 @@ namespace Calendar
             { 
                 return description; 
             }
-            set 
-            { 
+            set
+            {
                 description = value;
-                NotifyPropertyChanged();
             }
         }
         public DateTime Start
@@ -56,7 +53,6 @@ namespace Calendar
             set 
             { 
                 start = value;
-                NotifyPropertyChanged();
             }
         }
         public DateTime End
@@ -68,7 +64,6 @@ namespace Calendar
             set 
             { 
                 end = value;
-                NotifyPropertyChanged();
             }
         }
         #endregion
@@ -80,11 +75,6 @@ namespace Calendar
             Description = description;
             Start = start;
             End = end;
-        }
-
-        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
     }
