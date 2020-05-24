@@ -189,7 +189,7 @@ namespace Calendar
                 calendarAppointments.Add(selectedAppointment);
             }
             Utilities.SetCalendarAppointments(calendarAppointments);
-            Utilities.SaveAppointments();
+            Utilities.SavePersistentAppointments();
         }
         private void SaveNewAppointment() 
         {

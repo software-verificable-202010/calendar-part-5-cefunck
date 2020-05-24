@@ -5,8 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Calendar"
         mc:Ignorable="d"
-        Title="Calendar" Height="450" Width="800">
-    <Grid>
-        <local:CalendarLayout/>
-    </Grid>
+        Title="Calendar" Height="400" Width="600" MinHeight="400" MinWidth="600">
+    <ContentControl x:Name="contenControl"></ContentControl>
 </Window>

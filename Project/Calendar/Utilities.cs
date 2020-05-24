@@ -28,7 +28,7 @@ namespace Calendar
         public const int daysInWeek = 7;
         public const int systemEnumSundayNumber = 0;
         private const string displayedDateResourceName = "displayedDate";
-        private const string appointmentsDataFilePath = "applicationAppointmentData";
+        private const string appointmentsDataFilePath = "applicationAppointmentsData";
         private const string appointmentsDataResourceName = "calendarAppointments";
         #endregion
 
@@ -97,7 +97,7 @@ namespace Calendar
         {
             return (DateTime)App.Current.Resources[displayedDateResourceName];
         }
-        public static void SaveAppointments()
+        public static void SavePersistentAppointments()
         {
             List<Appointment> calendarAppointments = GetCalendarAppointments();
             using (FileStream file = new FileStream(appointmentsDataFilePath, FileMode.Create))

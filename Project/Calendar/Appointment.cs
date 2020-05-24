@@ -20,6 +20,8 @@ namespace Calendar
         private DateTime start;
         private DateTime end;
         private bool isInGarbage;
+        private User owner;
+        private List<User> guests;
         #endregion
 
         #region Properties
@@ -76,6 +78,28 @@ namespace Calendar
             set 
             {
                 isInGarbage = value;
+            }
+        }
+        public User Owner 
+        {
+            get 
+            {
+                return owner;
+            }
+            set 
+            {
+                owner = value;
+            }
+        }
+        public List<User> Guests 
+        {
+            get 
+            {
+                return guests; 
+            }
+            set 
+            { 
+                guests = value;
             }
         }
         #endregion
