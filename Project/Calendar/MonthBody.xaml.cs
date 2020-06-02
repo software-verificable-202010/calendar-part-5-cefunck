@@ -153,7 +153,8 @@ namespace Calendar
             List<Appointment> dayElementAppointments = new List<Appointment>();
             foreach (Appointment appointment in monthAppointmens)
             {
-                if (IsAppointmentOfDay(appointment, dayElement))
+                bool hasReadPermission = appointment.IsOwnerOrGuest(SessionController.GetCurrenUser());
+                if (IsAppointmentOfDay(appointment, dayElement) & hasReadPermission)
                 {
                     dayElementAppointments.Add(appointment);
                 }
@@ -198,6 +199,7 @@ namespace Calendar
         }
         private bool IsAppointmentOfDay(Appointment appointment, MonthDayElement dayElement) 
         {
+            //TODO: revisar si ¿Esta funcionalidad podría parte de appointment?
             if (appointment.Start.Date == dayElement.Date.Date)
             {
                 return true;

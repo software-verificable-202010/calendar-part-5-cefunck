@@ -21,57 +21,136 @@ namespace Calendar
     public partial class WeekBody : UserControl
     {
         #region Constants
-        private const string columnTitleResourceKeyPrefix = "WeekColumnTitle";
-        private const int firstColumnIndex = 1;
-        private const int lastColumnIndex = 7;
+        private const int saturdayGridColumnIndex = 6;
+        private const int sundayGridColumnIndex = 7;
         #endregion
 
         #region Fields
+        private readonly Brush highlightColor = Brushes.Red;
+        private List<WeekColumn> dayColumns = new List<WeekColumn>();
+        private List<Appointment> monthAppointmens;
         #endregion
 
         #region Properties
+        public List<Appointment> MonthAppointments
+        {
+            get
+            {
+                return monthAppointmens;
+            }
+            set
+            {
+                monthAppointmens = value;
+            }
+        }
         #endregion
 
         #region Methods
         public WeekBody()
         {
             InitializeComponent();
-            List<WeekColumn> dayColumnElements = CreateDayColumnElements();
-            InsertDayColumnElementsToWeekBody(dayColumnElements);
 
         }
         public void Refresh() 
         {
-            RefreshWeekBodyDayColumnTitles();
+            GenerateDayColumnElements();
+            InsertBodyElements();
+            RefreshDayColumnElements();
+            HighLightWeekends();
         }
-        private void RefreshWeekBodyDayColumnTitles()
+        private void InsertBodyElements()
         {
-            for (int i = 1; i <= Utilities.daysInWeek; i++)
-            {
-                DateTime displayedDate = Utilities.GetDisplayedDate();
-                int dayOfWeek = Utilities.GetDayNumberInWeek(displayedDate);
-                displayedDate = displayedDate.AddDays(Utilities.negativeMultiplier * dayOfWeek + i);
-                string columnTitleResourceKey = columnTitleResourceKeyPrefix + i.ToString();
-                string columnTitleResourceValue = Utilities.GetNameOfDayInSpanish(displayedDate) + Utilities.blankSpace + displayedDate.Day.ToString();
-                App.Current.Resources[columnTitleResourceKey] = columnTitleResourceValue;
-            }
+            WeekBodyGrid.Children.Clear();
+            InsertHoursColumnToGrid();
+            InsertDayColumnElementsToGrid();
         }
-        public List<WeekColumn> CreateDayColumnElements()
+        private void InsertDayColumnElementsToGrid()
         {
-            List<WeekColumn> dayColumns = new List<WeekColumn>();
-            for (int weekColumnIndex = firstColumnIndex; weekColumnIndex <= lastColumnIndex; weekColumnIndex++)
-            {
-                WeekColumn weekColumnElement = new WeekColumn(weekColumnIndex);
-                weekColumnElement.SetValue(Grid.ColumnProperty, weekColumnIndex);
-                dayColumns.Add(weekColumnElement);
-            }
-            return dayColumns;
-        }
-        public void InsertDayColumnElementsToWeekBody(List<WeekColumn> dayColumnElements)
-        {
-            foreach (WeekColumn dayColumnElement in dayColumnElements)
+            foreach (WeekColumn dayColumnElement in dayColumns)
             {
                 WeekBodyGrid.Children.Add(dayColumnElement);
+            }
+        }
+        private void InsertHoursColumnToGrid()
+        {
+            //TODO: revisar si esta lista esta función
+            int hoursColumnIndex = 0;
+            WeekHoursColumn weekHoursColumn = new WeekHoursColumn();
+            weekHoursColumn.SetValue(Grid.ColumnProperty, hoursColumnIndex);
+            WeekBodyGrid.Children.Add(weekHoursColumn);
+        }
+        private void HighLightWeekends()
+        {
+            foreach (var children in WeekBodyGrid.Children)
+            {
+                if (IsDayColumnElement(children))
+                {
+                    int childrenColumnIndex = (int)(children as WeekColumn).GetValue(Grid.ColumnProperty);
+                    if (IsInWeekendColumn(childrenColumnIndex))
+                    {
+                        (children as WeekColumn).Foreground = highlightColor;
+                    }
+                }
+            }
+        }
+        private bool IsDayColumnElement(object children)
+        {
+            if (children.GetType() == typeof(WeekColumn))
+            {
+                return true;
+            }
+            return false;
+        }
+        private bool IsInWeekendColumn(int childrenColumnIndex)
+        {
+            if (childrenColumnIndex == saturdayGridColumnIndex || childrenColumnIndex == sundayGridColumnIndex)
+            {
+                return true;
+            }
+            return false;
+        }
+        private void RefreshDayColumnElements()
+        {
+            foreach (WeekColumn dayColumnElement in dayColumns)
+            {
+                dayColumnElement.DayAppointments = GetDayAppointments(dayColumnElement);
+                dayColumnElement.Refresh();
+            }
+        }
+        private List<Appointment> GetDayAppointments(WeekColumn dayElement)
+        {
+            List<Appointment> dayElementAppointments = new List<Appointment>();
+            foreach (Appointment appointment in monthAppointmens)
+            {
+                bool hasReadPermission = appointment.IsOwnerOrGuest(SessionController.GetCurrenUser());
+                if (IsAppointmentOfDay(appointment, dayElement) & hasReadPermission)
+                {
+                    dayElementAppointments.Add(appointment);
+                }
+            }
+            return dayElementAppointments;
+        }
+        private bool IsAppointmentOfDay(Appointment appointment, WeekColumn dayColumnElement)
+        {
+            //TODO: revisar si ¿Esta funcionalidad podría parte de appointment?
+            if (appointment.Start.Date == dayColumnElement.Date.Date)
+            {
+                return true;
+            }
+            return false;
+        }
+        public void GenerateDayColumnElements()
+        {
+            dayColumns = new List<WeekColumn>();
+            for (int dayNumberInWeek = 1; dayNumberInWeek <= Utilities.daysInWeek; dayNumberInWeek++)
+            {
+                DateTime displayedDate = Utilities.GetDisplayedDate();
+                int displayedDateDayOfWeek = Utilities.GetDayNumberInWeek(displayedDate);
+                int daysFromDisplayedDate = Utilities.negativeMultiplier * displayedDateDayOfWeek + dayNumberInWeek;
+                DateTime dayColumnDate = displayedDate.AddDays(daysFromDisplayedDate);
+                WeekColumn weekColumnElement = new WeekColumn(dayColumnDate, dayNumberInWeek);
+                weekColumnElement.SetValue(Grid.ColumnProperty, dayNumberInWeek);
+                dayColumns.Add(weekColumnElement);
             }
         }
         #endregion

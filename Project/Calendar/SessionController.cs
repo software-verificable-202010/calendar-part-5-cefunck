@@ -32,7 +32,7 @@ namespace Calendar
             List<User> calendarUser = GetCalendarUsers();
             foreach (User user in calendarUser)
             {
-                if (user.UserName == name)
+                if (user.Name == name)
                 {
                     return user;
                 }

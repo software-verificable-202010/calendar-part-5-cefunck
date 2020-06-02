@@ -11,6 +11,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace Calendar
@@ -23,16 +24,21 @@ namespace Calendar
         #region Constants
         private const string blankTitleMessage = "Debe ingresar un título";
         private const string invalidEndTimeMessage = "Debe ingresar hora de fin válida";
+        private const string invalidGuestNameExistMessage = "Los siguientes invitados no son válidos:";
+        private const string existAppointmentCollisionMessage = "Los siguientes invitados tienen un evento que colisiona:";
+        private const string guestNamesFormPlaceHolder = "Ej: username1, username2";
         #endregion
 
         #region Fields
         private Appointment appointment;
         private readonly List<string> validationMessages = new List<string>();
+        private List<User> candidateGuests = new List<User>();
         private bool canSaveAppointment = false;
         private string candidateTitle;
         private string candidateDescription;
         private DateTime candidateStart;
         private DateTime candidateEnd;
+        private bool hasOwnerPermissions;
         #endregion
 
         #region Properties
@@ -62,24 +68,26 @@ namespace Calendar
         {
             if (IsUpdatingApponinment())
             {
-                MinimizeSaveButton();
+                RefreshSaveButton();
                 InsertDeleteButton();
             }
         }
-        private void MinimizeSaveButton() 
+        private void RefreshSaveButton() 
         {
             const int newSaveButtonColumnSpan = 3;
             buttonSave.SetValue(Grid.ColumnSpanProperty, newSaveButtonColumnSpan);
+            buttonSave.IsEnabled = hasOwnerPermissions;
         }
         private void InsertDeleteButton() 
         {
             const int deleteButtonColumnSpan = 3;
             const int deleteButtonColumn = 3;
-            const int deleteButtonRow = 3;
+            const int deleteButtonRow = 4;
             const string deleteButtonContent = "Eliminar";
             Button buttonDelete = new Button
             {
-                Content = deleteButtonContent
+                Content = deleteButtonContent,
+                IsEnabled = hasOwnerPermissions
             };
             buttonDelete.SetValue(Grid.ColumnSpanProperty, deleteButtonColumnSpan);
             buttonDelete.SetValue(Grid.ColumnProperty, deleteButtonColumn);
@@ -97,8 +105,13 @@ namespace Calendar
         }
         private void RefreshForm() 
         {
+            RefreshPermissions();
             RefreshFields();
             RefreshDeleteButton();
+        }
+        private void RefreshPermissions()
+        {
+            hasOwnerPermissions = appointment.Owner.Name == SessionController.GetCurrenUser().Name;
         }
         private void RefreshFields() 
         {
@@ -110,10 +123,43 @@ namespace Calendar
             int endMinute = appointment.End.Minute;
             textBoxTitle.Text = title;
             textBoxDescription.Text = description;
+            textBoxGuests.Text = GetAppointmentGuestNames();
             comboBoxStartHour.SelectedIndex = startHour;
             comboBoxStartMinute.SelectedIndex = startMinute;
             comboBoxEndHour.SelectedIndex = endHour;
             comboBoxEndMinute.SelectedIndex = endMinute;
+            AddGuestNamesPlaceHolderLogic();
+        }
+        private void AddGuestNamesPlaceHolderLogic()
+        {
+            if (textBoxGuests.Text == guestNamesFormPlaceHolder)
+            {
+                textBoxGuests.SelectionChanged += TextBoxGuests_SelectionChanged;
+            }
+        }
+        private void TextBoxGuests_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            textBoxGuests.SelectionChanged -= TextBoxGuests_SelectionChanged;
+            const string empty = "";
+            textBoxGuests.Text = empty;
+        }
+        private string GetAppointmentGuestNames()
+        {
+            const string prefix = ", ";
+            string guestNames = guestNamesFormPlaceHolder;
+            for (int i = 0; i < appointment.Guests.Count; i++)
+            {
+                string guestName = appointment.Guests[i].Name;
+                if (i == 0)
+                {
+                    guestNames = guestName;
+                }
+                else
+                {
+                    guestNames += prefix + guestName;
+                }
+            }
+            return guestNames;
         }
         private void InsertTimeOptions() 
         {
@@ -189,6 +235,9 @@ namespace Calendar
             appointment.Description = this.candidateDescription;
             appointment.Start = this.candidateStart;
             appointment.End = this.candidateEnd;
+            this.candidateGuests.RemoveAll(item => item == null);
+            this.candidateGuests.RemoveAll(item => item.HasAppointmentCollision(appointment));
+            appointment.Guests = this.candidateGuests;
         }
         private void ShowValidations() 
         {
@@ -205,11 +254,39 @@ namespace Calendar
             this.candidateDescription = textBoxDescription.Text;
             this.candidateStart = appointment.Start.Date + GetCandidateTime("start");
             this.candidateEnd = appointment.End.Date + GetCandidateTime("end");
+            this.candidateGuests = GetCandidateGuests();
+        }
+        private List<User> GetCandidateGuests()
+        {
+            List<User> result = new List<User>();
+            List<string> candidateGuestNames = GetCandidateGuestNames();
+            foreach (string name in candidateGuestNames)
+            {
+                User candidateGuest = SessionController.GetUserByName(name);
+                result.Add(candidateGuest);
+            }
+            return result;
         }
         private void ResetValidations() 
         {
             validationMessages.Clear();
-            this.canSaveAppointment = IsNotBlankTitle() & IsValidEndTime();
+            this.canSaveAppointment = IsNotBlankTitle() & IsValidEndTime() & AreValidGuests() & !ExistingAppointmentCollision();
+        }
+        private bool AreValidGuests()
+        {
+            bool isPlaceHolderInGuestNamesField = textBoxGuests.Text == guestNamesFormPlaceHolder;
+            bool isBlankGuestNamesField = textBoxGuests.Text.Trim().Length == 0;
+            bool existsNullGuest = this.candidateGuests.Contains(null);
+            if (existsNullGuest & !(isBlankGuestNamesField | isPlaceHolderInGuestNamesField))
+            {
+                return false;
+            }
+            return true;
+        }
+        private bool ExistingAppointmentCollision() 
+        {
+            List<User> notNullCandidateGuests = this.candidateGuests.Where(i => i != null).ToList();
+            return notNullCandidateGuests.Any(i => i.HasAppointmentCollision(this.appointment));
         }
         private void RefreshValidationMessages()
         {
@@ -221,6 +298,48 @@ namespace Calendar
             {
                 validationMessages.Add(invalidEndTimeMessage);
             }
+            if (!AreValidGuests())
+            {
+                validationMessages.Add(invalidGuestNameExistMessage);
+                AddInvalidGuestNamesToValidationMessages();
+            }
+            if (ExistingAppointmentCollision())
+            {
+                validationMessages.Add(existAppointmentCollisionMessage);
+                AddCollisionedGuestNamesToValidationMessages();
+            }
+        }
+        private void AddCollisionedGuestNamesToValidationMessages()
+        {
+            const string prefix = "- ";
+            foreach (string name in this.GetCandidateGuestNames())
+            {
+                User Guest = SessionController.GetUserByName(name);
+                if (Guest != null && Guest.HasAppointmentCollision(appointment))
+                {
+                    validationMessages.Add(prefix + name);
+                }
+            }
+        }
+        private void AddInvalidGuestNamesToValidationMessages()
+        {
+            const string prefix = "- ";
+            foreach (string name in this.GetCandidateGuestNames())
+            {
+                if (SessionController.GetUserByName(name) == null)
+                {
+                    validationMessages.Add(prefix + name);
+                }
+            }
+        }
+        private List<string> GetCandidateGuestNames()
+        {
+            List<string> candidateGuestNames = textBoxGuests.Text.Split(',').ToList();
+            for (int i = 0; i < candidateGuestNames.Count; i++)
+            {
+                candidateGuestNames[i] = candidateGuestNames[i].Trim();
+            }
+            return candidateGuestNames;
         }
         private bool IsNotBlankTitle() 
         {

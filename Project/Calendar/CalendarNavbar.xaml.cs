@@ -109,7 +109,10 @@ namespace Calendar
         }
         private void RefreshWeekBody() 
         {
-            weekBody = new WeekBody();
+            weekBody = new WeekBody() 
+            {
+                MonthAppointments = GetMonthAppointments()
+            };
             weekBody.Refresh();
             App.Current.Resources[currentBodyContentResourceName] = weekBody;
         }

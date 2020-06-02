@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Calendar
 {
@@ -47,6 +48,7 @@ namespace Calendar
                 description = value;
             }
         }
+
         public DateTime Start
         {
             get 
@@ -105,13 +107,31 @@ namespace Calendar
         #endregion
 
         #region Methods
-        public Appointment(string title, string description, DateTime start, DateTime end)
+        public Appointment(string title, string description, DateTime start, DateTime end, User owner)
         {
             Title = title;
             Description = description;
             Start = start;
             End = end;
+            this.owner = owner;
             isInGarbage = false;
+            this.guests = new List<User>();
+        }
+
+        public bool IsOwnerOrGuest(User user)
+        {
+            bool isOwner = owner.Name == user.Name;
+            bool isGuest = guests.Any(i => i.Name == user.Name);
+            return isOwner | isGuest;
+        }
+        public bool IsCollidingWith(Appointment appointment)
+        {
+            DateTime otherAppointmentStart = appointment.Start;
+            DateTime otherAppointmentEnd = appointment.End;
+            bool isCollidingWithOtherAppointmentStart = otherAppointmentStart >= this.start & otherAppointmentStart <= this.end;
+            bool isCollidingWithOtherAppointmentEnd = otherAppointmentEnd >= this.start & otherAppointmentEnd <= this.end;
+            bool isColliding = isCollidingWithOtherAppointmentStart | isCollidingWithOtherAppointmentEnd;
+            return isColliding;
         }
         #endregion
     }

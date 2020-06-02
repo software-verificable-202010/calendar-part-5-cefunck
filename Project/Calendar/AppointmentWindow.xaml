@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Calendar"
         mc:Ignorable="d"
-        Title="AppointmentWindow" Height="150" Width="500" MaxHeight="150" MaxWidth="500" MinHeight="150" MinWidth="500">
+        Title="AppointmentWindow" Height="150" Width="500" MaxHeight="300" MaxWidth="500" MinHeight="150" MinWidth="500">
     <Grid x:Name="grid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.9*"/>
@@ -20,13 +20,16 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Label Grid.Row="0" Grid.Column="0" Content="Título"/>
         <Label Grid.Row="1" Grid.Column="0" Content="De:"/>
         <Label Grid.Row="1" Grid.Column="3" Content="Hasta:"/>
         <Label Grid.Row="2" Grid.Column="0" Content="Descripción"/>
+        <Label Grid.Row="3" Grid.Column="0" Content="Invitados"/>
         <TextBox x:Name="textBoxTitle" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="5"/>
         <TextBox x:Name="textBoxDescription" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="5"/>
+        <TextBox x:Name="textBoxGuests" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="5"/>
         <ComboBox x:Name="comboBoxStartHour" Grid.Row="1" Grid.Column="1">
         </ComboBox>
         <ComboBox x:Name="comboBoxStartMinute" Grid.Row="1" Grid.Column="2">
@@ -35,6 +38,6 @@
         </ComboBox>
         <ComboBox x:Name="comboBoxEndMinute" Grid.Row="1" Grid.Column="5">
         </ComboBox>
-        <Button x:Name="buttonSave" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="6" Content="Guardar" Click="SaveButton_Click"/>
+        <Button x:Name="buttonSave" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" Content="Guardar" Click="SaveButton_Click"/>
     </Grid>
 </Window>

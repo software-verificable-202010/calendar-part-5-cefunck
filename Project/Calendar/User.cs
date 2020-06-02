@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace Calendar
 {
@@ -14,19 +16,19 @@ namespace Calendar
         #endregion
 
         #region Fields
-        private string userName;
+        private string name;
         #endregion
 
         #region Properties
-        public string UserName
+        public string Name
         {
             get
             {
-                return userName;
+                return name;
             }
             set
             {
-                userName = value;
+                name = value;
             }
         }
         #endregion
@@ -34,8 +36,20 @@ namespace Calendar
         #region Methods
         public User(string userName) 
         {
-            this.userName = userName;
+            this.name = userName;
         }
+        public bool HasAppointmentCollision(Appointment appointment)
+        {
+            List<Appointment> selfAppointments = GetAppointments();
+            return selfAppointments.Any(i => i.IsCollidingWith(appointment));
+        }
+
+        private List<Appointment> GetAppointments()
+        {
+            return Utilities.GetCalendarAppointments().Where(i => i.Owner.Name == this.name).ToList();
+        }
+
+
         #endregion
     }
 }

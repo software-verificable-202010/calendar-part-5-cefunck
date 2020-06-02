@@ -134,8 +134,9 @@ namespace Calendar
             int appointmentYear = this.date.Year;
             int appointmentMonth = this.date.Month;
             int appointmentDay = this.date.Day;
+            User currentUser = SessionController.GetCurrenUser();
             DateTime appointmentDate = new DateTime(appointmentYear, appointmentMonth, appointmentDay) + DateTime.Now.TimeOfDay;
-            selectedAppointment = new Appointment(emptyTextField, emptyTextField, appointmentDate, appointmentDate);
+            selectedAppointment = new Appointment(emptyTextField, emptyTextField, appointmentDate, appointmentDate, currentUser);
         }
         private void ShowAppointmentForm()
         {
