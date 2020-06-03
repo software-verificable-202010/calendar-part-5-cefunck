@@ -23,7 +23,6 @@ namespace Calendar
     {
         #region Constants
         const string nonExistentUserMessage = "El usuario ingresado no existe";
-        const string userNamePlaceHolder = "Ingrese nombre de usuario";
         #endregion
 
         #region Fields
@@ -35,26 +34,12 @@ namespace Calendar
         #region Properties
         #endregion
 
-        #region Methdos
+        #region Methods
         public LoginForm()
         {
             InitializeComponent();
-            RefreshUserNamePlaceHolder();
             calendarUsers = SessionController.GetCalendarUsers();
             currentUser = SessionController.GetUserByName(userNameProvided);
-        }
-        private void RefreshUserNamePlaceHolder() 
-        {
-            textBoxUserNameProvided.Text = userNamePlaceHolder;
-            textBoxUserNameProvided.SelectionChanged += TextBoxUserNameProvided_SelectionChanged;
-        }
-        private void TextBoxUserNameProvided_SelectionChanged(object sender, RoutedEventArgs e)
-        {
-            if (textBoxUserNameProvided.Text == userNamePlaceHolder)
-            {
-                textBoxUserNameProvided.Text = "";
-                textBoxUserNameProvided.SelectionChanged -= TextBoxUserNameProvided_SelectionChanged;
-            }
         }
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
