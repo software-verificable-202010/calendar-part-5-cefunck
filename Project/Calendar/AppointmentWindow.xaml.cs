@@ -24,7 +24,7 @@ namespace Calendar
         #region Constants
         private const string blankTitleMessage = "Debe ingresar un título";
         private const string invalidEndTimeMessage = "Debe ingresar hora de fin válida";
-        private const string invalidGuestNameExistMessage = "Los siguientes invitados no son válidos:";
+        private const string invalidGuestsMessage = "Los siguientes invitados no son válidos:";
         private const string existAppointmentCollisionMessage = "Los siguientes invitados tienen un evento que colisiona:";
         private const string guestNamesFormPlaceHolder = "Ej: username1, username2";
         #endregion
@@ -277,7 +277,9 @@ namespace Calendar
             bool isPlaceHolderInGuestNamesField = textBoxGuests.Text == guestNamesFormPlaceHolder;
             bool isBlankGuestNamesField = textBoxGuests.Text.Trim().Length == 0;
             bool existsNullGuest = this.candidateGuests.Contains(null);
-            if (existsNullGuest & !(isBlankGuestNamesField | isPlaceHolderInGuestNamesField))
+            bool isOwnerInvited = this.candidateGuests.Contains(appointment.Owner);
+            bool areThereGuests = !(isBlankGuestNamesField | isPlaceHolderInGuestNamesField);
+            if (areThereGuests & (existsNullGuest | isOwnerInvited))
             {
                 return false;
             }
@@ -286,7 +288,8 @@ namespace Calendar
         private bool ExistingAppointmentCollision() 
         {
             List<User> notNullCandidateGuests = this.candidateGuests.Where(i => i != null).ToList();
-            return notNullCandidateGuests.Any(i => i.HasAppointmentCollision(this.appointment));
+            bool existAppointmentCollision = notNullCandidateGuests.Any(i => i.HasAppointmentCollision(this.appointment) & i.Name != appointment.Owner.Name);
+            return existAppointmentCollision;
         }
         private void RefreshValidationMessages()
         {
@@ -300,7 +303,7 @@ namespace Calendar
             }
             if (!AreValidGuests())
             {
-                validationMessages.Add(invalidGuestNameExistMessage);
+                validationMessages.Add(invalidGuestsMessage);
                 AddInvalidGuestNamesToValidationMessages();
             }
             if (ExistingAppointmentCollision())
@@ -314,8 +317,10 @@ namespace Calendar
             const string prefix = "- ";
             foreach (string name in this.GetCandidateGuestNames())
             {
-                User Guest = SessionController.GetUserByName(name);
-                if (Guest != null && Guest.HasAppointmentCollision(appointment))
+                User guest = SessionController.GetUserByName(name);
+                bool isExistentUser = guest != null;
+                bool isNotOwner = name != appointment.Owner.Name;
+                if (isNotOwner & isExistentUser & guest.HasAppointmentCollision(appointment))
                 {
                     validationMessages.Add(prefix + name);
                 }
@@ -326,7 +331,10 @@ namespace Calendar
             const string prefix = "- ";
             foreach (string name in this.GetCandidateGuestNames())
             {
-                if (SessionController.GetUserByName(name) == null)
+                bool isOwnerUser = name == appointment.Owner.Name;
+                bool isNonExistentUser = SessionController.GetUserByName(name) == null;
+                bool isInvalidGuest = isOwnerUser | isNonExistentUser;
+                if (isInvalidGuest)
                 {
                     validationMessages.Add(prefix + name);
                 }
