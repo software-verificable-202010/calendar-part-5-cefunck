@@ -21,7 +21,7 @@ This is the repository corresponding to the third part of the project of the cou
   - Open the project with Visual Studio 2019 (or newer) and .NET Framework 4.7.2 (or newer).
   - Run the proyect
   - **Login with usuario1 or usuario2 as username.**
-  - **close calendar to logout.**
+  - **Close calendar to logout.**
   - Navigate in both monthly view and weekly view with arrow buttons in navigation bar.
 
 
