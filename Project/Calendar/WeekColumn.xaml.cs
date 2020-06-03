@@ -28,7 +28,6 @@ namespace Calendar
         #endregion
 
         #region Fields
-        //TODO: hacer globales estos colores para que lo usen login y apointment es vista mensual y semanal
         private Brush appointmentButtonBackground = Brushes.CornflowerBlue;
         private Brush appointmentButtonForeground = Brushes.White;
         private List<Appointment> dayAppointments = new List<Appointment>();
@@ -83,43 +82,64 @@ namespace Calendar
         }
         public void Refresh()
         {
+            ClearWeekColumnGrid();
             RefreshColumnsOfGrid();
             InsertTitle();
             InsertButtonsForNewAppointment();
             RefreshAppointments();
         }
-        private void RefreshColumnsOfGrid()
+        private void ClearWeekColumnGrid()
         {
             WeekColumnGrid.Children.Clear();
-            refreshAmountOfColumns();
-
+            WeekColumnGrid.ColumnDefinitions.Clear();
         }
-        private void refreshAmountOfColumns()
+        private void RefreshColumnsOfGrid()
         {
-            const int defaultColumns = 2;
-            int maxAppointmentCollisions = 0;
+            RefreshAmountOfColumns();
+            InsertColumnDefinitions();
+        }
+        private void InsertColumnDefinitions()
+        {
+            const double newAppointmentColumnWidth = 0.1;
+            for (int i = 0; i < amountOfColumns; i++)
+            {
+                WeekColumnGrid.ColumnDefinitions.Add(new ColumnDefinition());
+            }
+            WeekColumnGrid.ColumnDefinitions.Last().Width = new GridLength(newAppointmentColumnWidth, GridUnitType.Star);
+        }
+        private void RefreshAmountOfColumns()
+        {
+            const int columnOfNewAppointmentButtons = 1;
+            List<List<Appointment>> appointmentsColumns = new List<List<Appointment>>();
             foreach (Appointment appointment in dayAppointments)
             {
-                int appointmentCollisions = 0;
-                foreach (Appointment otherAppointment in dayAppointments)
+                bool isAlreadyAdded = false;
+                foreach (List<Appointment> existingColumn in appointmentsColumns)
                 {
-                    if (appointment != otherAppointment & appointment.IsCollidingWith(otherAppointment))
+                    bool canInsertWithoutColliding = !existingColumn.Any(i => i.IsCollidingWith(appointment));
+                    if (canInsertWithoutColliding)
                     {
-                        appointmentCollisions++;
+                        existingColumn.Add(appointment);
+                        isAlreadyAdded = true;
+                        break;
                     }
                 }
-                if (appointmentCollisions > maxAppointmentCollisions)
+                if (!isAlreadyAdded)
                 {
-                    maxAppointmentCollisions = appointmentCollisions;
+                    List<Appointment> newColumn = new List<Appointment>()
+                    {
+                        appointment
+                    };
+                    appointmentsColumns.Add(newColumn);
                 }
             }
-            amountOfColumns = maxAppointmentCollisions + defaultColumns;
-
+            amountOfColumns = appointmentsColumns.Count + columnOfNewAppointmentButtons;
         }
         private void InsertTitle()
         {
-            const int spanValue = 2;
             const double thicknessValue = 0.2;
+            const int rowSpanValue = 2;
+            int columnSpanValue = amountOfColumns;
             Brush brushTitleBorderBackgroundColor = Brushes.White;
             Thickness thicknessTitleBorder = new Thickness(thicknessValue);
             Border borderTitle = new Border()
@@ -132,15 +152,16 @@ namespace Calendar
                 Text = GetColumnTitle(),
                 VerticalAlignment = VerticalAlignment.Center
             };
-            textBlockTitle.SetValue(Grid.ColumnSpanProperty, spanValue);
-            textBlockTitle.SetValue(Grid.RowSpanProperty, spanValue);
-            borderTitle.SetValue(Grid.ColumnSpanProperty, spanValue);
-            borderTitle.SetValue(Grid.RowSpanProperty, spanValue);
+            textBlockTitle.SetValue(Grid.ColumnSpanProperty, columnSpanValue);
+            textBlockTitle.SetValue(Grid.RowSpanProperty, rowSpanValue);
+            borderTitle.SetValue(Grid.ColumnSpanProperty, columnSpanValue);
+            borderTitle.SetValue(Grid.RowSpanProperty, rowSpanValue);
             WeekColumnGrid.Children.Add(borderTitle);
             WeekColumnGrid.Children.Add(textBlockTitle);
         }
         private void InsertButtonsForNewAppointment()
         {
+            int spanValue = amountOfColumns;
             for (int i = 2; i < 50; i++)
             {
                 Button buttonNewDayElementAppoinment = new Button
@@ -148,7 +169,8 @@ namespace Calendar
                     Content = Utilities.blankSpace
                 };
                 buttonNewDayElementAppoinment.Click += NewAppointmentButton_Click;
-                buttonNewDayElementAppoinment.SetValue(Grid.RowProperty, i);                
+                buttonNewDayElementAppoinment.SetValue(Grid.RowProperty, i);
+                buttonNewDayElementAppoinment.SetValue(Grid.ColumnSpanProperty, spanValue);
                 WeekColumnGrid.Children.Add(buttonNewDayElementAppoinment);
             }
         }
@@ -160,7 +182,7 @@ namespace Calendar
             {
                 const double fontSizeAppointmentButtonValue = 9;
                 int rowValue = GetAppointmentRow(appointment);
-                int columnValue = GetAppointmentColumn();
+                int columnValue = GetAppointmentColumn(appointment);
                 int rowSpanValue = GetAppointmentRowSpan(appointment);
                 int columnSpanValue = GetAppointmentColumnSpan();
                 Binding appointmentBinding = new Binding(bindingPropertyName)
@@ -196,9 +218,7 @@ namespace Calendar
         }
         private void RefreshSelectedAppointment(object sender)
         {
-            BindingExpression bindingExpressionOfAppointmentButton = (sender as Button).GetBindingExpression(Button.ContentProperty);
-            Binding bindingAppointmentButton = bindingExpressionOfAppointmentButton.ParentBinding;
-            Appointment buttonSourceAppointment = bindingAppointmentButton.Source as Appointment;
+            Appointment buttonSourceAppointment = GetAppointmentOfButton(sender);
             int appointmentIndexInDayAppointents = dayAppointments.IndexOf(buttonSourceAppointment);
             selectedAppointment = dayAppointments[appointmentIndexInDayAppointents];
         }
@@ -296,6 +316,13 @@ namespace Calendar
             TimeSpan rowTime = new TimeSpan(rowHour, rowMinutes, rowSeconds);
             return rowTime;
         }
+        private Appointment GetAppointmentOfButton(object sender)
+        {
+            BindingExpression bindingExpressionOfAppointmentButton = (sender as Button).GetBindingExpression(Button.ContentProperty);
+            Binding bindingAppointmentButton = bindingExpressionOfAppointmentButton.ParentBinding;
+            Appointment buttonSourceAppointment = bindingAppointmentButton.Source as Appointment;
+            return buttonSourceAppointment;
+        }
         private string GetColumnTitle() 
         {
             string dayName;
@@ -341,9 +368,34 @@ namespace Calendar
             int appointmentRow = (int)Math.Floor((double)appointmentStartTimeInMinutes / minutesPerRow) + rowOffSetByTitleRows;
             return appointmentRow;
         }
-        private int GetAppointmentColumn()
+        private int GetAppointmentColumn(Appointment appointment)
         {
-            return 0;
+            const int defaultColumns = 2;
+            int columnIndex = 0;
+            for (int i = 0; i < amountOfColumns - defaultColumns; i++)
+            {
+                bool isCollisionFreeColumn = true;
+                List<UIElement> gridChildrenInColumnI = WeekColumnGrid.Children.Cast<UIElement>().Where(child => Grid.GetColumn(child) == i & Grid.GetColumnSpan(child) == 1 ).ToList();
+                foreach (UIElement child in gridChildrenInColumnI.Where(j=>j.GetType() == typeof(Button)))
+                {
+                    Appointment otherAppointment = GetAppointmentOfButton(child as Button);
+                    if (appointment.IsCollidingWith(otherAppointment))
+                    {
+                        isCollisionFreeColumn = false;
+                        break;
+                    }
+                }
+                if (isCollisionFreeColumn)
+                {
+                    columnIndex = i;
+                    break;
+                }
+                else
+                {
+                    columnIndex = amountOfColumns - defaultColumns;
+                }
+            }
+            return columnIndex;
         }
         #endregion
     }

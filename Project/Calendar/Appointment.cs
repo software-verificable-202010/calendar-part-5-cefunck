@@ -126,11 +126,7 @@ namespace Calendar
         }
         public bool IsCollidingWith(Appointment appointment)
         {
-            DateTime otherAppointmentStart = appointment.Start;
-            DateTime otherAppointmentEnd = appointment.End;
-            bool isCollidingWithOtherAppointmentStart = otherAppointmentStart >= this.start & otherAppointmentStart <= this.end;
-            bool isCollidingWithOtherAppointmentEnd = otherAppointmentEnd >= this.start & otherAppointmentEnd <= this.end;
-            bool isColliding = isCollidingWithOtherAppointmentStart | isCollidingWithOtherAppointmentEnd;
+            bool isColliding = this.start < appointment.end & appointment.start < this.end;
             return isColliding;
         }
         #endregion

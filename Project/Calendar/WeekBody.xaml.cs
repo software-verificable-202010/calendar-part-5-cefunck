@@ -73,7 +73,6 @@ namespace Calendar
         }
         private void InsertHoursColumnToGrid()
         {
-            //TODO: revisar si esta lista esta función
             int hoursColumnIndex = 0;
             WeekHoursColumn weekHoursColumn = new WeekHoursColumn();
             weekHoursColumn.SetValue(Grid.ColumnProperty, hoursColumnIndex);
@@ -132,7 +131,6 @@ namespace Calendar
         }
         private bool IsAppointmentOfDay(Appointment appointment, WeekColumn dayColumnElement)
         {
-            //TODO: revisar si ¿Esta funcionalidad podría parte de appointment?
             if (appointment.Start.Date == dayColumnElement.Date.Date)
             {
                 return true;
