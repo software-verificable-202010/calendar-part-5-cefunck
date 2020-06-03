@@ -26,6 +26,8 @@ namespace Calendar
         #endregion
 
         #region Fields
+        private Brush appointmentButtonBackground = Brushes.CornflowerBlue;
+        private Brush appointmentButtonForeground = Brushes.White;
         private List<Appointment> dayAppointments = new List<Appointment>();
         private DateTime date;
         private Appointment selectedAppointment;
@@ -94,7 +96,11 @@ namespace Calendar
                 {
                     Source = appointment
                 };
-                Button buttonDayElementAppoinment = new Button();
+                Button buttonDayElementAppoinment = new Button() 
+                { 
+                    Background = appointmentButtonBackground,
+                    Foreground = appointmentButtonForeground
+                };
                 buttonDayElementAppoinment.SetBinding(ContentProperty, appointmentBinding);
                 buttonDayElementAppoinment.Click += EditAppointmentButton_Click;
                 stackPanelMonthDayElement.Children.Add(buttonDayElementAppoinment);
