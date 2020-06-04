@@ -41,27 +41,27 @@ namespace Calendar
         }
         public static void Refresh()
         {
-            if (IsSessionLogined())
+            if (IsSessionLogoned())
             {
                 RefreshAsCalendar();
             }
             else 
             {
-                RefreshAsLoginForm();
+                RefreshAsLogOnForm();
             }
         }
-        private static bool IsSessionLogined() 
+        private static bool IsSessionLogoned() 
         {
-            if (SessionController.GetCurrenUser() != null)
+            if (SessionController.CurrenUser != null)
             {
                 return true;
             }
             return false;
         }
-        private static void RefreshAsLoginForm() 
+        private static void RefreshAsLogOnForm() 
         {
-            LoginForm loginForm = new LoginForm();
-            App.Current.Resources[contentResourceName] = loginForm;
+            LogOnForm logOnForm = new LogOnForm();
+            App.Current.Resources[contentResourceName] = logOnForm;
         }
         private static void RefreshAsCalendar() 
         {

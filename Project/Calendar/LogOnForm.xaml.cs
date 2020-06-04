@@ -17,9 +17,9 @@ using System.Windows.Shapes;
 namespace Calendar
 {
     /// <summary>
-    /// Lógica de interacción para LoginForm.xaml
+    /// Lógica de interacción para LogOnForm.xaml
     /// </summary>
-    public partial class LoginForm : UserControl
+    public partial class LogOnForm : UserControl
     {
         #region Constants
         const string nonExistentUserMessage = "El usuario ingresado no existe";
@@ -27,7 +27,6 @@ namespace Calendar
 
         #region Fields
         private User currentUser;
-        private List<User> calendarUsers;
         private string userNameProvided;
         #endregion
 
@@ -35,28 +34,26 @@ namespace Calendar
         #endregion
 
         #region Methods
-        public LoginForm()
+        public LogOnForm()
         {
             InitializeComponent();
-            calendarUsers = SessionController.GetCalendarUsers();
             currentUser = SessionController.GetUserByName(userNameProvided);
         }
-        private void LoginButton_Click(object sender, RoutedEventArgs e)
+        private void LogOnButton_Click(object sender, RoutedEventArgs e)
         {
             userNameProvided = textBoxUserNameProvided.Text;
-            calendarUsers = SessionController.GetCalendarUsers();
             currentUser = SessionController.GetUserByName(userNameProvided);
             if (IsExistingUser())
             {
-                SessionController.SetCurrenUser(currentUser);
+                SessionController.CurrenUser = currentUser;
                 MainWindow.Refresh();
             }
             else 
             {
-                ShowLoginValidationMessage();
+                ShowLogOnValidationMessage();
             }
         }
-        private void ShowLoginValidationMessage()
+        private static void ShowLogOnValidationMessage()
         {
             MessageBox.Show(nonExistentUserMessage);
         }

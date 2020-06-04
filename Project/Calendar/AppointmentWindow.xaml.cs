@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -111,7 +112,7 @@ namespace Calendar
         }
         private void RefreshPermissions()
         {
-            hasOwnerPermissions = appointment.Owner.Name == SessionController.GetCurrenUser().Name;
+            hasOwnerPermissions = appointment.Owner.Name == SessionController.CurrenUser.Name;
         }
         private void RefreshFields() 
         {
@@ -231,13 +232,14 @@ namespace Calendar
         }
         private void SaveAppointmentData()
         {
-            appointment.Title = this.candidateTitle;
-            appointment.Description = this.candidateDescription;
-            appointment.Start = this.candidateStart;
-            appointment.End = this.candidateEnd;
-            this.candidateGuests.RemoveAll(item => item == null);
-            this.candidateGuests.RemoveAll(item => item.HasAppointmentCollision(appointment));
-            appointment.Guests = this.candidateGuests;
+            appointment.Title = candidateTitle;
+            appointment.Description = candidateDescription;
+            appointment.Start = candidateStart;
+            appointment.End = candidateEnd;
+            candidateGuests.RemoveAll(item => item == null);
+            candidateGuests.RemoveAll(item => item.HasAppointmentCollision(appointment));
+            appointment.ClearGuests();
+            appointment.AddGuests(candidateGuests);
         }
         private void ShowValidations() 
         {
@@ -250,11 +252,11 @@ namespace Calendar
         }
         private void RefreshCandidateData()
         {
-            this.candidateTitle = textBoxTitle.Text;
-            this.candidateDescription = textBoxDescription.Text;
-            this.candidateStart = appointment.Start.Date + GetCandidateTime("start");
-            this.candidateEnd = appointment.End.Date + GetCandidateTime("end");
-            this.candidateGuests = GetCandidateGuests();
+            candidateTitle = textBoxTitle.Text;
+            candidateDescription = textBoxDescription.Text;
+            candidateStart = appointment.Start.Date + GetCandidateTime("start");
+            candidateEnd = appointment.End.Date + GetCandidateTime("end");
+            candidateGuests = GetCandidateGuests();
         }
         private List<User> GetCandidateGuests()
         {

@@ -11,26 +11,27 @@ namespace Calendar
     public static class SessionController
     {
         #region Constants
-        private const string calendarUsersResourceName = "calendarUsers";
-        private const string currentUserResourceName = "currentUser";
-        private const string userDataFilePath = "applicationUsersData";
         #endregion
 
         #region Fields
+        private static List<User> calendarUsers;
+        private static User currentUser;
+
         #endregion
 
         #region Properties
+        public static User CurrenUser 
+        { 
+            get => currentUser; 
+            set => currentUser = value; 
+        }
         #endregion
 
         #region Methods
-        public static void SetCurrenUser(User currentUser)
-        {
-            App.Current.Resources[currentUserResourceName] = currentUser;
-        }
         public static User GetUserByName(string name)
         {
-            List<User> calendarUser = GetCalendarUsers();
-            foreach (User user in calendarUser)
+            LoadDefaultUsers();
+            foreach (User user in calendarUsers)
             {
                 if (user.Name == name)
                 {
@@ -39,27 +40,7 @@ namespace Calendar
             }
             return null;
         }
-        public static User GetCurrenUser()
-        {
-            return App.Current.Resources[currentUserResourceName] as User;
-        }
-        public static List<User> GetCalendarUsers()
-        {
-            List<User> calendarUsers = App.Current.Resources[calendarUsersResourceName] as List<User>;
-            if (calendarUsers == null)
-            {
-                LoadDefaultUsers();
-            }
-            return calendarUsers;
-        }
-        public static void SetCalendarUsers(List<User> calendarUsers)
-        {
-            App.Current.Resources[calendarUsersResourceName] = calendarUsers;
-        }
-        private static void LoadPersistentUsers()
-        {
-            LoadDefaultUsers();
-        }
+
         private static void LoadDefaultUsers()
         {
             const string defaultUserName1 = "usuario1";
@@ -69,7 +50,7 @@ namespace Calendar
                     new User(defaultUserName1),
                     new User(defaultUserName2)
                 };
-            SetCalendarUsers(defaultUsers);
+            calendarUsers = defaultUsers;
         }
         #endregion
     }

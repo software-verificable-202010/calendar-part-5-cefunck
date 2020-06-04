@@ -1,106 +1,120 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Windows;
 
 namespace Calendar
 {
     public static class Utilities
     {
         #region Constants
-        public const string mondayName = "Lunes";
-        public const string tuesdayName = "Martes";
-        public const string wednesdayName = "Miércoles";
-        public const string thursdayName = "Jueves";
-        public const string fridayName = "Viernes";
-        public const string saturdayName = "Sábado";
-        public const string sundayName = "Domingo";
-        public const int mondayNumberInweek = 1;
-        public const int tuesdayNumberInweek = 2;
-        public const int wednesdayNumberInweek = 3;
-        public const int thursdayNumberInweek = 4;
-        public const int fridayNumberInweek = 5;
-        public const int saturdayNumberInweek = 6;
-        public const int sundayNumberInweek = 7;
-        public const string blankSpace = " ";
-        public const int negativeMultiplier = -1;
-        public const int daysInWeek = 7;
-        public const int systemEnumSundayNumber = 0;
-        private const string displayedDateResourceName = "displayedDate";
+        public const string MondayName = "Lunes";
+        public const string TuesdayName = "Martes";
+        public const string WednesdayName = "Miércoles";
+        public const string ThursdayName = "Jueves";
+        public const string FridayName = "Viernes";
+        public const string SaturdayName = "Sábado";
+        public const string SundayName = "Domingo";
+        public const int MondayNumberInweek = 1;
+        public const int TuesdayNumberInweek = 2;
+        public const int WednesdayNumberInweek = 3;
+        public const int ThursdayNumberInweek = 4;
+        public const int FridayNumberInweek = 5;
+        public const int SaturdayNumberInweek = 6;
+        public const int SundayNumberInweek = 7;
+        public const string BlankSpace = " ";
+        public const int NegativeMultiplier = -1;
+        public const int DaysInWeek = 7;
+        public const int SystemEnumSundayNumber = 0;
         private const string appointmentsDataFilePath = "applicationAppointmentsData";
-        private const string appointmentsDataResourceName = "calendarAppointments";
         #endregion
 
         #region Fields
+        private static DateTime displayedDate;
+        private static List<Appointment> calendarAppointments = new List<Appointment>();
         #endregion
 
         #region Properties
+        public static DateTime DisplayedDate 
+        { 
+            get => displayedDate; 
+            set => displayedDate = value; 
+        }
+        public static List<Appointment> CalendarAppointments 
+        { 
+            get => calendarAppointments;
+        }
+        public static Collection<string> DayNames
+        {
+            get
+            {
+                Collection<string> dayNames = new Collection<string>
+                {
+                    MondayName,
+                    TuesdayName,
+                    WednesdayName,
+                    ThursdayName,
+                    FridayName,
+                    SaturdayName,
+                    SundayName
+                };
+                return dayNames;
+            }
+        }
         #endregion
 
         #region Methods
         public static int GetDayNumberInWeek(DateTime date)
         {
             int dayNumber = (int)date.DayOfWeek;
-            if (dayNumber == systemEnumSundayNumber)
+            if (dayNumber == SystemEnumSundayNumber)
             {
-                dayNumber = sundayNumberInweek;
+                dayNumber = SundayNumberInweek;
             }
             return dayNumber;
         }
-        public static List<string> GetDayNames() 
-        {
-            List<string> dayNames = new List<string> 
-            {
-            mondayName,tuesdayName,wednesdayName,thursdayName,fridayName,saturdayName,sundayName
-            };
-            return dayNames;
-        }
+
         public static string GetNameOfDayInSpanish(DateTime date)
         {
             string spanishDayName;
             switch ((int)date.DayOfWeek)
             {
-                case mondayNumberInweek:
-                    spanishDayName = mondayName;
+                case MondayNumberInweek:
+                    spanishDayName = MondayName;
                     break;
-                case tuesdayNumberInweek:
-                    spanishDayName = tuesdayName;
+                case TuesdayNumberInweek:
+                    spanishDayName = TuesdayName;
                     break;
-                case wednesdayNumberInweek:
-                    spanishDayName = wednesdayName;
+                case WednesdayNumberInweek:
+                    spanishDayName = WednesdayName;
                     break;
-                case thursdayNumberInweek:
-                    spanishDayName = thursdayName;
+                case ThursdayNumberInweek:
+                    spanishDayName = ThursdayName;
                     break;
-                case fridayNumberInweek:
-                    spanishDayName = fridayName;
+                case FridayNumberInweek:
+                    spanishDayName = FridayName;
                     break;
-                case saturdayNumberInweek:
-                    spanishDayName = saturdayName;
+                case SaturdayNumberInweek:
+                    spanishDayName = SaturdayName;
                     break;
                 default:
-                    spanishDayName = sundayName;
+                    spanishDayName = SundayName;
                     break;
             }
             return spanishDayName;
         }
-        public static void SetDisplayedDate(DateTime dateToDisplay)
-        {
-            App.Current.Resources[displayedDateResourceName] = dateToDisplay;
-        }
+
         public static void SetDisplayedDateToNow()
         {
-            SetDisplayedDate(DateTime.Now);
+            DisplayedDate = DateTime.Now;
         }
-        public static DateTime GetDisplayedDate()
-        {
-            return (DateTime)App.Current.Resources[displayedDateResourceName];
-        }
+
         public static void SavePersistentAppointments()
         {
-            List<Appointment> calendarAppointments = GetCalendarAppointments();
-            using (FileStream file = new FileStream(appointmentsDataFilePath, FileMode.Create))
+            List<Appointment> calendarAppointments = CalendarAppointments; using (FileStream file = new FileStream(appointmentsDataFilePath, FileMode.Create))
             {
                 BinaryFormatter bf = new BinaryFormatter();
                 bf.Serialize(file, calendarAppointments);
@@ -114,22 +128,19 @@ namespace Calendar
                 using (FileStream file = new FileStream(appointmentsDataFilePath, FileMode.Open))
                 {
                     BinaryFormatter bf = new BinaryFormatter();
-                    object calendarAppointments = bf.Deserialize(file);
-                    SetCalendarAppointments(calendarAppointments as List<Appointment>);
+                    object deserealizedAppointments = bf.Deserialize(file);
+                    calendarAppointments = deserealizedAppointments as List<Appointment>;
                 }
             }
             catch (FileNotFoundException)
             {
-                SetCalendarAppointments(new List<Appointment>());
+                calendarAppointments = new List<Appointment>();
             }
         }
-        public static List<Appointment> GetCalendarAppointments()
+
+        internal static void AssignCalendarAppointments(List<Appointment> appointments)
         {
-            return App.Current.Resources[appointmentsDataResourceName] as List<Appointment>;
-        }
-        public static void SetCalendarAppointments(List<Appointment> calendarAppointments)
-        {
-            App.Current.Resources[appointmentsDataResourceName] = calendarAppointments;
+            calendarAppointments = appointments;
         }
         #endregion
     }

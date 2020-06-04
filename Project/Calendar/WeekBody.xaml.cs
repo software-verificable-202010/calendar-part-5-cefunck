@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,7 +29,7 @@ namespace Calendar
         #region Fields
         private readonly Brush highlightColor = Brushes.Red;
         private List<WeekColumn> dayColumns = new List<WeekColumn>();
-        private List<Appointment> monthAppointmens;
+        private List<Appointment> monthAppointmens = new List<Appointment>();
         #endregion
 
         #region Properties
@@ -37,10 +38,6 @@ namespace Calendar
             get
             {
                 return monthAppointmens;
-            }
-            set
-            {
-                monthAppointmens = value;
             }
         }
         #endregion
@@ -80,19 +77,20 @@ namespace Calendar
         }
         private void HighLightWeekends()
         {
-            foreach (var children in WeekBodyGrid.Children)
+            foreach (var child in WeekBodyGrid.Children)
             {
-                if (IsDayColumnElement(children))
+                if (IsDayColumnElement(child))
                 {
-                    int childrenColumnIndex = (int)(children as WeekColumn).GetValue(Grid.ColumnProperty);
+                    WeekColumn dayElementChild = (child as WeekColumn);
+                    int childrenColumnIndex = (int)dayElementChild.GetValue(Grid.ColumnProperty);
                     if (IsInWeekendColumn(childrenColumnIndex))
                     {
-                        (children as WeekColumn).Foreground = highlightColor;
+                        dayElementChild.Foreground = highlightColor;
                     }
                 }
             }
         }
-        private bool IsDayColumnElement(object children)
+        private static bool IsDayColumnElement(object children)
         {
             if (children.GetType() == typeof(WeekColumn))
             {
@@ -100,7 +98,7 @@ namespace Calendar
             }
             return false;
         }
-        private bool IsInWeekendColumn(int childrenColumnIndex)
+        private static bool IsInWeekendColumn(int childrenColumnIndex)
         {
             if (childrenColumnIndex == saturdayGridColumnIndex || childrenColumnIndex == sundayGridColumnIndex)
             {
@@ -112,7 +110,7 @@ namespace Calendar
         {
             foreach (WeekColumn dayColumnElement in dayColumns)
             {
-                dayColumnElement.DayAppointments = GetDayAppointments(dayColumnElement);
+                dayColumnElement.AssignDayAppointments(GetDayAppointments(dayColumnElement));
                 dayColumnElement.Refresh();
             }
         }
@@ -121,7 +119,7 @@ namespace Calendar
             List<Appointment> dayElementAppointments = new List<Appointment>();
             foreach (Appointment appointment in monthAppointmens)
             {
-                bool hasReadPermission = appointment.IsOwnerOrGuest(SessionController.GetCurrenUser());
+                bool hasReadPermission = appointment.IsOwnerOrGuest(SessionController.CurrenUser);
                 if (IsAppointmentOfDay(appointment, dayElement) & hasReadPermission)
                 {
                     dayElementAppointments.Add(appointment);
@@ -129,7 +127,13 @@ namespace Calendar
             }
             return dayElementAppointments;
         }
-        private bool IsAppointmentOfDay(Appointment appointment, WeekColumn dayColumnElement)
+
+        internal void AssignMonthBodyAppointmnts(List<Appointment> appointments)
+        {
+            monthAppointmens = appointments;
+        }
+
+        private static bool IsAppointmentOfDay(Appointment appointment, WeekColumn dayColumnElement)
         {
             if (appointment.Start.Date == dayColumnElement.Date.Date)
             {
@@ -140,11 +144,11 @@ namespace Calendar
         public void GenerateDayColumnElements()
         {
             dayColumns = new List<WeekColumn>();
-            for (int dayNumberInWeek = 1; dayNumberInWeek <= Utilities.daysInWeek; dayNumberInWeek++)
+            for (int dayNumberInWeek = 1; dayNumberInWeek <= Utilities.DaysInWeek; dayNumberInWeek++)
             {
-                DateTime displayedDate = Utilities.GetDisplayedDate();
+                DateTime displayedDate = Utilities.DisplayedDate;
                 int displayedDateDayOfWeek = Utilities.GetDayNumberInWeek(displayedDate);
-                int daysFromDisplayedDate = Utilities.negativeMultiplier * displayedDateDayOfWeek + dayNumberInWeek;
+                int daysFromDisplayedDate = Utilities.NegativeMultiplier * displayedDateDayOfWeek + dayNumberInWeek;
                 DateTime dayColumnDate = displayedDate.AddDays(daysFromDisplayedDate);
                 WeekColumn weekColumnElement = new WeekColumn(dayColumnDate, dayNumberInWeek);
                 weekColumnElement.SetValue(Grid.ColumnProperty, dayNumberInWeek);

@@ -24,6 +24,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -79,7 +81,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="LoginForm.xaml">
+    <Page Include="LogOnForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -101,8 +103,8 @@
     <Compile Include="CalendarNavbar.xaml.cs">
       <DependentUpon>CalendarNavbar.xaml</DependentUpon>
     </Compile>
-    <Compile Include="LoginForm.xaml.cs">
-      <DependentUpon>LoginForm.xaml</DependentUpon>
+    <Compile Include="LogOnForm.xaml.cs">
+      <DependentUpon>LogOnForm.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

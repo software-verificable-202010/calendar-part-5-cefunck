@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,15 +38,11 @@ namespace Calendar
         #endregion
 
         #region Properties
-        public List<Appointment> MonthAppointments 
+        public List<Appointment> MonthAppointments
         {
-            get 
+            get
             {
                 return monthAppointmens;
-            }
-            set 
-            {
-                monthAppointmens = value;
             }
         }
         #endregion
@@ -71,8 +68,8 @@ namespace Calendar
                 Point dayElementGridCoordinates = GetGridCoordinatesByIterationIndex(i);
                 if (IsDayNumberInDisplayedMonth(candidateDayNumber, dayElementGridCoordinates))
                 {
-                    int year = Utilities.GetDisplayedDate().Year;
-                    int month = Utilities.GetDisplayedDate().Month;
+                    int year = Utilities.DisplayedDate.Year;
+                    int month = Utilities.DisplayedDate.Month;
                     int day = candidateDayNumber;
                     DateTime dayElementDate = new DateTime(year, month, day);
                     MonthDayElement dayElement = new MonthDayElement(dayElementDate);
@@ -99,7 +96,7 @@ namespace Calendar
         {
             for (int i = 0; i < 7; i++)
             {
-                List<string> dayNames = Utilities.GetDayNames();
+                Collection<string> dayNames = Utilities.DayNames;
                 TextBlock textBlockDayName = new TextBlock
                 {
                     Text = dayNames[i]
@@ -111,6 +108,12 @@ namespace Calendar
                 BodyGrid.Children.Add(borderDayName);
             }
         }
+
+        internal void AssignMonthAppointments(List<Appointment> appointments)
+        {
+            monthAppointmens = appointments;
+        }
+
         private void InsertDayElementsToGrid()
         {
             foreach (MonthDayElement dayElement in dayElements)
@@ -120,22 +123,24 @@ namespace Calendar
         }
         private void HighLightWeekends()
         {
-            foreach (var children in BodyGrid.Children)
+            foreach (var child in BodyGrid.Children)
             {
-                if (IsDayElement(children))
+                if (IsDayElement(child))
                 {
-                    int childrenColumnIndex = (int)(children as MonthDayElement).GetValue(Grid.ColumnProperty);
-                    if (IsInWeekendColumn(childrenColumnIndex))
+                    MonthDayElement dayElementChild = child as MonthDayElement;
+                    int childColumnIndex = (int)dayElementChild.GetValue(Grid.ColumnProperty);
+                    if (IsInWeekendColumn(childColumnIndex))
                     {
-                        (children as MonthDayElement).Foreground = highlightColor;
+                        dayElementChild.Foreground = highlightColor;
                     }
                 }
-                else if(IsWeekDayNameElement(children))
+                else if(IsWeekDayNameElement(child))
                 {
-                    int childrenColumnIndex = (int)(children as TextBlock).GetValue(Grid.ColumnProperty);
+                    TextBlock textBlockDayNameElement = child as TextBlock;
+                    int childrenColumnIndex = (int)textBlockDayNameElement.GetValue(Grid.ColumnProperty);
                     if (IsInWeekendColumn(childrenColumnIndex))
                     {
-                        (children as TextBlock).Foreground = highlightColor;
+                        textBlockDayNameElement.Foreground = highlightColor;
                     }
                 }
             }
@@ -144,16 +149,16 @@ namespace Calendar
         {
             foreach (MonthDayElement dayElement in dayElements)
             {
-                dayElement.DayAppointments = GetDayAppointments(dayElement);
+                dayElement.AssignDayAppointments(GetDayAppointments(dayElement));
                 dayElement.Refresh();
             }
         }
-        private List<Appointment> GetDayAppointments(MonthDayElement dayElement) 
+        private List<Appointment> GetDayAppointments(MonthDayElement dayElement)
         {
             List<Appointment> dayElementAppointments = new List<Appointment>();
             foreach (Appointment appointment in monthAppointmens)
             {
-                bool hasReadPermission = appointment.IsOwnerOrGuest(SessionController.GetCurrenUser());
+                bool hasReadPermission = appointment.IsOwnerOrGuest(SessionController.CurrenUser);
                 if (IsAppointmentOfDay(appointment, dayElement) & hasReadPermission)
                 {
                     dayElementAppointments.Add(appointment);
@@ -161,7 +166,7 @@ namespace Calendar
             }
             return dayElementAppointments;
         }
-        private bool IsInWeekendColumn(int childrenColumnIndex)
+        private static bool IsInWeekendColumn(int childrenColumnIndex)
         {
             if (childrenColumnIndex == saturdayGridColumnIndex || childrenColumnIndex == sundayGridColumnIndex)
             {
@@ -169,7 +174,7 @@ namespace Calendar
             }
             return false;
         }
-        private bool IsDayElement(object children)
+        private static bool IsDayElement(object children)
         {
             if (children.GetType() == typeof(MonthDayElement))
             {
@@ -177,7 +182,7 @@ namespace Calendar
             }
             return false;
         }
-        private bool IsWeekDayNameElement(object children)
+        private static bool IsWeekDayNameElement(object children)
         {
             if (children.GetType() == typeof(TextBlock))
             {
@@ -185,10 +190,10 @@ namespace Calendar
             }
             return false;
         }
-        private bool IsDayNumberInDisplayedMonth(int candidateDayNumber, Point dayElementGridCoordinates)
+        private static bool IsDayNumberInDisplayedMonth(int candidateDayNumber, Point dayElementGridCoordinates)
         {
             const int firstDayRowIndex = 1;
-            DateTime displayedDate = Utilities.GetDisplayedDate();
+            DateTime displayedDate = Utilities.DisplayedDate;
             bool isFirstDayRow = dayElementGridCoordinates.Y == firstDayRowIndex;
             bool isNotFirstDayRow = dayElementGridCoordinates.Y > firstDayRowIndex;
             bool isFirstDayColumnOrLater = dayElementGridCoordinates.X >= GetfirstDayGridColumnIndex();
@@ -197,7 +202,7 @@ namespace Calendar
             bool isDisplayableDayElementOfRemainsRows = isNotFirstDayRow && isCandidateDayNumberInDisplayedMonth;
             return (isDisplayableDayElementOfFirstRow || isDisplayableDayElementOfRemainsRows);
         }
-        private bool IsAppointmentOfDay(Appointment appointment, MonthDayElement dayElement) 
+        private static bool IsAppointmentOfDay(Appointment appointment, MonthDayElement dayElement) 
         {
             if (appointment.Start.Date == dayElement.Date.Date)
             {
@@ -205,23 +210,23 @@ namespace Calendar
             }
             return false;
         }
-        private int GetNumberOfDaysOfMonth(DateTime date)
+        private static int GetNumberOfDaysOfMonth(DateTime date)
         {
             DateTime displayedDate = date;
             int numberOfDaysOfDisplayedMonth = DateTime.DaysInMonth(displayedDate.Year, displayedDate.Month);
             return numberOfDaysOfDisplayedMonth;
         }
-        private int GetfirstDayGridColumnIndex()
+        private static int GetfirstDayGridColumnIndex()
         {
-            DateTime displayedDate = Utilities.GetDisplayedDate();
+            DateTime displayedDate = Utilities.DisplayedDate;
             DateTime firstDayOfDisplayedMonth = new DateTime(displayedDate.Year, displayedDate.Month, firstDayNumberInMonth);
             int firstDayGridColumnIndex = Utilities.GetDayNumberInWeek(firstDayOfDisplayedMonth) - gridColumnIndexOffset;
             return firstDayGridColumnIndex;
         }
-        private Point GetGridCoordinatesByIterationIndex(int iterationIndex)
+        private static Point GetGridCoordinatesByIterationIndex(int iterationIndex)
         {
-            int gridColumn = (iterationIndex) % Utilities.daysInWeek;
-            int gridRow = (iterationIndex / Utilities.daysInWeek) + gridRowIndexOffset;
+            int gridColumn = (iterationIndex) % Utilities.DaysInWeek;
+            int gridRow = (iterationIndex / Utilities.DaysInWeek) + gridRowIndexOffset;
             return new Point(gridColumn, gridRow); ;
         }
         #endregion

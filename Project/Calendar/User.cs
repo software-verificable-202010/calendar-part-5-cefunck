@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -46,7 +47,7 @@ namespace Calendar
 
         private List<Appointment> GetAppointments()
         {
-            return Utilities.GetCalendarAppointments().Where(i => i.Owner.Name == this.name).ToList();
+            return Utilities.CalendarAppointments.Where(i => i.Owner.Name == this.name).ToList();
         }
 
 

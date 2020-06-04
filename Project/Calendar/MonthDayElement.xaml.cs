@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Configuration;
+using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -26,23 +29,19 @@ namespace Calendar
         #endregion
 
         #region Fields
-        private Brush appointmentButtonBackground = Brushes.CornflowerBlue;
-        private Brush appointmentButtonForeground = Brushes.White;
+        private readonly Brush appointmentButtonBackground = Brushes.CornflowerBlue;
+        private readonly Brush appointmentButtonForeground = Brushes.White;
         private List<Appointment> dayAppointments = new List<Appointment>();
         private DateTime date;
         private Appointment selectedAppointment;
         #endregion
 
         #region Properties
-        public List<Appointment> DayAppointments 
+        public List<Appointment> DayAppointments
         {
-            get 
+            get
             {
                 return dayAppointments;
-            }
-            set 
-            {
-                dayAppointments = value;
             }
         }
         public DateTime Date 
@@ -79,11 +78,11 @@ namespace Calendar
         }
         private void RefreshDayNumber() 
         {
-            int displayedDateMonth = Utilities.GetDisplayedDate().Month;
+            int displayedDateMonth = Utilities.DisplayedDate.Month;
             int dayElementMonth = date.Month;
             if (dayElementMonth == displayedDateMonth)
             {
-                textBlockDayNumber.Text = date.Day.ToString();
+                textBlockDayNumber.Text = date.Day.ToString(CultureInfo.CurrentCulture);
             }
         }
         private void RefreshAppointments()
@@ -110,7 +109,7 @@ namespace Calendar
         {
             Button buttonNewDayElementAppoinment = new Button
             {
-                Content = Utilities.blankSpace
+                Content = Utilities.BlankSpace
             };
             buttonNewDayElementAppoinment.Click += NewAppointmentButton_Click;
             stackPanelMonthDayElement.Children.Add(buttonNewDayElementAppoinment);
@@ -137,12 +136,12 @@ namespace Calendar
         private void RefreshSelectedAppointmentAsNew()
         {
             const int defaultDurationAppointmentInMinutes = 60;
-            string emptyTextField = Utilities.blankSpace;
+            string emptyTextField = Utilities.BlankSpace;
             int appointmentYear = this.date.Year;
             int appointmentMonth = this.date.Month;
             int appointmentDay = this.date.Day;
             TimeSpan nowTime = DateTime.Now.TimeOfDay;
-            User currentUser = SessionController.GetCurrenUser();
+            User currentUser = SessionController.CurrenUser;
             DateTime appointmentStartDate = new DateTime(appointmentYear, appointmentMonth, appointmentDay) + nowTime;
             DateTime appointmentEndDate = appointmentStartDate.AddMinutes(defaultDurationAppointmentInMinutes);
             selectedAppointment = new Appointment(emptyTextField, emptyTextField, appointmentStartDate, appointmentEndDate, currentUser);
@@ -160,6 +159,12 @@ namespace Calendar
                 UpdateDayAppointments();
             }
         }
+
+        internal void AssignDayAppointments(List<Appointment> appointments)
+        {
+            dayAppointments = appointments;
+        }
+
         private void UpdateDayAppointments() 
         {
             if (dayAppointments.Contains(selectedAppointment))
@@ -181,7 +186,7 @@ namespace Calendar
         }
         private void UpdateCalendarAppointments() 
         {
-            List<Appointment> calendarAppointments = Utilities.GetCalendarAppointments();
+            List<Appointment> calendarAppointments = Utilities.CalendarAppointments;
             if (calendarAppointments.Contains(selectedAppointment))
             {
                 if (selectedAppointment.IsInGarbage)
@@ -198,7 +203,7 @@ namespace Calendar
             {
                 calendarAppointments.Add(selectedAppointment);
             }
-            Utilities.SetCalendarAppointments(calendarAppointments);
+            Utilities.AssignCalendarAppointments(calendarAppointments);
             Utilities.SavePersistentAppointments();
         }
         private void SaveNewAppointment() 

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -61,18 +63,18 @@ namespace Calendar
         }
         private void MoveCalendar(int amountToMove)
         {
-            DateTime newDisplayedDate = Utilities.GetDisplayedDate();
+            DateTime newDisplayedDate = Utilities.DisplayedDate;
             string currentSelectedCalendarViewOption = GetSelectedCalendarView();
             switch (currentSelectedCalendarViewOption)
             {
                 case weekViewOption:
-                    newDisplayedDate = newDisplayedDate.AddDays(amountToMove * Utilities.daysInWeek);
+                    newDisplayedDate = newDisplayedDate.AddDays(amountToMove * Utilities.DaysInWeek);
                     break;
                 default:
                     newDisplayedDate = newDisplayedDate.AddMonths(amountToMove);
                     break;
             }
-            Utilities.SetDisplayedDate(newDisplayedDate);
+            Utilities.DisplayedDate = newDisplayedDate;
             RefreshCalendar();
         }
         private void RefreshCalendar()
@@ -81,10 +83,10 @@ namespace Calendar
             RefreshDisplayedNavbarDate();
             RefreshCalendarBody();
         }        
-        private void RefreshDisplayedNavbarDate()
+        private static void RefreshDisplayedNavbarDate()
         {
-            DateTime displayedDate = Utilities.GetDisplayedDate();
-            App.Current.Resources[monthAndYearResourceName] = displayedDate.ToString(navBarMonthFormat);
+            DateTime displayedDate = Utilities.DisplayedDate;
+            App.Current.Resources[monthAndYearResourceName] = displayedDate.ToString(navBarMonthFormat, CultureInfo.CurrentCulture);
         }
         private void RefreshCalendarBody() 
         {
@@ -100,26 +102,22 @@ namespace Calendar
         }
         private void RefreshMonthBody()
         {
-            monthBody = new MonthBody
-            {
-                MonthAppointments = GetMonthAppointments()
-            };
+            monthBody = new MonthBody();
+            monthBody.AssignMonthAppointments(GetMonthAppointments());
             monthBody.Refresh();
             App.Current.Resources[currentBodyContentResourceName] = monthBody;
         }
         private void RefreshWeekBody() 
         {
-            weekBody = new WeekBody() 
-            {
-                MonthAppointments = GetMonthAppointments()
-            };
+            weekBody = new WeekBody();
+            weekBody.AssignMonthBodyAppointmnts(GetMonthAppointments());
             weekBody.Refresh();
             App.Current.Resources[currentBodyContentResourceName] = weekBody;
         }
         private void RefreshCalendarAppointments() 
         {
             Utilities.LoadPersistentAppointments();
-            calendarAppointments = Utilities.GetCalendarAppointments();
+            calendarAppointments = Utilities.CalendarAppointments;
         }
         private List<Appointment> GetMonthAppointments()
         {
@@ -133,9 +131,9 @@ namespace Calendar
             }
             return monthAppointmens;
         }
-        private bool IsAppointmentOfDisplayedMonth(Appointment appointment)
+        private static bool IsAppointmentOfDisplayedMonth(Appointment appointment)
         {
-            int displayedMonth = Utilities.GetDisplayedDate().Month;
+            int displayedMonth = Utilities.DisplayedDate.Month;
             int appointmentMonth = appointment.Start.Month;
             if (appointmentMonth == displayedMonth)
             {

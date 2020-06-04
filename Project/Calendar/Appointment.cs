@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -22,7 +23,7 @@ namespace Calendar
         private DateTime end;
         private bool isInGarbage;
         private User owner;
-        private List<User> guests;
+        private readonly List<User> guests;
         #endregion
 
         #region Properties
@@ -93,15 +94,11 @@ namespace Calendar
                 owner = value;
             }
         }
-        public List<User> Guests 
+        public List<User> Guests
         {
-            get 
+            get
             {
-                return guests; 
-            }
-            set 
-            { 
-                guests = value;
+                return guests;
             }
         }
         #endregion
@@ -117,7 +114,6 @@ namespace Calendar
             isInGarbage = false;
             this.guests = new List<User>();
         }
-
         public bool IsOwnerOrGuest(User user)
         {
             bool isOwner = owner.Name == user.Name;
@@ -126,8 +122,20 @@ namespace Calendar
         }
         public bool IsCollidingWith(Appointment appointment)
         {
+            if (appointment == null)
+            {
+                throw new ArgumentNullException("appointment");
+            }
             bool isColliding = this.start < appointment.end & appointment.start < this.end;
             return isColliding;
+        }
+        public void ClearGuests() 
+        {
+            guests.Clear();
+        }
+        public void AddGuests(List<User> users) 
+        {
+            guests.AddRange(users);
         }
         #endregion
     }
