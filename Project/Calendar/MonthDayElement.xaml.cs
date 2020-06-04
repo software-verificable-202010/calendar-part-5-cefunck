@@ -76,6 +76,10 @@ namespace Calendar
                 AddButtonForNewAppointment();
             }
         }
+        public void AssignDayAppointments(List<Appointment> appointments)
+        {
+            dayAppointments = appointments;
+        }
         private void RefreshDayNumber() 
         {
             int displayedDateMonth = Utilities.DisplayedDate.Month;
@@ -135,8 +139,9 @@ namespace Calendar
         }
         private void RefreshSelectedAppointmentAsNew()
         {
+            const string empty = "";
             const int defaultDurationAppointmentInMinutes = 60;
-            string emptyTextField = Utilities.BlankSpace;
+            string emptyTextField = empty;
             int appointmentYear = this.date.Year;
             int appointmentMonth = this.date.Month;
             int appointmentDay = this.date.Day;
@@ -159,12 +164,6 @@ namespace Calendar
                 UpdateDayAppointments();
             }
         }
-
-        internal void AssignDayAppointments(List<Appointment> appointments)
-        {
-            dayAppointments = appointments;
-        }
-
         private void UpdateDayAppointments() 
         {
             if (dayAppointments.Contains(selectedAppointment))
