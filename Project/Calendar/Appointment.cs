@@ -14,14 +14,16 @@ namespace Calendar
     public class Appointment
     {
         #region Constants
+        const string empty = "";
+        const int defaultDurationInMinutes = 30;
         #endregion
 
         #region Fields
         private string title;
         private string description;
+        private bool isInGarbage;
         private DateTime start;
         private DateTime end;
-        private bool isInGarbage;
         private User owner;
         private readonly List<User> guests;
         #endregion
@@ -38,6 +40,7 @@ namespace Calendar
                 title = value;
             }
         }
+
         public string Description
         {
             get 
@@ -61,6 +64,7 @@ namespace Calendar
                 start = value;
             }
         }
+
         public DateTime End
         {
             get 
@@ -72,6 +76,7 @@ namespace Calendar
                 end = value;
             }
         }
+
         public bool IsInGarbage
         {
             get 
@@ -83,6 +88,7 @@ namespace Calendar
                 isInGarbage = value;
             }
         }
+
         public User Owner 
         {
             get 
@@ -94,6 +100,7 @@ namespace Calendar
                 owner = value;
             }
         }
+
         public List<User> Guests
         {
             get
@@ -104,39 +111,44 @@ namespace Calendar
         #endregion
 
         #region Methods
-        public Appointment(string title, string description, DateTime start, DateTime end, User owner)
+        public Appointment(DateTime start, User owner)
         {
-            Title = title;
-            Description = description;
+            Title = empty;
+            Description = empty;
             Start = start;
-            End = end;
+            End = start.AddMinutes(defaultDurationInMinutes);
             this.owner = owner;
             isInGarbage = false;
             this.guests = new List<User>();
         }
-        public bool IsOwnerOrGuest(User user)
+
+        public bool HasReadPermissions(User user)
         {
             bool isOwner = owner.Name == user.Name;
-            bool isGuest = guests.Any(i => i.Name == user.Name);
+            bool isGuest = guests.Any(guest => guest.Name == user.Name);
             return isOwner | isGuest;
         }
-        public bool IsCollidingWith(Appointment appointment)
+
+        public bool IsCollidingWith(Appointment otherAppointment)
         {
-            if (appointment == null)
+            const string argumentNameOfNullException = "appointment";
+            if (otherAppointment == null)
             {
-                throw new ArgumentNullException("appointment");
+                throw new ArgumentNullException(argumentNameOfNullException);
             }
-            bool isColliding = this.start < appointment.end & appointment.start < this.end;
+
+            bool isThisStartingBeforeOtherEnds = this.start < otherAppointment.end;
+            bool isThisEndingAfterOtherStarts = otherAppointment.start < this.end;
+            bool isColliding = isThisStartingBeforeOtherEnds & isThisEndingAfterOtherStarts;
             return isColliding;
         }
-        public void ClearGuests() 
+
+        public void AssignGuests(List<User> users) 
         {
             guests.Clear();
-        }
-        public void AddGuests(List<User> users) 
-        {
             guests.AddRange(users);
         }
+
         #endregion
     }
 }

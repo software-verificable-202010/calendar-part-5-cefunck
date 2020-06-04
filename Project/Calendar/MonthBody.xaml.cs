@@ -158,7 +158,7 @@ namespace Calendar
             List<Appointment> dayElementAppointments = new List<Appointment>();
             foreach (Appointment appointment in monthAppointmens)
             {
-                bool hasReadPermission = appointment.IsOwnerOrGuest(SessionController.CurrenUser);
+                bool hasReadPermission = appointment.HasReadPermissions(SessionController.CurrenUser);
                 if (IsAppointmentOfDay(appointment, dayElement) & hasReadPermission)
                 {
                     dayElementAppointments.Add(appointment);

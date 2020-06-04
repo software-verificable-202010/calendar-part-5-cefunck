@@ -139,17 +139,13 @@ namespace Calendar
         }
         private void RefreshSelectedAppointmentAsNew()
         {
-            const string empty = "";
-            const int defaultDurationAppointmentInMinutes = 60;
-            string emptyTextField = empty;
             int appointmentYear = this.date.Year;
             int appointmentMonth = this.date.Month;
             int appointmentDay = this.date.Day;
             TimeSpan nowTime = DateTime.Now.TimeOfDay;
             User currentUser = SessionController.CurrenUser;
             DateTime appointmentStartDate = new DateTime(appointmentYear, appointmentMonth, appointmentDay) + nowTime;
-            DateTime appointmentEndDate = appointmentStartDate.AddMinutes(defaultDurationAppointmentInMinutes);
-            selectedAppointment = new Appointment(emptyTextField, emptyTextField, appointmentStartDate, appointmentEndDate, currentUser);
+            selectedAppointment = new Appointment(appointmentStartDate, currentUser);
         }
         private void ShowAppointmentForm()
         {

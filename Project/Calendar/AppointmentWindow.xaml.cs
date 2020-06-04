@@ -75,8 +75,8 @@ namespace Calendar
         }
         private void RefreshSaveButton() 
         {
-            const int newSaveButtonColumnSpan = 3;
-            buttonSave.SetValue(Grid.ColumnSpanProperty, newSaveButtonColumnSpan);
+            const int saveButtonColumnSpan = 3;
+            buttonSave.SetValue(Grid.ColumnSpanProperty, saveButtonColumnSpan);
             buttonSave.IsEnabled = hasOwnerPermissions;
         }
         private void InsertDeleteButton() 
@@ -238,8 +238,7 @@ namespace Calendar
             appointment.End = candidateEnd;
             candidateGuests.RemoveAll(item => item == null);
             candidateGuests.RemoveAll(item => item.HasAppointmentCollision(appointment));
-            appointment.ClearGuests();
-            appointment.AddGuests(candidateGuests);
+            appointment.AssignGuests(candidateGuests);
         }
         private void ShowValidations() 
         {
