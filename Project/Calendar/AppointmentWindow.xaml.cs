@@ -23,62 +23,150 @@ namespace Calendar
     public partial class AppointmentWindow : Window
     {
         #region Constants
-        private const string blankTitleMessage = "Debe ingresar un título";
+        private const int hoursInOneDay = 24;
+        private const int minutesInOneHour = 60;
+        private const string emptyTitleMessage = "Debe ingresar un título";
         private const string invalidEndTimeMessage = "Debe ingresar hora de fin válida";
         private const string invalidGuestsMessage = "Los siguientes invitados no son válidos:";
-        private const string existAppointmentCollisionMessage = "Los siguientes invitados tienen un evento que colisiona:";
-        private const string guestNamesFormPlaceHolder = "Ej: username1, username2";
+        private const string appointmentCollisionMessage = "Los siguientes invitados tienen un evento que colisiona:";
+        private const string guestNamesFieldPlaceHolder = "Ej: un_nombre, otro_nombre";
         #endregion
 
+
         #region Fields
-        private Appointment appointment;
-        private readonly List<string> validationMessages = new List<string>();
-        private List<User> candidateGuests = new List<User>();
-        private bool canSaveAppointment = false;
+        private bool hasOwnerPermissions;
+        private bool canSaveSourceAppointment = false;
         private string candidateTitle;
         private string candidateDescription;
         private DateTime candidateStart;
         private DateTime candidateEnd;
-        private bool hasOwnerPermissions;
+        private Appointment sourceAppointment;
+        private List<User> candidateGuests = new List<User>();
+        private readonly List<string> validationMessages = new List<string>();
+
         #endregion
+
 
         #region Properties
-        public Appointment Appointment 
-        {
-            get 
-            {
-                return appointment;
-            }
-            set 
-            {
-                appointment = value;
-            }
-        }
         #endregion
 
+
         #region Methods
-        public AppointmentWindow(Appointment appointment)
+        public AppointmentWindow(Appointment sourceAppointment)
         {
-            this.appointment = appointment;
+            this.sourceAppointment = sourceAppointment;
             InitializeComponent();
             InsertTimeOptions();
-            SelectDefaultTimeOptions();
             RefreshForm();
         }
+
+        private void InsertTimeOptions()
+        {
+            InsertHoursOptions();
+            InsertMinutesOptions();
+        }
+
+        private void InsertHoursOptions()
+        {
+            for (int i = 0; i < hoursInOneDay; i++)
+            {
+                ComboBoxItem comboBoxItemStartHour = new ComboBoxItem
+                {
+                    Content = i
+                };
+                comboBoxStartHour.Items.Add(comboBoxItemStartHour);
+
+                ComboBoxItem comboBoxItemEndtHour = new ComboBoxItem
+                {
+                    Content = i
+                };
+                comboBoxEndHour.Items.Add(comboBoxItemEndtHour);
+            }
+        }
+
+        private void InsertMinutesOptions()
+        {
+            for (int i = 0; i < minutesInOneHour; i++)
+            {
+                ComboBoxItem comboBoxItemStartMinute = new ComboBoxItem
+                {
+                    Content = i
+                };
+                comboBoxStartMinute.Items.Add(comboBoxItemStartMinute);
+
+                ComboBoxItem comboBoxItemEndMinute = new ComboBoxItem
+                {
+                    Content = i
+                };
+                comboBoxEndMinute.Items.Add(comboBoxItemEndMinute);
+            }
+        }
+
+        private void RefreshForm()
+        {
+            RefreshPermissions();
+            RefreshFields();
+            RefreshDeleteButton();
+        }
+
+        private void RefreshPermissions()
+        {
+            User currentUser = SessionController.CurrenUser;
+            hasOwnerPermissions = sourceAppointment.HasOwnerPermissions(currentUser);
+        }
+
+        private void RefreshFields()
+        {
+            string title = sourceAppointment.Title;
+            string description = sourceAppointment.Description;
+            string guestNames = GetAppointmentGuestNamesInFieldFormat();
+            int startHour = sourceAppointment.Start.Hour;
+            int startMinute = sourceAppointment.Start.Minute;
+            int endHour = sourceAppointment.End.Hour;
+            int endMinute = sourceAppointment.End.Minute;
+
+            textBoxTitle.Text = title;
+            textBoxDescription.Text = description;
+            textBoxGuests.Text = guestNames;
+            comboBoxStartHour.SelectedIndex = startHour;
+            comboBoxStartMinute.SelectedIndex = startMinute;
+            comboBoxEndHour.SelectedIndex = endHour;
+            comboBoxEndMinute.SelectedIndex = endMinute;
+            SuscribeGuestNamesFieldSelectionChanged();
+        }
+
+        private void SuscribeGuestNamesFieldSelectionChanged()
+        {
+            string guestNamesField = textBoxGuests.Text;
+            bool isStillPlaceHodler = guestNamesField == guestNamesFieldPlaceHolder;
+            if (isStillPlaceHodler)
+            {
+                textBoxGuests.SelectionChanged += GuestNamesField_SelectionChanged;
+            }
+        }
+
+        private void GuestNamesField_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            textBoxGuests.SelectionChanged -= GuestNamesField_SelectionChanged;
+            textBoxGuests.Text = string.Empty;
+        }
+
         private void RefreshDeleteButton() 
         {
-            if (IsUpdatingApponinment())
+            if (IsFormForEditAppointment())
             {
-                RefreshSaveButton();
+                RefreshSaveButtonForEditForm();
                 InsertDeleteButton();
             }
         }
-        private void RefreshSaveButton() 
+
+        private void RefreshSaveButtonForEditForm() 
         {
             const int saveButtonColumnSpan = 3;
             buttonSave.SetValue(Grid.ColumnSpanProperty, saveButtonColumnSpan);
             buttonSave.IsEnabled = hasOwnerPermissions;
         }
+
         private void InsertDeleteButton() 
         {
             const int deleteButtonColumnSpan = 3;
@@ -96,61 +184,28 @@ namespace Calendar
             buttonDelete.Click += DeleteButton_Click;
             grid.Children.Add(buttonDelete);
         }
-        private bool IsUpdatingApponinment() 
+
+        private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
-            if (appointment.Title.Trim().Length != 0)
-            {
-                return true;
-            }
-            return false;
+            sourceAppointment.IsInGarbage = true;
+            this.Close();
         }
-        private void RefreshForm() 
+
+        private bool IsFormForEditAppointment() 
         {
-            RefreshPermissions();
-            RefreshFields();
-            RefreshDeleteButton();
+            string sourceAppointmentTitle = sourceAppointment.Title.Trim();
+            bool isNotBlankTitle = sourceAppointmentTitle.Length != 0;
+            return isNotBlankTitle;
         }
-        private void RefreshPermissions()
-        {
-            hasOwnerPermissions = appointment.Owner.Name == SessionController.CurrenUser.Name;
-        }
-        private void RefreshFields() 
-        {
-            string title = appointment.Title;
-            string description = appointment.Description;
-            int startHour = appointment.Start.Hour;
-            int startMinute = appointment.Start.Minute;
-            int endHour = appointment.End.Hour;
-            int endMinute = appointment.End.Minute;
-            textBoxTitle.Text = title;
-            textBoxDescription.Text = description;
-            textBoxGuests.Text = GetAppointmentGuestNames();
-            comboBoxStartHour.SelectedIndex = startHour;
-            comboBoxStartMinute.SelectedIndex = startMinute;
-            comboBoxEndHour.SelectedIndex = endHour;
-            comboBoxEndMinute.SelectedIndex = endMinute;
-            AddGuestNamesPlaceHolderLogic();
-        }
-        private void AddGuestNamesPlaceHolderLogic()
-        {
-            if (textBoxGuests.Text == guestNamesFormPlaceHolder)
-            {
-                textBoxGuests.SelectionChanged += TextBoxGuests_SelectionChanged;
-            }
-        }
-        private void TextBoxGuests_SelectionChanged(object sender, RoutedEventArgs e)
-        {
-            textBoxGuests.SelectionChanged -= TextBoxGuests_SelectionChanged;
-            const string empty = "";
-            textBoxGuests.Text = empty;
-        }
-        private string GetAppointmentGuestNames()
+
+        private string GetAppointmentGuestNamesInFieldFormat()
         {
             const string prefix = ", ";
-            string guestNames = guestNamesFormPlaceHolder;
-            for (int i = 0; i < appointment.Guests.Count; i++)
+            string guestNames = guestNamesFieldPlaceHolder;
+
+            for (int i = 0; i < sourceAppointment.Guests.Count; i++)
             {
-                string guestName = appointment.Guests[i].Name;
+                string guestName = sourceAppointment.Guests[i].Name;
                 if (i == 0)
                 {
                     guestNames = guestName;
@@ -160,61 +215,15 @@ namespace Calendar
                     guestNames += prefix + guestName;
                 }
             }
+
             return guestNames;
         }
-        private void InsertTimeOptions() 
-        {
-            InsertHoursOptions();
-            InsertMinutesOptions();
-        }
-        private void InsertHoursOptions()
-        {
-            for (int i = 0; i < 24; i++)
-            {
-                ComboBoxItem comboBoxItemStartHour = new ComboBoxItem
-                {
-                    Content = i
-                };
-                ComboBoxItem comboBoxItemEndtHour = new ComboBoxItem
-                {
-                    Content = i
-                };
-                comboBoxStartHour.Items.Add(comboBoxItemStartHour);
-                comboBoxEndHour.Items.Add(comboBoxItemEndtHour);
-            }
-        }
-        private void InsertMinutesOptions()
-        {
-            for (int i = 0; i < 60; i++)
-            {
-                ComboBoxItem comboBoxItemStartMinute = new ComboBoxItem
-                {
-                    Content = i
-                };
-                ComboBoxItem comboBoxItemEndMinute = new ComboBoxItem
-                {
-                    Content = i
-                };
-                comboBoxStartMinute.Items.Add(comboBoxItemStartMinute);
-                comboBoxEndMinute.Items.Add(comboBoxItemEndMinute);
-            }
-        }
-        private void SelectDefaultTimeOptions()
-        {
-            comboBoxStartHour.SelectedIndex = 0;
-            comboBoxStartMinute.SelectedIndex = 0;
-            comboBoxEndHour.SelectedIndex = 0;
-            comboBoxEndMinute.SelectedIndex = 0;
-        }
-        private void DeleteButton_Click(object sender, RoutedEventArgs e)
-        {
-            appointment.IsInGarbage = true;
-            this.Close();
-        }
+
         private void SaveButton_Click(object sender, RoutedEventArgs e) 
         {
             RunValidations();
-            if (canSaveAppointment)
+
+            if (canSaveSourceAppointment)
             {
                 SaveAppointmentData();
                 this.Close();
@@ -224,22 +233,26 @@ namespace Calendar
                 ShowValidations();
             }
         }
+
         private void RunValidations()
         {
             RefreshCandidateData();
             ResetValidations();
             RefreshValidationMessages();
         }
+
         private void SaveAppointmentData()
         {
-            appointment.Title = candidateTitle;
-            appointment.Description = candidateDescription;
-            appointment.Start = candidateStart;
-            appointment.End = candidateEnd;
             candidateGuests.RemoveAll(item => item == null);
-            candidateGuests.RemoveAll(item => item.HasAppointmentCollision(appointment));
-            appointment.AssignGuests(candidateGuests);
+            candidateGuests.RemoveAll(item => item.HasAppointmentCollision(sourceAppointment));
+
+            sourceAppointment.Title = candidateTitle;
+            sourceAppointment.Description = candidateDescription;
+            sourceAppointment.Start = candidateStart;
+            sourceAppointment.End = candidateEnd;
+            sourceAppointment.AssignGuests(candidateGuests);
         }
+
         private void ShowValidations() 
         {
             string validationMessage = "";
@@ -249,14 +262,16 @@ namespace Calendar
             }
             MessageBox.Show(validationMessage);
         }
+
         private void RefreshCandidateData()
         {
             candidateTitle = textBoxTitle.Text;
             candidateDescription = textBoxDescription.Text;
-            candidateStart = appointment.Start.Date + GetCandidateTime("start");
-            candidateEnd = appointment.End.Date + GetCandidateTime("end");
+            candidateStart = sourceAppointment.Start.Date + GetCandidateTime("start");
+            candidateEnd = sourceAppointment.End.Date + GetCandidateTime("end");
             candidateGuests = GetCandidateGuests();
         }
+
         private List<User> GetCandidateGuests()
         {
             List<User> result = new List<User>();
@@ -268,17 +283,19 @@ namespace Calendar
             }
             return result;
         }
+
         private void ResetValidations() 
         {
             validationMessages.Clear();
-            this.canSaveAppointment = IsNotBlankTitle() & IsValidEndTime() & AreValidGuests() & !ExistingAppointmentCollision();
+            this.canSaveSourceAppointment = IsNotBlankTitle() & IsValidEndTime() & AreValidGuests() & !ExistingAppointmentCollision();
         }
+
         private bool AreValidGuests()
         {
-            bool isPlaceHolderInGuestNamesField = textBoxGuests.Text == guestNamesFormPlaceHolder;
+            bool isPlaceHolderInGuestNamesField = textBoxGuests.Text == guestNamesFieldPlaceHolder;
             bool isBlankGuestNamesField = textBoxGuests.Text.Trim().Length == 0;
             bool existsNullGuest = this.candidateGuests.Contains(null);
-            bool isOwnerInvited = this.candidateGuests.Contains(appointment.Owner);
+            bool isOwnerInvited = this.candidateGuests.Contains(sourceAppointment.Owner);
             bool areThereGuests = !(isBlankGuestNamesField | isPlaceHolderInGuestNamesField);
             if (areThereGuests & (existsNullGuest | isOwnerInvited))
             {
@@ -286,17 +303,19 @@ namespace Calendar
             }
             return true;
         }
+
         private bool ExistingAppointmentCollision() 
         {
             List<User> notNullCandidateGuests = this.candidateGuests.Where(i => i != null).ToList();
-            bool existAppointmentCollision = notNullCandidateGuests.Any(i => i.HasAppointmentCollision(this.appointment) & i.Name != appointment.Owner.Name);
+            bool existAppointmentCollision = notNullCandidateGuests.Any(i => i.HasAppointmentCollision(this.sourceAppointment) & i.Name != sourceAppointment.Owner.Name);
             return existAppointmentCollision;
         }
+
         private void RefreshValidationMessages()
         {
             if (!IsNotBlankTitle())
             {
-                validationMessages.Add(blankTitleMessage);
+                validationMessages.Add(emptyTitleMessage);
             }
             if (!IsValidEndTime())
             {
@@ -309,10 +328,11 @@ namespace Calendar
             }
             if (ExistingAppointmentCollision())
             {
-                validationMessages.Add(existAppointmentCollisionMessage);
+                validationMessages.Add(appointmentCollisionMessage);
                 AddCollisionedGuestNamesToValidationMessages();
             }
         }
+
         private void AddCollisionedGuestNamesToValidationMessages()
         {
             const string prefix = "- ";
@@ -320,19 +340,20 @@ namespace Calendar
             {
                 User guest = SessionController.GetUserByName(name);
                 bool isExistentUser = guest != null;
-                bool isNotOwner = name != appointment.Owner.Name;
-                if (isNotOwner & isExistentUser & guest.HasAppointmentCollision(appointment))
+                bool isNotOwner = name != sourceAppointment.Owner.Name;
+                if (isNotOwner & isExistentUser & guest.HasAppointmentCollision(sourceAppointment))
                 {
                     validationMessages.Add(prefix + name);
                 }
             }
         }
+
         private void AddInvalidGuestNamesToValidationMessages()
         {
             const string prefix = "- ";
             foreach (string name in this.GetCandidateGuestNames())
             {
-                bool isOwnerUser = name == appointment.Owner.Name;
+                bool isOwnerUser = name == sourceAppointment.Owner.Name;
                 bool isNonExistentUser = SessionController.GetUserByName(name) == null;
                 bool isInvalidGuest = isOwnerUser | isNonExistentUser;
                 if (isInvalidGuest)
@@ -341,6 +362,7 @@ namespace Calendar
                 }
             }
         }
+
         private List<string> GetCandidateGuestNames()
         {
             List<string> candidateGuestNames = textBoxGuests.Text.Split(',').ToList();
@@ -350,6 +372,7 @@ namespace Calendar
             }
             return candidateGuestNames;
         }
+
         private bool IsNotBlankTitle() 
         {
             string titleCandidate = textBoxTitle.Text.Trim();
@@ -359,6 +382,7 @@ namespace Calendar
             }
             return false;
         }
+
         private bool IsValidEndTime() 
         {
             if (this.candidateEnd > this.candidateStart)
@@ -367,6 +391,7 @@ namespace Calendar
             }
             return false;
         }
+
         private TimeSpan GetCandidateTime(string requiredTime) 
         {
             const int defaultSeconds = 0;
@@ -382,6 +407,7 @@ namespace Calendar
             }
             return endTime;
         }
+
         #endregion
     }
 }

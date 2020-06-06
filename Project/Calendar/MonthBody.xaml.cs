@@ -31,27 +31,24 @@ namespace Calendar
         private const int sundayGridColumnIndex = 6;
         #endregion
 
+
         #region Fields
         private readonly Brush highlightColor = Brushes.Red;
         private List<MonthDayElement> dayElements = new List<MonthDayElement>();
         private List<Appointment> monthAppointmens;
         #endregion
 
+
         #region Properties
-        public List<Appointment> MonthAppointments
-        {
-            get
-            {
-                return monthAppointmens;
-            }
-        }
         #endregion
+
 
         #region Methods
         public MonthBody()
         {
             InitializeComponent();
         }
+
         public void Refresh() 
         {
             GenerateDayElements();
@@ -59,6 +56,7 @@ namespace Calendar
             RefreshDayElements();
             HighLightWeekends();
         }
+
         private void GenerateDayElements()
         {
             dayElements = new List<MonthDayElement>();
@@ -86,12 +84,14 @@ namespace Calendar
                 }
             }
         }
+
         private void InsertBodyElements() 
         {
             BodyGrid.Children.Clear();
             InsertWeekDaysToGrid();
             InsertDayElementsToGrid();
         }
+
         private void InsertWeekDaysToGrid() 
         {
             for (int i = 0; i < 7; i++)
@@ -121,6 +121,7 @@ namespace Calendar
                 BodyGrid.Children.Add(dayElement);
             }
         }
+
         private void HighLightWeekends()
         {
             foreach (var child in BodyGrid.Children)
@@ -145,6 +146,7 @@ namespace Calendar
                 }
             }
         }
+
         private void RefreshDayElements()
         {
             foreach (MonthDayElement dayElement in dayElements)
@@ -153,6 +155,7 @@ namespace Calendar
                 dayElement.Refresh();
             }
         }
+
         private List<Appointment> GetDayAppointments(MonthDayElement dayElement)
         {
             List<Appointment> dayElementAppointments = new List<Appointment>();
@@ -166,6 +169,7 @@ namespace Calendar
             }
             return dayElementAppointments;
         }
+
         private static bool IsInWeekendColumn(int childrenColumnIndex)
         {
             if (childrenColumnIndex == saturdayGridColumnIndex || childrenColumnIndex == sundayGridColumnIndex)
@@ -174,6 +178,7 @@ namespace Calendar
             }
             return false;
         }
+
         private static bool IsDayElement(object children)
         {
             if (children.GetType() == typeof(MonthDayElement))
@@ -182,6 +187,7 @@ namespace Calendar
             }
             return false;
         }
+
         private static bool IsWeekDayNameElement(object children)
         {
             if (children.GetType() == typeof(TextBlock))
@@ -190,6 +196,7 @@ namespace Calendar
             }
             return false;
         }
+
         private static bool IsDayNumberInDisplayedMonth(int candidateDayNumber, Point dayElementGridCoordinates)
         {
             const int firstDayRowIndex = 1;
@@ -202,6 +209,7 @@ namespace Calendar
             bool isDisplayableDayElementOfRemainsRows = isNotFirstDayRow && isCandidateDayNumberInDisplayedMonth;
             return (isDisplayableDayElementOfFirstRow || isDisplayableDayElementOfRemainsRows);
         }
+
         private static bool IsAppointmentOfDay(Appointment appointment, MonthDayElement dayElement) 
         {
             if (appointment.Start.Date == dayElement.Date.Date)
@@ -210,12 +218,14 @@ namespace Calendar
             }
             return false;
         }
+
         private static int GetNumberOfDaysOfMonth(DateTime date)
         {
             DateTime displayedDate = date;
             int numberOfDaysOfDisplayedMonth = DateTime.DaysInMonth(displayedDate.Year, displayedDate.Month);
             return numberOfDaysOfDisplayedMonth;
         }
+
         private static int GetfirstDayGridColumnIndex()
         {
             DateTime displayedDate = Utilities.DisplayedDate;
@@ -223,12 +233,14 @@ namespace Calendar
             int firstDayGridColumnIndex = Utilities.GetDayNumberInWeek(firstDayOfDisplayedMonth) - gridColumnIndexOffset;
             return firstDayGridColumnIndex;
         }
+
         private static Point GetGridCoordinatesByIterationIndex(int iterationIndex)
         {
             int gridColumn = (iterationIndex) % Utilities.DaysInWeek;
             int gridRow = (iterationIndex / Utilities.DaysInWeek) + gridRowIndexOffset;
             return new Point(gridColumn, gridRow); ;
         }
+
         #endregion
     }
 }

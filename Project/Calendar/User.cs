@@ -16,9 +16,11 @@ namespace Calendar
         #region Constants
         #endregion
 
+
         #region Fields
         private string name;
         #endregion
+
 
         #region Properties
         public string Name
@@ -34,11 +36,13 @@ namespace Calendar
         }
         #endregion
 
+
         #region Methods
         public User(string userName) 
         {
             this.name = userName;
         }
+
         public bool HasAppointmentCollision(Appointment appointment)
         {
             List<Appointment> selfAppointments = GetAppointments();
@@ -49,7 +53,6 @@ namespace Calendar
         {
             return Utilities.CalendarAppointments.Where(i => i.Owner.Name == this.name).ToList();
         }
-
 
         #endregion
     }

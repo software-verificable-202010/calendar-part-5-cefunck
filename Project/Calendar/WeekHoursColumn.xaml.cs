@@ -23,11 +23,14 @@ namespace Calendar
         #region Constants
         #endregion
 
+
         #region Fields
         #endregion
 
+
         #region Properties
         #endregion
+
 
         #region Methods
         public WeekHoursColumn()

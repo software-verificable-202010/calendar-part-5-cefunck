@@ -25,39 +25,23 @@ namespace Calendar
     public partial class WeekColumn : UserControl
     {
         #region Constants
-        const int rowOffSetByTitleRows = 2;
-        const int minutesPerRow = 30;
+        private const int rowOffSetByTitleRows = 2;
+        private const int minutesPerRow = 30;
         #endregion
+
 
         #region Fields
-        private readonly Brush appointmentButtonBackground = Brushes.CornflowerBlue;
-        private readonly Brush appointmentButtonForeground = Brushes.White;
-        private List<Appointment> dayAppointments = new List<Appointment>();
+        private int dayNumberInWeek;
+        private int amountOfColumns; 
         private DateTime date;
         private Appointment selectedAppointment;
-        private int dayNumberInWeek;
-        private int amountOfColumns;
+        private List<Appointment> dayAppointments = new List<Appointment>();
+        private readonly Brush appointmentButtonBackground = Brushes.CornflowerBlue;
+        private readonly Brush appointmentButtonForeground = Brushes.White;
         #endregion
 
+
         #region Properties
-        public int DayNumberInWeek
-        {
-            get 
-            {
-                return dayNumberInWeek;
-            }
-            set 
-            {
-                dayNumberInWeek = value;
-            }
-        }
-        public List<Appointment> DayAppointments 
-        {
-            get 
-            {
-                return dayAppointments;
-            }
-        }
         public DateTime Date
         {
             get
@@ -71,6 +55,7 @@ namespace Calendar
         }
         #endregion
 
+
         #region Methods
         public WeekColumn(DateTime date, int dayNumberInWeek) 
         {
@@ -78,6 +63,7 @@ namespace Calendar
             this.dayNumberInWeek = dayNumberInWeek;
             InitializeComponent();
         }
+
         public void Refresh()
         {
             ClearWeekColumnGrid();
@@ -86,16 +72,24 @@ namespace Calendar
             InsertButtonsForNewAppointment();
             RefreshAppointments();
         }
+
+        public void AssignDayAppointments(List<Appointment> appointments)
+        {
+            dayAppointments = appointments;
+        }
+
         private void ClearWeekColumnGrid()
         {
             WeekColumnGrid.Children.Clear();
             WeekColumnGrid.ColumnDefinitions.Clear();
         }
+
         private void RefreshColumnsOfGrid()
         {
             RefreshAmountOfColumns();
             InsertColumnDefinitions();
         }
+
         private void InsertColumnDefinitions()
         {
             const double newAppointmentColumnWidth = 0.1;
@@ -105,6 +99,7 @@ namespace Calendar
             }
             WeekColumnGrid.ColumnDefinitions.Last().Width = new GridLength(newAppointmentColumnWidth, GridUnitType.Star);
         }
+
         private void RefreshAmountOfColumns()
         {
             const int columnOfNewAppointmentButtons = 1;
@@ -132,12 +127,7 @@ namespace Calendar
                 }
             }
             amountOfColumns = appointmentsColumns.Count + columnOfNewAppointmentButtons;
-        }
-
-        internal void AssignDayAppointments(List<Appointment> appointments)
-        {
-            dayAppointments = appointments;
-        }
+        }        
 
         private void InsertTitle()
         {
@@ -163,6 +153,7 @@ namespace Calendar
             WeekColumnGrid.Children.Add(borderTitle);
             WeekColumnGrid.Children.Add(textBlockTitle);
         }
+
         private void InsertButtonsForNewAppointment()
         {
             int spanValue = amountOfColumns;
@@ -178,6 +169,7 @@ namespace Calendar
                 WeekColumnGrid.Children.Add(buttonNewDayElementAppoinment);
             }
         }
+
         private void RefreshAppointments()
         {
 
@@ -206,6 +198,7 @@ namespace Calendar
                 WeekColumnGrid.Children.Add(buttonDayElementAppoinment);
             }
         }
+
         private void NewAppointmentButton_Click(object sender, RoutedEventArgs e)
         {
             RefreshSelectedAppointmentAsNew(sender);
@@ -213,6 +206,7 @@ namespace Calendar
             SaveNewAppointment();
             Refresh();
         }
+
         private void EditAppointmentButton_Click(object sender, RoutedEventArgs e)
         {
             RefreshSelectedAppointment(sender);
@@ -220,12 +214,14 @@ namespace Calendar
             SaveAppointmentChanges();
             Refresh();
         }
+
         private void RefreshSelectedAppointment(object sender)
         {
             Appointment buttonSourceAppointment = GetAppointmentOfButton(sender);
             int appointmentIndexInDayAppointents = dayAppointments.IndexOf(buttonSourceAppointment);
             selectedAppointment = dayAppointments[appointmentIndexInDayAppointents];
         }
+
         private void RefreshSelectedAppointmentAsNew(object sender)
         {
             int appointmentYear = this.date.Year;
@@ -236,11 +232,13 @@ namespace Calendar
             DateTime appointmentStartDate = new DateTime(appointmentYear, appointmentMonth, appointmentDay) + rowTime;
             selectedAppointment = new Appointment(appointmentStartDate,currentUser);
         }
+
         private void ShowAppointmentForm()
         {
             AppointmentWindow newAppointmentWindow = new AppointmentWindow(selectedAppointment);
             newAppointmentWindow.ShowDialog();
         }
+
         private void SaveAppointmentChanges()
         {
             if (IsValidAppointment())
@@ -249,6 +247,7 @@ namespace Calendar
                 UpdateDayAppointments();
             }
         }
+
         private void SaveNewAppointment()
         {
             if (IsValidAppointment())
@@ -257,14 +256,7 @@ namespace Calendar
                 UpdateCalendarAppointments();
             }
         }
-        private bool IsValidAppointment()
-        {
-            if (selectedAppointment.Title.Trim().Length != 0)
-            {
-                return true;
-            }
-            return false;
-        }
+
         private void UpdateDayAppointments()
         {
             if (dayAppointments.Contains(selectedAppointment))
@@ -284,6 +276,7 @@ namespace Calendar
                 dayAppointments.Add(selectedAppointment);
             }
         }
+
         private void UpdateCalendarAppointments()
         {
             List<Appointment> calendarAppointments = Utilities.CalendarAppointments;
@@ -306,69 +299,35 @@ namespace Calendar
             Utilities.AssignCalendarAppointments(calendarAppointments);
             Utilities.SavePersistentAppointments();
         }
-        private static TimeSpan GetRowTime(object sender)
+
+        private bool IsValidAppointment()
         {
-            const double minutesInOneHour = 60;
-            const int rowSeconds = 0;
-            int appointmentButtonRow = (int)(sender as Button).GetValue(Grid.RowProperty);
-            int minutesOfAppontmentStarFromZeroHours = (appointmentButtonRow - rowOffSetByTitleRows) * minutesPerRow;
-            int rowHour = (int)Math.Floor(minutesOfAppontmentStarFromZeroHours / minutesInOneHour);
-            int rowMinutes = (int)(minutesOfAppontmentStarFromZeroHours - rowHour * minutesInOneHour);
-            TimeSpan rowTime = new TimeSpan(rowHour, rowMinutes, rowSeconds);
-            return rowTime;
-        }
-        private static Appointment GetAppointmentOfButton(object sender)
-        {
-            BindingExpression bindingExpressionOfAppointmentButton = (sender as Button).GetBindingExpression(Button.ContentProperty);
-            Binding bindingAppointmentButton = bindingExpressionOfAppointmentButton.ParentBinding;
-            Appointment buttonSourceAppointment = bindingAppointmentButton.Source as Appointment;
-            return buttonSourceAppointment;
-        }
-        private string GetColumnTitle() 
-        {
-            string dayName;
-            switch (dayNumberInWeek)
+            if (selectedAppointment.Title.Trim().Length != 0)
             {
-                case Utilities.MondayNumberInweek:
-                    dayName = Utilities.MondayName;
-                    break;
-                case Utilities.TuesdayNumberInweek:
-                    dayName = Utilities.TuesdayName;
-                    break;
-                case Utilities.WednesdayNumberInweek:
-                    dayName = Utilities.WednesdayName;
-                    break;
-                case Utilities.ThursdayNumberInweek:
-                    dayName = Utilities.ThursdayName;
-                    break;
-                case Utilities.FridayNumberInweek:
-                    dayName = Utilities.FridayName;
-                    break;
-                case Utilities.SaturdayNumberInweek:
-                    dayName = Utilities.SaturdayName;
-                    break;
-                default:
-                    dayName = Utilities.SundayName;
-                    break;
+                return true;
             }
-            return dayName + Utilities.BlankSpace + date.Day.ToString(CultureInfo.CurrentCulture);
+            return false;
         }
-        private static int GetAppointmentRowSpan(Appointment appointment) 
+
+        private int GetAppointmentRowSpan(Appointment appointment) 
         {
             double appointmentDurationInMinutes = (appointment.End - appointment.Start).TotalMinutes;
             int appointmentRowSpan = (int)Math.Ceiling(appointmentDurationInMinutes / minutesPerRow);
             return appointmentRowSpan;
         }
-        private static int GetAppointmentColumnSpan()
+
+        private int GetAppointmentColumnSpan()
         {
             return 1;
         }
-        private static int GetAppointmentRow(Appointment appointment) 
+
+        private int GetAppointmentRow(Appointment appointment) 
         {
             int appointmentStartTimeInMinutes = (int)(appointment.Start.TimeOfDay - appointment.Start.Date.TimeOfDay).TotalMinutes;
             int appointmentRow = (int)Math.Floor((double)appointmentStartTimeInMinutes / minutesPerRow) + rowOffSetByTitleRows;
             return appointmentRow;
         }
+
         private int GetAppointmentColumn(Appointment appointment)
         {
             const int defaultColumns = 2;
@@ -398,6 +357,57 @@ namespace Calendar
             }
             return columnIndex;
         }
+
+        private string GetColumnTitle()
+        {
+            string dayName;
+            switch (dayNumberInWeek)
+            {
+                case Utilities.MondayNumberInweek:
+                    dayName = Utilities.MondayName;
+                    break;
+                case Utilities.TuesdayNumberInweek:
+                    dayName = Utilities.TuesdayName;
+                    break;
+                case Utilities.WednesdayNumberInweek:
+                    dayName = Utilities.WednesdayName;
+                    break;
+                case Utilities.ThursdayNumberInweek:
+                    dayName = Utilities.ThursdayName;
+                    break;
+                case Utilities.FridayNumberInweek:
+                    dayName = Utilities.FridayName;
+                    break;
+                case Utilities.SaturdayNumberInweek:
+                    dayName = Utilities.SaturdayName;
+                    break;
+                default:
+                    dayName = Utilities.SundayName;
+                    break;
+            }
+            return dayName + Utilities.BlankSpace + date.Day.ToString(CultureInfo.CurrentCulture);
+        }
+
+        private TimeSpan GetRowTime(object sender)
+        {
+            const double minutesInOneHour = 60;
+            const int rowSeconds = 0;
+            int appointmentButtonRow = (int)(sender as Button).GetValue(Grid.RowProperty);
+            int minutesOfAppontmentStarFromZeroHours = (appointmentButtonRow - rowOffSetByTitleRows) * minutesPerRow;
+            int rowHour = (int)Math.Floor(minutesOfAppontmentStarFromZeroHours / minutesInOneHour);
+            int rowMinutes = (int)(minutesOfAppontmentStarFromZeroHours - rowHour * minutesInOneHour);
+            TimeSpan rowTime = new TimeSpan(rowHour, rowMinutes, rowSeconds);
+            return rowTime;
+        }
+
+        private Appointment GetAppointmentOfButton(object sender)
+        {
+            BindingExpression bindingExpressionOfAppointmentButton = (sender as Button).GetBindingExpression(Button.ContentProperty);
+            Binding bindingAppointmentButton = bindingExpressionOfAppointmentButton.ParentBinding;
+            Appointment buttonSourceAppointment = bindingAppointmentButton.Source as Appointment;
+            return buttonSourceAppointment;
+        }
+
         #endregion
     }
 }

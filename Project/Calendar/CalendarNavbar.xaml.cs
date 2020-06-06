@@ -31,6 +31,7 @@ namespace Calendar
         private const int numberToGoBack = -1;
         #endregion
 
+
         #region Fields
         private List<Appointment> calendarAppointments;
         private string selectedCalendarViewOption;
@@ -38,8 +39,10 @@ namespace Calendar
         private WeekBody weekBody;
         #endregion
 
+
         #region Properties
         #endregion
+
 
         #region Methods
         public CalendarNavbar()
@@ -48,19 +51,23 @@ namespace Calendar
             RefreshCalendar();
             InitializeComponent();
         }
+
         private void CurrentCalendarViewOption_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             selectedCalendarViewOption = GetSelectedCalendarView();
             RefreshCalendarBody();
         }
+
         private void BackwardNavigation_Click(object sender, RoutedEventArgs e)
         {
             MoveCalendar(numberToGoBack);
         }
+
         private void ForwardNavigation_Click(object sender, RoutedEventArgs e)
         {
             MoveCalendar(numberToAdvance);
         }
+
         private void MoveCalendar(int amountToMove)
         {
             DateTime newDisplayedDate = Utilities.DisplayedDate;
@@ -77,17 +84,20 @@ namespace Calendar
             Utilities.DisplayedDate = newDisplayedDate;
             RefreshCalendar();
         }
+
         private void RefreshCalendar()
         {
             RefreshCalendarAppointments();
             RefreshDisplayedNavbarDate();
             RefreshCalendarBody();
         }        
+
         private static void RefreshDisplayedNavbarDate()
         {
             DateTime displayedDate = Utilities.DisplayedDate;
             App.Current.Resources[monthAndYearResourceName] = displayedDate.ToString(navBarMonthFormat, CultureInfo.CurrentCulture);
         }
+
         private void RefreshCalendarBody() 
         {
             switch (selectedCalendarViewOption)
@@ -100,6 +110,7 @@ namespace Calendar
                     break;
             }
         }
+
         private void RefreshMonthBody()
         {
             monthBody = new MonthBody();
@@ -107,6 +118,7 @@ namespace Calendar
             monthBody.Refresh();
             App.Current.Resources[currentBodyContentResourceName] = monthBody;
         }
+
         private void RefreshWeekBody() 
         {
             weekBody = new WeekBody();
@@ -114,11 +126,13 @@ namespace Calendar
             weekBody.Refresh();
             App.Current.Resources[currentBodyContentResourceName] = weekBody;
         }
+
         private void RefreshCalendarAppointments() 
         {
             Utilities.LoadPersistentAppointments();
             calendarAppointments = Utilities.CalendarAppointments;
         }
+
         private List<Appointment> GetMonthAppointments()
         {
             List<Appointment> monthAppointmens = new List<Appointment>();
@@ -131,6 +145,7 @@ namespace Calendar
             }
             return monthAppointmens;
         }
+
         private static bool IsAppointmentOfDisplayedMonth(Appointment appointment)
         {
             int displayedMonth = Utilities.DisplayedDate.Month;
@@ -141,11 +156,13 @@ namespace Calendar
             }
             return false;
         }
+
         private string GetSelectedCalendarView()
         {
             const int initOfValueSubstring = 38;
             return CurrentCalendarViewOptions.SelectedValue.ToString().Substring(initOfValueSubstring);
         }
+
         #endregion
     }
 }

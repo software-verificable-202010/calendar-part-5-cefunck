@@ -22,16 +22,19 @@ namespace Calendar
     public partial class LogOnForm : UserControl
     {
         #region Constants
-        const string nonExistentUserMessage = "El usuario ingresado no existe";
+        private const string nonExistentUserMessage = "El usuario ingresado no existe";
         #endregion
+
 
         #region Fields
         private User currentUser;
         private string userNameProvided;
         #endregion
 
+
         #region Properties
         #endregion
+
 
         #region Methods
         public LogOnForm()
@@ -39,6 +42,7 @@ namespace Calendar
             InitializeComponent();
             currentUser = SessionController.GetUserByName(userNameProvided);
         }
+
         private void LogOnButton_Click(object sender, RoutedEventArgs e)
         {
             userNameProvided = textBoxUserNameProvided.Text;
@@ -53,10 +57,12 @@ namespace Calendar
                 ShowLogOnValidationMessage();
             }
         }
+
         private static void ShowLogOnValidationMessage()
         {
             MessageBox.Show(nonExistentUserMessage);
         }
+
         private bool IsExistingUser()
         {
             if (currentUser != null)
@@ -65,6 +71,7 @@ namespace Calendar
             }
             return false;
         }
+
         #endregion
     }
 }

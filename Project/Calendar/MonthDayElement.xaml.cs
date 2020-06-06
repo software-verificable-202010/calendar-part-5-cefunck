@@ -28,45 +28,39 @@ namespace Calendar
         #region Constants
         #endregion
 
+
         #region Fields
+        private readonly DateTime date;
         private readonly Brush appointmentButtonBackground = Brushes.CornflowerBlue;
         private readonly Brush appointmentButtonForeground = Brushes.White;
         private List<Appointment> dayAppointments = new List<Appointment>();
-        private DateTime date;
         private Appointment selectedAppointment;
         #endregion
 
+
         #region Properties
-        public List<Appointment> DayAppointments
-        {
-            get
-            {
-                return dayAppointments;
-            }
-        }
         public DateTime Date 
         {
             get 
             {
                 return date;
             }
-            set 
-            {
-                date = value;
-            }
         }
         #endregion
+
 
         #region Methods
         public MonthDayElement()
         {
             InitializeComponent();
         }
+
         public MonthDayElement(DateTime date)
         {
             this.date = date;
             InitializeComponent();
         }
+
         public void Refresh() 
         {
             if (IsNotBlankDayElement())
@@ -76,10 +70,12 @@ namespace Calendar
                 AddButtonForNewAppointment();
             }
         }
+
         public void AssignDayAppointments(List<Appointment> appointments)
         {
             dayAppointments = appointments;
         }
+
         private void RefreshDayNumber() 
         {
             int displayedDateMonth = Utilities.DisplayedDate.Month;
@@ -89,6 +85,7 @@ namespace Calendar
                 textBlockDayNumber.Text = date.Day.ToString(CultureInfo.CurrentCulture);
             }
         }
+
         private void RefreshAppointments()
         {
             const string bindingPropertyName = "Title";
@@ -109,6 +106,7 @@ namespace Calendar
                 stackPanelMonthDayElement.Children.Add(buttonDayElementAppoinment);
             }
         }
+
         private void AddButtonForNewAppointment() 
         {
             Button buttonNewDayElementAppoinment = new Button
@@ -118,6 +116,7 @@ namespace Calendar
             buttonNewDayElementAppoinment.Click += NewAppointmentButton_Click;
             stackPanelMonthDayElement.Children.Add(buttonNewDayElementAppoinment);
         }
+
         private void EditAppointmentButton_Click(object sender, RoutedEventArgs e)
         {
             RefreshSelectedAppointment(sender);
@@ -125,6 +124,7 @@ namespace Calendar
             SaveAppointmentChanges();
             Refresh();
         }
+
         private void NewAppointmentButton_Click(object sender, RoutedEventArgs e)
         {
             RefreshSelectedAppointmentAsNew();
@@ -132,11 +132,13 @@ namespace Calendar
             SaveNewAppointment();
             Refresh();
         }
+
         private void RefreshSelectedAppointment(object sender)
         {
             int appointmentIndexInDayAppointents = stackPanelMonthDayElement.Children.IndexOf(sender as UIElement);
             selectedAppointment = dayAppointments[appointmentIndexInDayAppointents];
         }
+
         private void RefreshSelectedAppointmentAsNew()
         {
             int appointmentYear = this.date.Year;
@@ -147,11 +149,13 @@ namespace Calendar
             DateTime appointmentStartDate = new DateTime(appointmentYear, appointmentMonth, appointmentDay) + nowTime;
             selectedAppointment = new Appointment(appointmentStartDate, currentUser);
         }
+
         private void ShowAppointmentForm()
         {
             AppointmentWindow newAppointmentWindow = new AppointmentWindow(selectedAppointment);
             newAppointmentWindow.ShowDialog();
         }
+
         private void SaveAppointmentChanges()
         {
             if (IsValidAppointment())
@@ -160,6 +164,7 @@ namespace Calendar
                 UpdateDayAppointments();
             }
         }
+
         private void UpdateDayAppointments() 
         {
             if (dayAppointments.Contains(selectedAppointment))
@@ -179,6 +184,7 @@ namespace Calendar
                 dayAppointments.Add(selectedAppointment);
             }
         }
+
         private void UpdateCalendarAppointments() 
         {
             List<Appointment> calendarAppointments = Utilities.CalendarAppointments;
@@ -201,6 +207,7 @@ namespace Calendar
             Utilities.AssignCalendarAppointments(calendarAppointments);
             Utilities.SavePersistentAppointments();
         }
+
         private void SaveNewAppointment() 
         {
             if (IsValidAppointment())
@@ -209,6 +216,7 @@ namespace Calendar
                 UpdateCalendarAppointments();
             }
         }
+
         private bool IsNotBlankDayElement()
         {
             if (this.date.Year != 1)
@@ -217,6 +225,7 @@ namespace Calendar
             }
             return false;
         }
+
         private bool IsValidAppointment() 
         {
             if (selectedAppointment.Title.Trim().Length != 0)
@@ -225,6 +234,7 @@ namespace Calendar
             }
             return false;
         }
+
         #endregion
     }
 }

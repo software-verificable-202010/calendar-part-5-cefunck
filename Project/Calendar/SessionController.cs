@@ -13,19 +13,28 @@ namespace Calendar
         #region Constants
         #endregion
 
+
         #region Fields
         private static List<User> calendarUsers;
         private static User currentUser;
 
         #endregion
 
+
         #region Properties
         public static User CurrenUser 
-        { 
-            get => currentUser; 
-            set => currentUser = value; 
+        {
+            get 
+            {
+                return currentUser;
+            }
+            set 
+            {
+                currentUser = value;
+            }
         }
         #endregion
+
 
         #region Methods
         public static User GetUserByName(string name)
@@ -52,6 +61,7 @@ namespace Calendar
                 };
             calendarUsers = defaultUsers;
         }
+
         #endregion
     }
 }

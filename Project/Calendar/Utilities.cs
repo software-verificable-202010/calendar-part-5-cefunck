@@ -11,13 +11,6 @@ namespace Calendar
     public static class Utilities
     {
         #region Constants
-        public const string MondayName = "Lunes";
-        public const string TuesdayName = "Martes";
-        public const string WednesdayName = "Miércoles";
-        public const string ThursdayName = "Jueves";
-        public const string FridayName = "Viernes";
-        public const string SaturdayName = "Sábado";
-        public const string SundayName = "Domingo";
         public const int MondayNumberInweek = 1;
         public const int TuesdayNumberInweek = 2;
         public const int WednesdayNumberInweek = 3;
@@ -25,17 +18,26 @@ namespace Calendar
         public const int FridayNumberInweek = 5;
         public const int SaturdayNumberInweek = 6;
         public const int SundayNumberInweek = 7;
-        public const string BlankSpace = " ";
         public const int NegativeMultiplier = -1;
         public const int DaysInWeek = 7;
         public const int SystemEnumSundayNumber = 0;
+        public const string BlankSpace = " ";
+        public const string MondayName = "Lunes";
+        public const string TuesdayName = "Martes";
+        public const string WednesdayName = "Miércoles";
+        public const string ThursdayName = "Jueves";
+        public const string FridayName = "Viernes";
+        public const string SaturdayName = "Sábado";
+        public const string SundayName = "Domingo";
         private const string appointmentsDataFilePath = "applicationAppointmentsData";
         #endregion
+
 
         #region Fields
         private static DateTime displayedDate;
         private static List<Appointment> calendarAppointments = new List<Appointment>();
         #endregion
+
 
         #region Properties
         public static DateTime DisplayedDate 
@@ -43,10 +45,12 @@ namespace Calendar
             get => displayedDate; 
             set => displayedDate = value; 
         }
+
         public static List<Appointment> CalendarAppointments 
         { 
             get => calendarAppointments;
         }
+
         public static Collection<string> DayNames
         {
             get
@@ -64,9 +68,48 @@ namespace Calendar
                 return dayNames;
             }
         }
+
         #endregion
 
+
         #region Methods
+        public static void SetDisplayedDateToNow()
+        {
+            DisplayedDate = DateTime.Now;
+        }
+
+        public static void SavePersistentAppointments()
+        {
+            List<Appointment> calendarAppointments = CalendarAppointments; using (FileStream file = new FileStream(appointmentsDataFilePath, FileMode.Create))
+            {
+                BinaryFormatter bf = new BinaryFormatter();
+                bf.Serialize(file, calendarAppointments);
+                file.Flush();
+            }
+        }
+
+        public static void LoadPersistentAppointments()
+        {
+            try
+            {
+                using (FileStream file = new FileStream(appointmentsDataFilePath, FileMode.Open))
+                {
+                    BinaryFormatter bf = new BinaryFormatter();
+                    object deserealizedAppointments = bf.Deserialize(file);
+                    calendarAppointments = deserealizedAppointments as List<Appointment>;
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                calendarAppointments = new List<Appointment>();
+            }
+        }
+
+        public static void AssignCalendarAppointments(List<Appointment> appointments)
+        {
+            calendarAppointments = appointments;
+        }
+
         public static int GetDayNumberInWeek(DateTime date)
         {
             int dayNumber = (int)date.DayOfWeek;
@@ -107,41 +150,6 @@ namespace Calendar
             return spanishDayName;
         }
 
-        public static void SetDisplayedDateToNow()
-        {
-            DisplayedDate = DateTime.Now;
-        }
-
-        public static void SavePersistentAppointments()
-        {
-            List<Appointment> calendarAppointments = CalendarAppointments; using (FileStream file = new FileStream(appointmentsDataFilePath, FileMode.Create))
-            {
-                BinaryFormatter bf = new BinaryFormatter();
-                bf.Serialize(file, calendarAppointments);
-                file.Flush();
-            }
-        }
-        public static void LoadPersistentAppointments()
-        {
-            try
-            {
-                using (FileStream file = new FileStream(appointmentsDataFilePath, FileMode.Open))
-                {
-                    BinaryFormatter bf = new BinaryFormatter();
-                    object deserealizedAppointments = bf.Deserialize(file);
-                    calendarAppointments = deserealizedAppointments as List<Appointment>;
-                }
-            }
-            catch (FileNotFoundException)
-            {
-                calendarAppointments = new List<Appointment>();
-            }
-        }
-
-        internal static void AssignCalendarAppointments(List<Appointment> appointments)
-        {
-            calendarAppointments = appointments;
-        }
         #endregion
     }
 }

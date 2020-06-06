@@ -14,9 +14,10 @@ namespace Calendar
     public class Appointment
     {
         #region Constants
-        const string empty = "";
-        const int defaultDurationInMinutes = 30;
+        private const string empty = "";
+        private const int defaultDurationInMinutes = 30;
         #endregion
+
 
         #region Fields
         private string title;
@@ -27,6 +28,7 @@ namespace Calendar
         private User owner;
         private readonly List<User> guests;
         #endregion
+
 
         #region Properties
         public string Title
@@ -110,7 +112,14 @@ namespace Calendar
         }
         #endregion
 
+
         #region Methods
+        public void AssignGuests(List<User> users)
+        {
+            guests.Clear();
+            guests.AddRange(users);
+        }
+
         public Appointment(DateTime start, User owner)
         {
             Title = empty;
@@ -120,13 +129,6 @@ namespace Calendar
             this.owner = owner;
             isInGarbage = false;
             this.guests = new List<User>();
-        }
-
-        public bool HasReadPermissions(User user)
-        {
-            bool isOwner = owner.Name == user.Name;
-            bool isGuest = guests.Any(guest => guest.Name == user.Name);
-            return isOwner | isGuest;
         }
 
         public bool IsCollidingWith(Appointment otherAppointment)
@@ -143,10 +145,19 @@ namespace Calendar
             return isColliding;
         }
 
-        public void AssignGuests(List<User> users) 
+        public bool HasReadPermissions(User user)
         {
-            guests.Clear();
-            guests.AddRange(users);
+            return HasOwnerPermissions(user) | IsGuest(user);
+        }
+
+        public bool HasOwnerPermissions(User user) 
+        {
+            return owner.Name == user.Name;
+        }
+
+        private bool IsGuest(User user) 
+        {
+            return guests.Any(guest => guest.Name == user.Name);
         }
 
         #endregion

@@ -26,21 +26,17 @@ namespace Calendar
         private const int sundayGridColumnIndex = 7;
         #endregion
 
+
         #region Fields
         private readonly Brush highlightColor = Brushes.Red;
         private List<WeekColumn> dayColumns = new List<WeekColumn>();
         private List<Appointment> monthAppointmens = new List<Appointment>();
         #endregion
 
+
         #region Properties
-        public List<Appointment> MonthAppointments
-        {
-            get
-            {
-                return monthAppointmens;
-            }
-        }
         #endregion
+
 
         #region Methods
         public WeekBody()
@@ -48,6 +44,7 @@ namespace Calendar
             InitializeComponent();
 
         }
+
         public void Refresh() 
         {
             GenerateDayColumnElements();
@@ -55,12 +52,19 @@ namespace Calendar
             RefreshDayColumnElements();
             HighLightWeekends();
         }
+
+        public void AssignMonthBodyAppointmnts(List<Appointment> appointments)
+        {
+            monthAppointmens = appointments;
+        }
+
         private void InsertBodyElements()
         {
             WeekBodyGrid.Children.Clear();
             InsertHoursColumnToGrid();
             InsertDayColumnElementsToGrid();
         }
+
         private void InsertDayColumnElementsToGrid()
         {
             foreach (WeekColumn dayColumnElement in dayColumns)
@@ -68,6 +72,7 @@ namespace Calendar
                 WeekBodyGrid.Children.Add(dayColumnElement);
             }
         }
+
         private void InsertHoursColumnToGrid()
         {
             int hoursColumnIndex = 0;
@@ -75,6 +80,7 @@ namespace Calendar
             weekHoursColumn.SetValue(Grid.ColumnProperty, hoursColumnIndex);
             WeekBodyGrid.Children.Add(weekHoursColumn);
         }
+
         private void HighLightWeekends()
         {
             foreach (var child in WeekBodyGrid.Children)
@@ -90,22 +96,7 @@ namespace Calendar
                 }
             }
         }
-        private static bool IsDayColumnElement(object children)
-        {
-            if (children.GetType() == typeof(WeekColumn))
-            {
-                return true;
-            }
-            return false;
-        }
-        private static bool IsInWeekendColumn(int childrenColumnIndex)
-        {
-            if (childrenColumnIndex == saturdayGridColumnIndex || childrenColumnIndex == sundayGridColumnIndex)
-            {
-                return true;
-            }
-            return false;
-        }
+
         private void RefreshDayColumnElements()
         {
             foreach (WeekColumn dayColumnElement in dayColumns)
@@ -114,6 +105,49 @@ namespace Calendar
                 dayColumnElement.Refresh();
             }
         }
+
+        private void GenerateDayColumnElements()
+        {
+            dayColumns = new List<WeekColumn>();
+            for (int dayNumberInWeek = 1; dayNumberInWeek <= Utilities.DaysInWeek; dayNumberInWeek++)
+            {
+                DateTime displayedDate = Utilities.DisplayedDate;
+                int displayedDateDayOfWeek = Utilities.GetDayNumberInWeek(displayedDate);
+                int daysFromDisplayedDate = Utilities.NegativeMultiplier * displayedDateDayOfWeek + dayNumberInWeek;
+                DateTime dayColumnDate = displayedDate.AddDays(daysFromDisplayedDate);
+                WeekColumn weekColumnElement = new WeekColumn(dayColumnDate, dayNumberInWeek);
+                weekColumnElement.SetValue(Grid.ColumnProperty, dayNumberInWeek);
+                dayColumns.Add(weekColumnElement);
+            }
+        }
+
+        private bool IsDayColumnElement(object children)
+        {
+            if (children.GetType() == typeof(WeekColumn))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private bool IsInWeekendColumn(int childrenColumnIndex)
+        {
+            if (childrenColumnIndex == saturdayGridColumnIndex || childrenColumnIndex == sundayGridColumnIndex)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private bool IsAppointmentOfDay(Appointment appointment, WeekColumn dayColumnElement)
+        {
+            if (appointment.Start.Date == dayColumnElement.Date.Date)
+            {
+                return true;
+            }
+            return false;
+        }
+
         private List<Appointment> GetDayAppointments(WeekColumn dayElement)
         {
             List<Appointment> dayElementAppointments = new List<Appointment>();
@@ -128,33 +162,6 @@ namespace Calendar
             return dayElementAppointments;
         }
 
-        internal void AssignMonthBodyAppointmnts(List<Appointment> appointments)
-        {
-            monthAppointmens = appointments;
-        }
-
-        private static bool IsAppointmentOfDay(Appointment appointment, WeekColumn dayColumnElement)
-        {
-            if (appointment.Start.Date == dayColumnElement.Date.Date)
-            {
-                return true;
-            }
-            return false;
-        }
-        public void GenerateDayColumnElements()
-        {
-            dayColumns = new List<WeekColumn>();
-            for (int dayNumberInWeek = 1; dayNumberInWeek <= Utilities.DaysInWeek; dayNumberInWeek++)
-            {
-                DateTime displayedDate = Utilities.DisplayedDate;
-                int displayedDateDayOfWeek = Utilities.GetDayNumberInWeek(displayedDate);
-                int daysFromDisplayedDate = Utilities.NegativeMultiplier * displayedDateDayOfWeek + dayNumberInWeek;
-                DateTime dayColumnDate = displayedDate.AddDays(daysFromDisplayedDate);
-                WeekColumn weekColumnElement = new WeekColumn(dayColumnDate, dayNumberInWeek);
-                weekColumnElement.SetValue(Grid.ColumnProperty, dayNumberInWeek);
-                dayColumns.Add(weekColumnElement);
-            }
-        }
         #endregion
     }
 }

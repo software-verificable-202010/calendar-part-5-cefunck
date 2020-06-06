@@ -25,11 +25,14 @@ namespace Calendar
         private const string contentResourceName = "mainWindowContentResourceName";
         #endregion
 
+
         #region Fields
         #endregion
 
+
         #region Properties
         #endregion
+
 
         #region Methods
         public MainWindow()
@@ -39,6 +42,7 @@ namespace Calendar
             BindingContent();
             Refresh();
         }
+
         public static void Refresh()
         {
             if (IsSessionLogoned())
@@ -50,6 +54,7 @@ namespace Calendar
                 RefreshAsLogOnForm();
             }
         }
+
         private static bool IsSessionLogoned() 
         {
             if (SessionController.CurrenUser != null)
@@ -58,20 +63,24 @@ namespace Calendar
             }
             return false;
         }
+
         private static void RefreshAsLogOnForm() 
         {
             LogOnForm logOnForm = new LogOnForm();
             App.Current.Resources[contentResourceName] = logOnForm;
         }
+
         private static void RefreshAsCalendar() 
         {
             CalendarLayout calendar = new CalendarLayout();
             App.Current.Resources[contentResourceName] = calendar;
         }
+
         private void BindingContent()
         {
             contenControl.SetResourceReference(ContentControl.ContentProperty, contentResourceName);
         }
+
         #endregion
     }
 }
