@@ -281,18 +281,11 @@ namespace Calendar
 
             foreach (string name in candidateGuestNames)
             {
-                try
+                User candidateGuest = SessionController.GetUserByName(name);
+                bool isNotOwner = !sourceAppointment.IsOwner(candidateGuest);
+                if (isNotOwner)
                 {
-                    User candidateGuest = SessionController.GetUserByName(name);
-                    bool isNotOwner = !sourceAppointment.IsOwner(candidateGuest);
-                    if (isNotOwner)
-                    {
-                        result.Add(candidateGuest);
-                    }
-                }
-                catch (ArgumentNullException)
-                {
-                    continue;
+                    result.Add(candidateGuest);
                 }
             }
 
@@ -313,19 +306,12 @@ namespace Calendar
 
             foreach (string name in candidateGuestNames)
             {
-                try
+                User candidateGuest = SessionController.GetUserByName(name);
+                bool isOwner = sourceAppointment.IsOwner(candidateGuest);
+                if (isOwner)
                 {
-                    User candidateGuest = SessionController.GetUserByName(name);
-                    bool isOwner = sourceAppointment.IsOwner(candidateGuest);
-                    if (isOwner)
-                    {
-                        result = true;
-                        break;
-                    }
-                }
-                catch (ArgumentNullException)
-                {
-                    continue;
+                    result = true;
+                    break;
                 }
             }
             return result;

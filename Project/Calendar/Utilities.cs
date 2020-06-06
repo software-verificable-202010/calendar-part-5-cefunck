@@ -90,7 +90,8 @@ namespace Calendar
 
         public static void LoadPersistentAppointments()
         {
-            try
+            bool isAppointmentsDataFileFound = File.Exists(appointmentsDataFilePath);
+            if (isAppointmentsDataFileFound)
             {
                 using (FileStream file = new FileStream(appointmentsDataFilePath, FileMode.Open))
                 {
@@ -99,7 +100,7 @@ namespace Calendar
                     calendarAppointments = deserealizedAppointments as List<Appointment>;
                 }
             }
-            catch (FileNotFoundException)
+            else 
             {
                 calendarAppointments = new List<Appointment>();
             }

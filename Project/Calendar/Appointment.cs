@@ -155,7 +155,7 @@ namespace Calendar
         {
             if (user is null)
             {
-                throw new ArgumentNullException(nameof(user));
+                return false;
             }
 
             return owner.Name == user.Name;
