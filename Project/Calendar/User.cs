@@ -49,7 +49,7 @@ namespace Calendar
             List<Appointment> selfAppointments = GetSelfAppointments();
             bool existsCollisionWithSelfAppointments = selfAppointments.Any(i => i.IsCollidingWith(appointment));
 
-            List<Appointment> appointmentsWichThisUserIsInvited = GetAppointmentsWhichIAmInvited();
+            List<Appointment> appointmentsWichThisUserIsInvited = GetAppointmentsWhichThisUserIsInvited();
             bool existsCollisionWithAppointmentsWichThisUserIsIvited = appointmentsWichThisUserIsInvited.Any(i => i.IsCollidingWith(appointment));
 
             return existsCollisionWithSelfAppointments | existsCollisionWithAppointmentsWichThisUserIsIvited;
@@ -61,7 +61,7 @@ namespace Calendar
             return selfAppointments;
         }
 
-        private List<Appointment> GetAppointmentsWhichIAmInvited()
+        private List<Appointment> GetAppointmentsWhichThisUserIsInvited()
         {
             List<Appointment> appointmentsWichThisUserIsInvited = Utilities.CalendarAppointments.Where(appointment => appointment.IsGuest(this)).ToList();
             return appointmentsWichThisUserIsInvited;
