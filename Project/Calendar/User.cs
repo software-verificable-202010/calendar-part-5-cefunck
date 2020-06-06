@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace Calendar
@@ -45,13 +46,25 @@ namespace Calendar
 
         public bool HasAppointmentCollision(Appointment appointment)
         {
-            List<Appointment> selfAppointments = GetAppointments();
-            return selfAppointments.Any(i => i.IsCollidingWith(appointment));
+            List<Appointment> selfAppointments = GetSelfAppointments();
+            bool existsCollisionWithSelfAppointments = selfAppointments.Any(i => i.IsCollidingWith(appointment));
+
+            List<Appointment> appointmentsWichThisUserIsInvited = GetAppointmentsWhichIAmInvited();
+            bool existsCollisionWithAppointmentsWichThisUserIsIvited = appointmentsWichThisUserIsInvited.Any(i => i.IsCollidingWith(appointment));
+
+            return existsCollisionWithSelfAppointments | existsCollisionWithAppointmentsWichThisUserIsIvited;
         }
 
-        private List<Appointment> GetAppointments()
+        private List<Appointment> GetSelfAppointments()
         {
-            return Utilities.CalendarAppointments.Where(i => i.Owner.Name == this.name).ToList();
+            List<Appointment> selfAppointments = Utilities.CalendarAppointments.Where(appointment => appointment.IsOwner(this)).ToList();
+            return selfAppointments;
+        }
+
+        private List<Appointment> GetAppointmentsWhichIAmInvited()
+        {
+            List<Appointment> appointmentsWichThisUserIsInvited = Utilities.CalendarAppointments.Where(appointment => appointment.IsGuest(this)).ToList();
+            return appointmentsWichThisUserIsInvited;
         }
 
         #endregion

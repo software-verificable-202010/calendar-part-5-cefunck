@@ -114,29 +114,30 @@ namespace Calendar
 
 
         #region Methods
-        public void AssignGuests(List<User> users)
+        public Appointment(DateTime startTime, User ownerUser)
         {
-            guests.Clear();
-            guests.AddRange(users);
+            title = empty;
+            description = empty;
+            start = startTime;
+            end = start.AddMinutes(defaultDurationInMinutes);
+            owner = ownerUser;
+            guests = new List<User>();
+            isInGarbage = false;
         }
 
-        public Appointment(DateTime start, User owner)
+        public void AssignGuests(List<User> users)
         {
-            Title = empty;
-            Description = empty;
-            Start = start;
-            End = start.AddMinutes(defaultDurationInMinutes);
-            this.owner = owner;
-            isInGarbage = false;
-            this.guests = new List<User>();
+            DistinctUserComparer distinctUserComparer = new DistinctUserComparer();
+            List<User> distinctUsers = users.Distinct(distinctUserComparer).ToList();
+            guests.Clear();
+            guests.AddRange(distinctUsers);
         }
 
         public bool IsCollidingWith(Appointment otherAppointment)
         {
-            const string argumentNameOfNullException = "appointment";
-            if (otherAppointment == null)
+            if (otherAppointment is null)
             {
-                throw new ArgumentNullException(argumentNameOfNullException);
+                throw new ArgumentNullException(nameof(otherAppointment));
             }
 
             bool isThisStartingBeforeOtherEnds = this.start < otherAppointment.end;
@@ -147,10 +148,10 @@ namespace Calendar
 
         public bool HasReadPermissions(User user)
         {
-            return HasOwnerPermissions(user) | IsGuest(user);
+            return IsOwner(user) | IsGuest(user);
         }
 
-        public bool HasOwnerPermissions(User user) 
+        public bool IsOwner(User user) 
         {
             if (user is null)
             {
@@ -160,7 +161,7 @@ namespace Calendar
             return owner.Name == user.Name;
         }
 
-        private bool IsGuest(User user) 
+        public bool IsGuest(User user)
         {
             if (user is null)
             {

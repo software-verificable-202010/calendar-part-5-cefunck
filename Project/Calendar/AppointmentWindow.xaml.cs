@@ -34,14 +34,14 @@ namespace Calendar
 
 
         #region Fields
-        private bool hasOwnerPermissions;
+        private bool hasOwnerPermissions = false;
         private bool canSaveSourceAppointment = false;
         private string candidateTitle;
         private string candidateDescription;
         private DateTime candidateStart;
         private DateTime candidateEnd;
-        private readonly Appointment sourceAppointment;
         private List<User> candidateGuests = new List<User>();
+        private readonly Appointment sourceAppointment;
         private readonly List<string> validationMessages = new List<string>();
 
         #endregion
@@ -112,7 +112,7 @@ namespace Calendar
         private void RefreshPermissions()
         {
             User currentUser = SessionController.CurrenUser;
-            hasOwnerPermissions = sourceAppointment.HasOwnerPermissions(currentUser);
+            hasOwnerPermissions = sourceAppointment.IsOwner(currentUser);
         }
 
         private void RefreshFields()
@@ -173,6 +173,7 @@ namespace Calendar
             const int deleteButtonColumn = 3;
             const int deleteButtonRow = 4;
             const string deleteButtonContent = "Eliminar";
+
             Button buttonDelete = new Button
             {
                 Content = deleteButtonContent,
@@ -182,6 +183,7 @@ namespace Calendar
             buttonDelete.SetValue(Grid.ColumnProperty, deleteButtonColumn);
             buttonDelete.SetValue(Grid.RowProperty, deleteButtonRow);
             buttonDelete.Click += DeleteButton_Click;
+
             grid.Children.Add(buttonDelete);
         }
 
@@ -269,17 +271,62 @@ namespace Calendar
             candidateDescription = textBoxDescription.Text;
             candidateStart = sourceAppointment.Start.Date + GetCandidateTime("start");
             candidateEnd = sourceAppointment.End.Date + GetCandidateTime("end");
-            candidateGuests = GetCandidateGuests();
+            candidateGuests = GetValidGuests();
         }
 
-        private List<User> GetCandidateGuests()
+        private List<User> GetValidGuests()
         {
             List<User> result = new List<User>();
             List<string> candidateGuestNames = GetCandidateGuestNames();
+
             foreach (string name in candidateGuestNames)
             {
-                User candidateGuest = SessionController.GetUserByName(name);
-                result.Add(candidateGuest);
+                try
+                {
+                    User candidateGuest = SessionController.GetUserByName(name);
+                    bool isNotOwner = !sourceAppointment.IsOwner(candidateGuest);
+                    if (isNotOwner)
+                    {
+                        result.Add(candidateGuest);
+                    }
+                }
+                catch (ArgumentNullException)
+                {
+                    continue;
+                }
+            }
+
+            return result;
+        }
+
+        private bool ExistsNullGuest()
+        {
+            List<string> candidateGuestNames = GetCandidateGuestNames();
+            bool result = candidateGuestNames.Any(guestName => SessionController.GetUserByName(guestName) is null);
+            return result;
+        }
+
+        private bool IsOwnerInvited()
+        {
+            bool result = false;
+            List<string> candidateGuestNames = GetCandidateGuestNames();
+
+            foreach (string name in candidateGuestNames)
+            {
+                try
+                {
+                    User candidateGuest = SessionController.GetUserByName(name);
+                    bool isOwner = sourceAppointment.IsOwner(candidateGuest);
+                    if (isOwner)
+                    {
+                        result = true;
+                        break;
+                    }
+                }
+                catch (ArgumentNullException)
+                {
+                    continue;
+                }
             }
             return result;
         }
@@ -287,27 +334,26 @@ namespace Calendar
         private void ResetValidations() 
         {
             validationMessages.Clear();
-            this.canSaveSourceAppointment = IsNotBlankTitle() & IsValidEndTime() & AreValidGuests() & !ExistingAppointmentCollision();
+            canSaveSourceAppointment = IsNotBlankTitle() & IsValidEndTime() & AreValidGuests() & !ExistingAppointmentCollision();
         }
 
         private bool AreValidGuests()
         {
-            bool isPlaceHolderInGuestNamesField = textBoxGuests.Text == guestNamesFieldPlaceHolder;
-            bool isBlankGuestNamesField = textBoxGuests.Text.Trim().Length == 0;
-            bool existsNullGuest = this.candidateGuests.Contains(null);
-            bool isOwnerInvited = this.candidateGuests.Contains(sourceAppointment.Owner);
-            bool areThereGuests = !(isBlankGuestNamesField | isPlaceHolderInGuestNamesField);
-            if (areThereGuests & (existsNullGuest | isOwnerInvited))
+            bool isGuestFieldEmpty = GetCandidateGuestNames().Count == 0;
+            if (isGuestFieldEmpty | (!ExistsNullGuest() & !IsOwnerInvited()))
+            {
+                return true;
+            }
+            else
             {
                 return false;
             }
-            return true;
         }
 
         private bool ExistingAppointmentCollision() 
         {
-            List<User> notNullCandidateGuests = this.candidateGuests.Where(i => i != null).ToList();
-            bool existAppointmentCollision = notNullCandidateGuests.Any(i => i.HasAppointmentCollision(this.sourceAppointment) & i.Name != sourceAppointment.Owner.Name);
+            List<User> notNullCandidateGuests = candidateGuests.Where(guest => guest != null).ToList();
+            bool existAppointmentCollision = notNullCandidateGuests.Any(guest => guest.HasAppointmentCollision(sourceAppointment));
             return existAppointmentCollision;
         }
 
@@ -340,8 +386,7 @@ namespace Calendar
             {
                 User guest = SessionController.GetUserByName(name);
                 bool isExistentUser = guest != null;
-                bool isNotOwner = name != sourceAppointment.Owner.Name;
-                if (isNotOwner & isExistentUser & guest.HasAppointmentCollision(sourceAppointment))
+                if (isExistentUser & guest.HasAppointmentCollision(sourceAppointment))
                 {
                     validationMessages.Add(prefix + name);
                 }
@@ -366,10 +411,16 @@ namespace Calendar
         private List<string> GetCandidateGuestNames()
         {
             List<string> candidateGuestNames = textBoxGuests.Text.Split(',').ToList();
+
+            List<string> placeHolderGuestNames = guestNamesFieldPlaceHolder.Split(',').ToList();
+            candidateGuestNames.RemoveAll(candidateGuestName => placeHolderGuestNames.Contains(candidateGuestName));
+
             for (int i = 0; i < candidateGuestNames.Count; i++)
             {
                 candidateGuestNames[i] = candidateGuestNames[i].Trim();
             }
+            candidateGuestNames.RemoveAll(candidateGuestName => candidateGuestName.Length == 0);
+
             return candidateGuestNames;
         }
 
