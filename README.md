@@ -23,7 +23,12 @@ This is the repository corresponding to the third part of the project of the cou
   - **Login with usuario1 or usuario2 as username.**
   - **Close calendar to logout.**
   - Navigate in both monthly view and weekly view with arrow buttons in navigation bar.
+  
+### Explanations of false positives in static analysis
 
+  - CA1002: The classes in my project that expose generic lists are not designed for inheritance so this warning can be suppressed.
+  - CA2210: The project context does not require an assembly signature so this warning can be suppressed.
+  
 
 ### Tech Stack
 
