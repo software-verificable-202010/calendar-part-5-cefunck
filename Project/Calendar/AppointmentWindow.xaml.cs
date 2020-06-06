@@ -385,10 +385,14 @@ namespace Calendar
             foreach (string name in this.GetCandidateGuestNames())
             {
                 User guest = SessionController.GetUserByName(name);
-                bool isExistentUser = guest != null;
-                if (isExistentUser & guest.HasAppointmentCollision(sourceAppointment))
+                bool isNotNullGuest = !(guest is null);
+                if (isNotNullGuest)
                 {
-                    validationMessages.Add(prefix + name);
+                    bool isNotOwner = !sourceAppointment.IsOwner(guest);
+                    if (isNotOwner & guest.HasAppointmentCollision(sourceAppointment))
+                    {
+                        validationMessages.Add(prefix + name);
+                    }
                 }
             }
         }
@@ -413,13 +417,13 @@ namespace Calendar
             List<string> candidateGuestNames = textBoxGuests.Text.Split(',').ToList();
 
             List<string> placeHolderGuestNames = guestNamesFieldPlaceHolder.Split(',').ToList();
-            candidateGuestNames.RemoveAll(candidateGuestName => placeHolderGuestNames.Contains(candidateGuestName));
+            candidateGuestNames.RemoveAll(name => placeHolderGuestNames.Contains(name));
 
             for (int i = 0; i < candidateGuestNames.Count; i++)
             {
                 candidateGuestNames[i] = candidateGuestNames[i].Trim();
             }
-            candidateGuestNames.RemoveAll(candidateGuestName => candidateGuestName.Length == 0);
+            candidateGuestNames.RemoveAll(name => name.Length == 0);
 
             return candidateGuestNames;
         }
