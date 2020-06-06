@@ -30,9 +30,9 @@ namespace Calendar
         #endregion
 
 
-        #region Fields
-        private int dayNumberInWeek;
-        private int amountOfColumns; 
+        #region Fields   
+        private int amountOfColumns;
+        private readonly int dayNumberInWeek;
         private DateTime date;
         private Appointment selectedAppointment;
         private List<Appointment> dayAppointments = new List<Appointment>();

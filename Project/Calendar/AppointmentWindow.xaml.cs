@@ -40,7 +40,7 @@ namespace Calendar
         private string candidateDescription;
         private DateTime candidateStart;
         private DateTime candidateEnd;
-        private Appointment sourceAppointment;
+        private readonly Appointment sourceAppointment;
         private List<User> candidateGuests = new List<User>();
         private readonly List<string> validationMessages = new List<string>();
 
