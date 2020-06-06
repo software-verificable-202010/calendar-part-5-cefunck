@@ -121,7 +121,7 @@ namespace Calendar
             }
         }
 
-        private bool IsDayColumnElement(object children)
+        private static bool IsDayColumnElement(object children)
         {
             if (children.GetType() == typeof(WeekColumn))
             {
@@ -130,7 +130,7 @@ namespace Calendar
             return false;
         }
 
-        private bool IsInWeekendColumn(int childrenColumnIndex)
+        private static bool IsInWeekendColumn(int childrenColumnIndex)
         {
             if (childrenColumnIndex == saturdayGridColumnIndex || childrenColumnIndex == sundayGridColumnIndex)
             {
@@ -139,7 +139,7 @@ namespace Calendar
             return false;
         }
 
-        private bool IsAppointmentOfDay(Appointment appointment, WeekColumn dayColumnElement)
+        private static bool IsAppointmentOfDay(Appointment appointment, WeekColumn dayColumnElement)
         {
             if (appointment.Start.Date == dayColumnElement.Date.Date)
             {

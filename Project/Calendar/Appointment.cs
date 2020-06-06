@@ -152,11 +152,21 @@ namespace Calendar
 
         public bool HasOwnerPermissions(User user) 
         {
+            if (user is null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
             return owner.Name == user.Name;
         }
 
         private bool IsGuest(User user) 
         {
+            if (user is null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
             return guests.Any(guest => guest.Name == user.Name);
         }
 

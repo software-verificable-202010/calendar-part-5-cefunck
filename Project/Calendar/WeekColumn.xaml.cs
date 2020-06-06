@@ -309,19 +309,19 @@ namespace Calendar
             return false;
         }
 
-        private int GetAppointmentRowSpan(Appointment appointment) 
+        private static int GetAppointmentRowSpan(Appointment appointment) 
         {
             double appointmentDurationInMinutes = (appointment.End - appointment.Start).TotalMinutes;
             int appointmentRowSpan = (int)Math.Ceiling(appointmentDurationInMinutes / minutesPerRow);
             return appointmentRowSpan;
         }
 
-        private int GetAppointmentColumnSpan()
+        private static int GetAppointmentColumnSpan()
         {
             return 1;
         }
 
-        private int GetAppointmentRow(Appointment appointment) 
+        private static int GetAppointmentRow(Appointment appointment) 
         {
             int appointmentStartTimeInMinutes = (int)(appointment.Start.TimeOfDay - appointment.Start.Date.TimeOfDay).TotalMinutes;
             int appointmentRow = (int)Math.Floor((double)appointmentStartTimeInMinutes / minutesPerRow) + rowOffSetByTitleRows;
@@ -388,7 +388,7 @@ namespace Calendar
             return dayName + Utilities.BlankSpace + date.Day.ToString(CultureInfo.CurrentCulture);
         }
 
-        private TimeSpan GetRowTime(object sender)
+        private static TimeSpan GetRowTime(object sender)
         {
             const double minutesInOneHour = 60;
             const int rowSeconds = 0;
@@ -400,7 +400,7 @@ namespace Calendar
             return rowTime;
         }
 
-        private Appointment GetAppointmentOfButton(object sender)
+        private static Appointment GetAppointmentOfButton(object sender)
         {
             BindingExpression bindingExpressionOfAppointmentButton = (sender as Button).GetBindingExpression(Button.ContentProperty);
             Binding bindingAppointmentButton = bindingExpressionOfAppointmentButton.ParentBinding;
