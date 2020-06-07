@@ -48,6 +48,11 @@ namespace Calendar
             HighLightWeekends();
         }
 
+        public void AssignMonthAppointments(List<Appointment> appointments)
+        {
+            monthAppointmens = appointments;
+        }
+
         private void GenerateDayElements()
         {
             dayElements = new List<MonthDayElement>();
@@ -103,11 +108,6 @@ namespace Calendar
                 BodyGrid.Children.Add(textBlockDayName);
                 BodyGrid.Children.Add(borderDayName);
             }
-        }
-
-        internal void AssignMonthAppointments(List<Appointment> appointments)
-        {
-            monthAppointmens = appointments;
         }
 
         private void InsertDayElementsToGrid()
