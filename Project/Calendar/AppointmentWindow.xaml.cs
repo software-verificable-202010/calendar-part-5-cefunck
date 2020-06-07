@@ -1,19 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+
 
 namespace Calendar
 {
@@ -202,19 +193,21 @@ namespace Calendar
 
         private string GetAppointmentGuestNamesInFieldFormat()
         {
-            const string prefix = ", ";
+            const string guestNamesFormat = "{0}, {1}";
+            bool isFirstIteration = true;
             string guestNames = guestNamesFieldPlaceHolder;
 
             for (int i = 0; i < sourceAppointment.Guests.Count; i++)
             {
                 string guestName = sourceAppointment.Guests[i].Name;
-                if (i == 0)
+                if (isFirstIteration)
                 {
                     guestNames = guestName;
+                    isFirstIteration = false;
                 }
                 else
                 {
-                    guestNames += prefix + guestName;
+                    guestNames = string.Format(CultureInfo.CurrentCulture,guestNamesFormat, guestNames, guestName);
                 }
             }
 
@@ -257,20 +250,26 @@ namespace Calendar
 
         private void ShowValidations() 
         {
+            const string messageFormat = "{0}{1}\n";
             string validationMessage = "";
+            
             foreach (string message in validationMessages)
             {
-                validationMessage += message + "\n";
+                validationMessage = string.Format(CultureInfo.CurrentCulture,messageFormat, validationMessage, message);
             }
+
             MessageBox.Show(validationMessage);
         }
 
         private void RefreshCandidateData()
         {
+            const string startSymbol = "start";
+            const string endSymbol = "end";
+
             candidateTitle = textBoxTitle.Text;
             candidateDescription = textBoxDescription.Text;
-            candidateStart = sourceAppointment.Start.Date + GetCandidateTime("start");
-            candidateEnd = sourceAppointment.End.Date + GetCandidateTime("end");
+            candidateStart = sourceAppointment.Start.Date + GetCandidateTime(startSymbol);
+            candidateEnd = sourceAppointment.End.Date + GetCandidateTime(endSymbol);
             candidateGuests = GetValidGuests();
         }
 
@@ -339,8 +338,8 @@ namespace Calendar
         private bool ExistingAppointmentCollision() 
         {
             List<User> notNullCandidateGuests = candidateGuests.Where(guest => guest != null).ToList();
-            bool existAppointmentCollision = notNullCandidateGuests.Any(guest => guest.HasAppointmentCollision(sourceAppointment));
-            return existAppointmentCollision;
+            bool existsCollision = notNullCandidateGuests.Any(guest => guest.HasAppointmentCollision(sourceAppointment));
+            return existsCollision;
         }
 
         private void RefreshValidationMessages()
@@ -367,7 +366,7 @@ namespace Calendar
 
         private void AddCollisionedGuestNamesToValidationMessages()
         {
-            const string prefix = "- ";
+            const string nameFormat = "- {0}";
             foreach (string name in this.GetCandidateGuestNames())
             {
                 User guest = SessionController.GetUserByName(name);
@@ -375,9 +374,10 @@ namespace Calendar
                 if (isNotNullGuest)
                 {
                     bool isNotOwner = !sourceAppointment.IsOwner(guest);
-                    if (isNotOwner & guest.HasAppointmentCollision(sourceAppointment))
+                    bool isColliding = guest.HasAppointmentCollision(sourceAppointment);
+                    if (isNotOwner & isColliding)
                     {
-                        validationMessages.Add(prefix + name);
+                        validationMessages.Add(string.Format(CultureInfo.CurrentCulture, nameFormat, name));
                     }
                 }
             }
@@ -385,7 +385,7 @@ namespace Calendar
 
         private void AddInvalidGuestNamesToValidationMessages()
         {
-            const string prefix = "- ";
+            const string nameFormat = "- {0}";
             foreach (string name in this.GetCandidateGuestNames())
             {
                 bool isOwnerUser = name == sourceAppointment.Owner.Name;
@@ -393,7 +393,7 @@ namespace Calendar
                 bool isInvalidGuest = isOwnerUser | isNonExistentUser;
                 if (isInvalidGuest)
                 {
-                    validationMessages.Add(prefix + name);
+                    validationMessages.Add(string.Format(CultureInfo.CurrentCulture, nameFormat, name));
                 }
             }
         }
@@ -417,36 +417,36 @@ namespace Calendar
         private bool IsNotBlankTitle() 
         {
             string titleCandidate = textBoxTitle.Text.Trim();
-            if (titleCandidate.Length != 0)
-            {
-                return true;
-            }
-            return false;
+            bool isNotBlankTitle = titleCandidate.Length != 0;
+            return isNotBlankTitle;
         }
 
         private bool IsValidEndTime() 
         {
-            if (this.candidateEnd > this.candidateStart)
-            {
-                return true;
-            }
-            return false;
+            bool isEndAfterStart = candidateEnd > candidateStart;
+            return isEndAfterStart;
         }
 
         private TimeSpan GetCandidateTime(string requiredTime) 
         {
+            const string startSymbol = "start";
             const int defaultSeconds = 0;
             int startHour = comboBoxStartHour.SelectedIndex;
             int startMinute = comboBoxStartMinute.SelectedIndex;
             int endHour = comboBoxEndHour.SelectedIndex;
             int endMinute = comboBoxEndMinute.SelectedIndex;
-            TimeSpan startTime = new TimeSpan(startHour, startMinute, defaultSeconds);
-            TimeSpan endTime = new TimeSpan(endHour, endMinute, defaultSeconds);
-            if (requiredTime == "start")
+
+            bool isRequiredStartTime = requiredTime == startSymbol;
+            if (isRequiredStartTime)
             {
+                TimeSpan startTime = new TimeSpan(startHour, startMinute, defaultSeconds);
                 return startTime;
             }
-            return endTime;
+            else 
+            {
+                TimeSpan endTime = new TimeSpan(endHour, endMinute, defaultSeconds);
+                return endTime;
+            }
         }
 
         #endregion

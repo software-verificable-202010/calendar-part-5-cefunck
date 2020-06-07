@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Windows;
 
 namespace Calendar
 {
@@ -21,7 +19,6 @@ namespace Calendar
         public const int NegativeMultiplier = -1;
         public const int DaysInWeek = 7;
         public const int SystemEnumSundayNumber = 0;
-        public const string BlankSpace = " ";
         public const string MondayName = "Lunes";
         public const string TuesdayName = "Martes";
         public const string WednesdayName = "Miércoles";
@@ -80,7 +77,8 @@ namespace Calendar
 
         public static void SavePersistentAppointments()
         {
-            List<Appointment> calendarAppointments = CalendarAppointments; using (FileStream file = new FileStream(appointmentsDataFilePath, FileMode.Create))
+            List<Appointment> calendarAppointments = CalendarAppointments; 
+            using (FileStream file = new FileStream(appointmentsDataFilePath, FileMode.Create))
             {
                 BinaryFormatter bf = new BinaryFormatter();
                 bf.Serialize(file, calendarAppointments);
@@ -91,6 +89,7 @@ namespace Calendar
         public static void LoadPersistentAppointments()
         {
             bool isAppointmentsDataFileFound = File.Exists(appointmentsDataFilePath);
+
             if (isAppointmentsDataFileFound)
             {
                 using (FileStream file = new FileStream(appointmentsDataFilePath, FileMode.Open))
@@ -114,7 +113,9 @@ namespace Calendar
         public static int GetDayNumberInWeek(DateTime date)
         {
             int dayNumber = (int)date.DayOfWeek;
-            if (dayNumber == SystemEnumSundayNumber)
+            bool isSunday = dayNumber == SystemEnumSundayNumber;
+
+            if (isSunday)
             {
                 dayNumber = SundayNumberInweek;
             }

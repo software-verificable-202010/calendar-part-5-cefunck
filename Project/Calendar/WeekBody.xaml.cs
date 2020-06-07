@@ -1,18 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Calendar
 {
@@ -88,8 +77,8 @@ namespace Calendar
                 if (IsDayColumnElement(child))
                 {
                     WeekColumn dayElementChild = (child as WeekColumn);
-                    int childrenColumnIndex = (int)dayElementChild.GetValue(Grid.ColumnProperty);
-                    if (IsInWeekendColumn(childrenColumnIndex))
+                    int childColumnIndex = (int)dayElementChild.GetValue(Grid.ColumnProperty);
+                    if (IsInWeekendColumn(childColumnIndex))
                     {
                         dayElementChild.Foreground = highlightColor;
                     }
@@ -121,31 +110,25 @@ namespace Calendar
             }
         }
 
-        private static bool IsDayColumnElement(object children)
+        private static bool IsDayColumnElement(object child)
         {
-            if (children.GetType() == typeof(WeekColumn))
-            {
-                return true;
-            }
-            return false;
+            bool isTypeOfWeekColumn = child.GetType() == typeof(WeekColumn);
+            return isTypeOfWeekColumn;
         }
 
-        private static bool IsInWeekendColumn(int childrenColumnIndex)
+        private static bool IsInWeekendColumn(int childColumnIndex)
         {
-            if (childrenColumnIndex == saturdayGridColumnIndex || childrenColumnIndex == sundayGridColumnIndex)
-            {
-                return true;
-            }
-            return false;
+            bool isInSaturday = childColumnIndex == saturdayGridColumnIndex;
+            bool isInSunday = childColumnIndex == sundayGridColumnIndex;
+            bool isInWeekend = isInSaturday | isInSunday;
+
+            return isInWeekend;
         }
 
         private static bool IsAppointmentOfDay(Appointment appointment, WeekColumn dayColumnElement)
         {
-            if (appointment.Start.Date == dayColumnElement.Date.Date)
-            {
-                return true;
-            }
-            return false;
+            bool haveTheSameDate = appointment.Start.Date == dayColumnElement.Date.Date;
+            return haveTheSameDate;
         }
 
         private List<Appointment> GetDayAppointments(WeekColumn dayElement)
@@ -154,7 +137,8 @@ namespace Calendar
             foreach (Appointment appointment in monthAppointmens)
             {
                 bool hasReadPermission = appointment.HasReadPermissions(SessionController.CurrenUser);
-                if (IsAppointmentOfDay(appointment, dayElement) & hasReadPermission)
+                bool isOfTheDayElement = IsAppointmentOfDay(appointment, dayElement);
+                if (isOfTheDayElement & hasReadPermission)
                 {
                     dayElementAppointments.Add(appointment);
                 }

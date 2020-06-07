@@ -1,19 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+
 
 namespace Calendar
 {
@@ -138,7 +128,8 @@ namespace Calendar
             List<Appointment> monthAppointmens = new List<Appointment>();
             foreach (Appointment appointment in calendarAppointments)
             {
-                if (IsAppointmentOfDisplayedMonth(appointment))
+                bool isOfDisplayedMonth = IsAppointmentOfDisplayedMonth(appointment);
+                if (isOfDisplayedMonth)
                 {
                     monthAppointmens.Add(appointment);
                 }
@@ -150,11 +141,8 @@ namespace Calendar
         {
             int displayedMonth = Utilities.DisplayedDate.Month;
             int appointmentMonth = appointment.Start.Month;
-            if (appointmentMonth == displayedMonth)
-            {
-                return true;
-            }
-            return false;
+            bool areTheSameMonth = appointmentMonth == displayedMonth;
+            return areTheSameMonth;
         }
 
         private string GetSelectedCalendarView()

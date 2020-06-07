@@ -1,22 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Configuration;
 using System.Globalization;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Calendar
 {
@@ -80,7 +68,9 @@ namespace Calendar
         {
             int displayedDateMonth = Utilities.DisplayedDate.Month;
             int dayElementMonth = date.Month;
-            if (dayElementMonth == displayedDateMonth)
+            bool dayElementIsOfDisplayedMonth = dayElementMonth == displayedDateMonth;
+
+            if (dayElementIsOfDisplayedMonth)
             {
                 textBlockDayNumber.Text = date.Day.ToString(CultureInfo.CurrentCulture);
             }
@@ -109,9 +99,10 @@ namespace Calendar
 
         private void AddButtonForNewAppointment() 
         {
+            const string empty = "";
             Button buttonNewDayElementAppoinment = new Button
             {
-                Content = Utilities.BlankSpace
+                Content = empty
             };
             buttonNewDayElementAppoinment.Click += NewAppointmentButton_Click;
             stackPanelMonthDayElement.Children.Add(buttonNewDayElementAppoinment);
@@ -219,20 +210,14 @@ namespace Calendar
 
         private bool IsNotBlankDayElement()
         {
-            if (this.date.Year != 1)
-            {
-                return true;
-            }
-            return false;
+            bool isUnassignedDate = date.Year != 1;
+            return isUnassignedDate;
         }
 
         private bool IsValidAppointment() 
         {
-            if (selectedAppointment.Title.Trim().Length != 0)
-            {
-                return true;
-            }
-            return false;
+            bool isNotBlankTitle = selectedAppointment.Title.Trim().Length != 0;
+            return isNotBlankTitle;
         }
 
         #endregion

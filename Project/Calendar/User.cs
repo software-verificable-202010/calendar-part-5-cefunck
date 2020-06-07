@@ -1,13 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics.Eventing.Reader;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
 
 namespace Calendar
 {
@@ -44,26 +37,30 @@ namespace Calendar
             this.name = userName;
         }
 
-        public bool HasAppointmentCollision(Appointment appointment)
+        public bool HasAppointmentCollision(Appointment appointmentThatCouldCollide)
         {
             List<Appointment> selfAppointments = GetSelfAppointments();
-            bool existsCollisionWithSelfAppointments = selfAppointments.Any(i => i.IsCollidingWith(appointment));
+            bool existsCollisionWithSelfAppointments = selfAppointments
+                .Any(appointment => appointment.IsCollidingWith(appointmentThatCouldCollide));
 
             List<Appointment> appointmentsWichThisUserIsInvited = GetAppointmentsWhichThisUserIsInvited();
-            bool existsCollisionWithAppointmentsWichThisUserIsIvited = appointmentsWichThisUserIsInvited.Any(i => i.IsCollidingWith(appointment));
+            bool existsCollisionWithAppointmentsWichThisUserIsIvited = appointmentsWichThisUserIsInvited
+                .Any(appointment => appointment.IsCollidingWith(appointmentThatCouldCollide));
 
             return existsCollisionWithSelfAppointments | existsCollisionWithAppointmentsWichThisUserIsIvited;
         }
 
         private List<Appointment> GetSelfAppointments()
         {
-            List<Appointment> selfAppointments = Utilities.CalendarAppointments.Where(appointment => appointment.IsOwner(this)).ToList();
+            List<Appointment> selfAppointments = Utilities.CalendarAppointments
+                .Where(appointment => appointment.IsOwner(this)).ToList();
             return selfAppointments;
         }
 
         private List<Appointment> GetAppointmentsWhichThisUserIsInvited()
         {
-            List<Appointment> appointmentsWichThisUserIsInvited = Utilities.CalendarAppointments.Where(appointment => appointment.IsGuest(this)).ToList();
+            List<Appointment> appointmentsWichThisUserIsInvited = Utilities.CalendarAppointments
+                .Where(appointment => appointment.IsGuest(this)).ToList();
             return appointmentsWichThisUserIsInvited;
         }
 

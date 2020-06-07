@@ -1,18 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Calendar
 {
@@ -64,15 +55,19 @@ namespace Calendar
             {
                 int candidateDayNumber = i - GetfirstDayGridColumnIndex() + iterationIndexOffset;
                 Point dayElementGridCoordinates = GetGridCoordinatesByIterationIndex(i);
-                if (IsDayNumberInDisplayedMonth(candidateDayNumber, dayElementGridCoordinates))
+                bool isDayNumberInDisplayedMonth = IsDayNumberInDisplayedMonth(candidateDayNumber, dayElementGridCoordinates);
+
+                if (isDayNumberInDisplayedMonth)
                 {
                     int year = Utilities.DisplayedDate.Year;
                     int month = Utilities.DisplayedDate.Month;
                     int day = candidateDayNumber;
                     DateTime dayElementDate = new DateTime(year, month, day);
+
                     MonthDayElement dayElement = new MonthDayElement(dayElementDate);
                     dayElement.SetValue(Grid.ColumnProperty, (int)dayElementGridCoordinates.X);
                     dayElement.SetValue(Grid.RowProperty, (int)dayElementGridCoordinates.Y);
+
                     dayElements.Add(dayElement);
                 }
                 else 
@@ -80,6 +75,7 @@ namespace Calendar
                     MonthDayElement dayElementBlank = new MonthDayElement();
                     dayElementBlank.SetValue(Grid.ColumnProperty, (int)dayElementGridCoordinates.X);
                     dayElementBlank.SetValue(Grid.RowProperty, (int)dayElementGridCoordinates.Y);
+
                     dayElements.Add(dayElementBlank);
                 }
             }
@@ -159,42 +155,39 @@ namespace Calendar
         private List<Appointment> GetDayAppointments(MonthDayElement dayElement)
         {
             List<Appointment> dayElementAppointments = new List<Appointment>();
+
             foreach (Appointment appointment in monthAppointmens)
             {
                 bool hasReadPermission = appointment.HasReadPermissions(SessionController.CurrenUser);
-                if (IsAppointmentOfDay(appointment, dayElement) & hasReadPermission)
+                bool isOfTheDayElement = IsAppointmentOfDay(appointment, dayElement);
+
+                if (isOfTheDayElement & hasReadPermission)
                 {
                     dayElementAppointments.Add(appointment);
                 }
             }
+
             return dayElementAppointments;
         }
 
         private static bool IsInWeekendColumn(int childrenColumnIndex)
         {
-            if (childrenColumnIndex == saturdayGridColumnIndex || childrenColumnIndex == sundayGridColumnIndex)
-            {
-                return true;
-            }
-            return false;
+            bool isInSaturday = childrenColumnIndex == saturdayGridColumnIndex;
+            bool isInSunday = childrenColumnIndex == sundayGridColumnIndex;
+            bool isInWeekend = isInSaturday | isInSunday;
+            return isInWeekend;
         }
 
-        private static bool IsDayElement(object children)
+        private static bool IsDayElement(object child)
         {
-            if (children.GetType() == typeof(MonthDayElement))
-            {
-                return true;
-            }
-            return false;
+            bool isDayElement = child.GetType() == typeof(MonthDayElement);
+            return isDayElement;
         }
 
         private static bool IsWeekDayNameElement(object children)
         {
-            if (children.GetType() == typeof(TextBlock))
-            {
-                return true;
-            }
-            return false;
+            bool isTextBlockElement = children.GetType() == typeof(TextBlock);
+            return isTextBlockElement;
         }
 
         private static bool IsDayNumberInDisplayedMonth(int candidateDayNumber, Point dayElementGridCoordinates)
@@ -212,11 +205,8 @@ namespace Calendar
 
         private static bool IsAppointmentOfDay(Appointment appointment, MonthDayElement dayElement) 
         {
-            if (appointment.Start.Date == dayElement.Date.Date)
-            {
-                return true;
-            }
-            return false;
+            bool areTheSameDate = appointment.Start.Date == dayElement.Date.Date;
+            return areTheSameDate;
         }
 
         private static int GetNumberOfDaysOfMonth(DateTime date)

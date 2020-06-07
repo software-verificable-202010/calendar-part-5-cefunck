@@ -1,21 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Calendar
 {
@@ -109,7 +99,8 @@ namespace Calendar
                 bool isAlreadyAdded = false;
                 foreach (List<Appointment> existingColumn in appointmentsColumns)
                 {
-                    bool canInsertWithoutColliding = !existingColumn.Any(i => i.IsCollidingWith(appointment));
+                    bool canInsertWithoutColliding = !existingColumn
+                        .Any(columnAppointment => columnAppointment.IsCollidingWith(appointment));
                     if (canInsertWithoutColliding)
                     {
                         existingColumn.Add(appointment);
@@ -156,12 +147,13 @@ namespace Calendar
 
         private void InsertButtonsForNewAppointment()
         {
+            const string empty = "";
             int spanValue = amountOfColumns;
             for (int i = 2; i < 50; i++)
             {
                 Button buttonNewDayElementAppoinment = new Button
                 {
-                    Content = Utilities.BlankSpace
+                    Content = empty
                 };
                 buttonNewDayElementAppoinment.Click += NewAppointmentButton_Click;
                 buttonNewDayElementAppoinment.SetValue(Grid.RowProperty, i);
@@ -302,11 +294,8 @@ namespace Calendar
 
         private bool IsValidAppointment()
         {
-            if (selectedAppointment.Title.Trim().Length != 0)
-            {
-                return true;
-            }
-            return false;
+            bool isNotBlankTitle = selectedAppointment.Title.Trim().Length != 0;
+            return isNotBlankTitle;
         }
 
         private static int GetAppointmentRowSpan(Appointment appointment) 
@@ -323,7 +312,9 @@ namespace Calendar
 
         private static int GetAppointmentRow(Appointment appointment) 
         {
-            int appointmentStartTimeInMinutes = (int)(appointment.Start.TimeOfDay - appointment.Start.Date.TimeOfDay).TotalMinutes;
+            TimeSpan startTimeOfAppointment = appointment.Start.TimeOfDay;
+            TimeSpan startTimeOfDay = appointment.Start.Date.TimeOfDay;
+            int appointmentStartTimeInMinutes = (int)(startTimeOfAppointment - startTimeOfDay).TotalMinutes;
             int appointmentRow = (int)Math.Floor((double)appointmentStartTimeInMinutes / minutesPerRow) + rowOffSetByTitleRows;
             return appointmentRow;
         }
@@ -335,7 +326,8 @@ namespace Calendar
             for (int i = 0; i < amountOfColumns - defaultColumns; i++)
             {
                 bool isCollisionFreeColumn = true;
-                List<UIElement> gridChildrenInColumnI = WeekColumnGrid.Children.Cast<UIElement>().Where(child => Grid.GetColumn(child) == i & Grid.GetColumnSpan(child) == 1 ).ToList();
+                List<UIElement> gridChildrenInColumnI = WeekColumnGrid.Children.Cast<UIElement>()
+                    .Where(child => Grid.GetColumn(child) == i & Grid.GetColumnSpan(child) == 1 ).ToList();
                 foreach (UIElement child in gridChildrenInColumnI.Where(j=>j.GetType() == typeof(Button)))
                 {
                     Appointment otherAppointment = GetAppointmentOfButton(child as Button);
@@ -360,6 +352,8 @@ namespace Calendar
 
         private string GetColumnTitle()
         {
+            const string columnTitleFormat = "{0} {1}";
+
             string dayName;
             switch (dayNumberInWeek)
             {
@@ -385,7 +379,11 @@ namespace Calendar
                     dayName = Utilities.SundayName;
                     break;
             }
-            return dayName + Utilities.BlankSpace + date.Day.ToString(CultureInfo.CurrentCulture);
+
+            string dayNumberInMonth = date.Day.ToString(CultureInfo.CurrentCulture);
+            string columnTitle = string.Format(CultureInfo.CurrentCulture, columnTitleFormat, dayName, dayNumberInMonth);
+
+            return columnTitle;
         }
 
         private static TimeSpan GetRowTime(object sender)
@@ -402,7 +400,8 @@ namespace Calendar
 
         private static Appointment GetAppointmentOfButton(object sender)
         {
-            BindingExpression bindingExpressionOfAppointmentButton = (sender as Button).GetBindingExpression(Button.ContentProperty);
+            Button buttonSender = sender as Button;
+            BindingExpression bindingExpressionOfAppointmentButton = buttonSender.GetBindingExpression(Button.ContentProperty);
             Binding bindingAppointmentButton = bindingExpressionOfAppointmentButton.ParentBinding;
             Appointment buttonSourceAppointment = bindingAppointmentButton.Source as Appointment;
             return buttonSourceAppointment;
