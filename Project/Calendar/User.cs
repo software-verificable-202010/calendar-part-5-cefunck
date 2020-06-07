@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 
 namespace Calendar
 {
@@ -44,6 +45,8 @@ namespace Calendar
                 .Any(appointment => appointment.IsCollidingWith(appointmentThatCouldCollide));
 
             List<Appointment> appointmentsWichThisUserIsInvited = GetAppointmentsWhichThisUserIsInvited();
+            appointmentsWichThisUserIsInvited.Remove(appointmentThatCouldCollide);
+
             bool existsCollisionWithAppointmentsWichThisUserIsIvited = appointmentsWichThisUserIsInvited
                 .Any(appointment => appointment.IsCollidingWith(appointmentThatCouldCollide));
 

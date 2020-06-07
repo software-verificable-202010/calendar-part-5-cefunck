@@ -64,19 +64,19 @@ namespace Calendar
                     int day = candidateDayNumber;
                     DateTime dayElementDate = new DateTime(year, month, day);
 
-                    MonthDayElement dayElement = new MonthDayElement(dayElementDate);
-                    dayElement.SetValue(Grid.ColumnProperty, (int)dayElementGridCoordinates.X);
-                    dayElement.SetValue(Grid.RowProperty, (int)dayElementGridCoordinates.Y);
+                    MonthDayElement monthDayElement = new MonthDayElement(dayElementDate);
+                    monthDayElement.SetValue(Grid.ColumnProperty, (int)dayElementGridCoordinates.X);
+                    monthDayElement.SetValue(Grid.RowProperty, (int)dayElementGridCoordinates.Y);
 
-                    dayElements.Add(dayElement);
+                    dayElements.Add(monthDayElement);
                 }
                 else 
                 {
-                    MonthDayElement dayElementBlank = new MonthDayElement();
-                    dayElementBlank.SetValue(Grid.ColumnProperty, (int)dayElementGridCoordinates.X);
-                    dayElementBlank.SetValue(Grid.RowProperty, (int)dayElementGridCoordinates.Y);
+                    MonthDayElement monthDayElementBlank = new MonthDayElement();
+                    monthDayElementBlank.SetValue(Grid.ColumnProperty, (int)dayElementGridCoordinates.X);
+                    monthDayElementBlank.SetValue(Grid.RowProperty, (int)dayElementGridCoordinates.Y);
 
-                    dayElements.Add(dayElementBlank);
+                    dayElements.Add(monthDayElementBlank);
                 }
             }
         }

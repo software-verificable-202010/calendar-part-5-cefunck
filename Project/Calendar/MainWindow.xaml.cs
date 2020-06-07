@@ -56,8 +56,8 @@ namespace Calendar
 
         private static void RefreshAsCalendar() 
         {
-            CalendarLayout calendar = new CalendarLayout();
-            App.Current.Resources[contentResourceName] = calendar;
+            CalendarLayout calendarLayout = new CalendarLayout();
+            App.Current.Resources[contentResourceName] = calendarLayout;
         }
 
         private void BindingContent()
