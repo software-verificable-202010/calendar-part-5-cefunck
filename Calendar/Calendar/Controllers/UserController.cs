@@ -56,10 +56,10 @@ namespace Calendar.Controllers
             this.sourceUserName = sourceUserName;
         }
 
-        public List<string> GetValidUserNamesOf(List<string> UserNames)
+        public List<string> GetValidUserNamesOf(List<string> userNames)
         {
             List<string> validUserNames = calendarUserNames
-                .Where(username => UserNames.Contains(username))
+                .Where(username => userNames.Contains(username))
                 .ToList();
 
             return validUserNames;

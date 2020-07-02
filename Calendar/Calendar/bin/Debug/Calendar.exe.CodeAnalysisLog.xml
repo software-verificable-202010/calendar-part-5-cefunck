@@ -1,0 +1,246 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="c:\program files (x86)\microsoft visual studio\2017\community\team tools\static analysis tools\fxcop\Xml\CodeAnalysisReport.xsl"?>
+<FxCopReport Version="15.0">
+ <Targets>
+  <Target Name="C:\Users\Cristian\Source\Repos\Part4\Calendar\Calendar\bin\Debug\Calendar.exe">
+   <Modules>
+    <Module Name="calendar.exe">
+     <Messages>
+      <Message TypeName="AssembliesShouldHaveValidStrongNames" Category="Microsoft.Design" CheckId="CA2210" Status="Active" Created="2020-07-02 21:08:36Z" FixCategory="NonBreaking">
+       <Issue Name="NoStrongName" Certainty="95" Level="CriticalError">Firme 'Calendar.exe' con una clave de nombre seguro.</Issue>
+      </Message>
+      <Message TypeName="MarkAssembliesWithClsCompliant" Category="Microsoft.Design" CheckId="CA1014" Status="Active" Created="2020-07-02 21:08:36Z" FixCategory="NonBreaking">
+       <Issue Certainty="95" Level="Error">Marque 'Calendar.exe' con CLSCompliant(true) porque expone tipos visibles externamente.</Issue>
+      </Message>
+     </Messages>
+     <Namespaces>
+      <Namespace Name="Calendar.Controllers">
+       <Types>
+        <Type Name="AppointmentController" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#AssignCalendarAppointments(System.Collections.Generic.List`1&lt;Calendar.Interfaces.IAppointment&gt;)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Status="Active" Created="2020-07-02 21:08:36Z" FixCategory="Breaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\Cristian\Source\Repos\Part4\Calendar\Calendar\Controllers" File="AppointmentController.cs" Line="303">Cambie ''List&lt;IAppointment&gt;'' en 'AppointmentController.AssignCalendarAppointments(List&lt;IAppointment&gt;)' para que use Collection&lt;T&gt;, ReadOnlyCollection&lt;T&gt; o KeyedCollection&lt;K,V&gt;</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#CalendarAppointments" Kind="Property" Static="True" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Status="Active" Created="2020-07-02 21:08:36Z" FixCategory="Breaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\Cristian\Source\Repos\Part4\Calendar\Calendar\Controllers" File="AppointmentController.cs" Line="104">Cambie ''List&lt;IAppointment&gt;'' en 'AppointmentController.CalendarAppointments' para que use Collection&lt;T&gt;, ReadOnlyCollection&lt;T&gt; o KeyedCollection&lt;K,V&gt;</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#GetAppointmentsWhereIsGuest(System.String)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Status="Active" Created="2020-07-02 21:08:36Z" FixCategory="Breaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\Cristian\Source\Repos\Part4\Calendar\Calendar\Controllers" File="AppointmentController.cs" Line="297">Cambie ''List&lt;IAppointment&gt;'' en 'AppointmentController.GetAppointmentsWhereIsGuest(string)' para que use Collection&lt;T&gt;, ReadOnlyCollection&lt;T&gt; o KeyedCollection&lt;K,V&gt;</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#GetAppointmentsWhereIsOwner(System.String)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Status="Active" Created="2020-07-02 21:08:36Z" FixCategory="Breaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\Cristian\Source\Repos\Part4\Calendar\Calendar\Controllers" File="AppointmentController.cs" Line="291">Cambie ''List&lt;IAppointment&gt;'' en 'AppointmentController.GetAppointmentsWhereIsOwner(string)' para que use Collection&lt;T&gt;, ReadOnlyCollection&lt;T&gt; o KeyedCollection&lt;K,V&gt;</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#RefreshCandidateData(System.String,System.String,System.Collections.Generic.List`1&lt;System.String&gt;,System.TimeSpan,System.TimeSpan)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Status="Active" Created="2020-07-02 21:08:36Z" FixCategory="Breaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\Cristian\Source\Repos\Part4\Calendar\Calendar\Controllers" File="AppointmentController.cs" Line="154">Cambie ''List&lt;string&gt;'' en 'AppointmentController.RefreshCandidateData(string, string, List&lt;string&gt;, TimeSpan, TimeSpan)' para que use Collection&lt;T&gt;, ReadOnlyCollection&lt;T&gt; o KeyedCollection&lt;K,V&gt;</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#SourceAppointmentGuestsUserNames" Kind="Property" Static="False" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Status="Active" Created="2020-07-02 21:08:36Z" FixCategory="Breaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\Cristian\Source\Repos\Part4\Calendar\Calendar\Controllers" File="AppointmentController.cs" Line="80">Cambie ''List&lt;string&gt;'' en 'AppointmentController.SourceAppointmentGuestsUserNames' para que use Collection&lt;T&gt;, ReadOnlyCollection&lt;T&gt; o KeyedCollection&lt;K,V&gt;</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#ValidationMessages" Kind="Property" Static="False" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Status="Active" Created="2020-07-02 21:08:36Z" FixCategory="Breaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\Cristian\Source\Repos\Part4\Calendar\Calendar\Controllers" File="AppointmentController.cs" Line="96">Cambie ''List&lt;string&gt;'' en 'AppointmentController.ValidationMessages' para que use Collection&lt;T&gt;, ReadOnlyCollection&lt;T&gt; o KeyedCollection&lt;K,V&gt;</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+        <Type Name="UserController" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#ExistsInvalidUserName(System.Collections.Generic.List`1&lt;System.String&gt;)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Status="Active" Created="2020-07-02 21:08:36Z" FixCategory="Breaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\Cristian\Source\Repos\Part4\Calendar\Calendar\Controllers" File="UserController.cs" Line="70">Cambie ''List&lt;string&gt;'' en 'UserController.ExistsInvalidUserName(List&lt;string&gt;)' para que use Collection&lt;T&gt;, ReadOnlyCollection&lt;T&gt; o KeyedCollection&lt;K,V&gt;</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#GetValidUserNamesOf(System.Collections.Generic.List`1&lt;System.String&gt;)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Status="Active" Created="2020-07-02 21:08:36Z" FixCategory="Breaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\Cristian\Source\Repos\Part4\Calendar\Calendar\Controllers" File="UserController.cs" Line="60">Cambie ''List&lt;string&gt;'' en 'UserController.GetValidUserNamesOf(List&lt;string&gt;)' para que use Collection&lt;T&gt;, ReadOnlyCollection&lt;T&gt; o KeyedCollection&lt;K,V&gt;</Issue>
+             <Issue Certainty="95" Level="Error" Path="C:\Users\Cristian\Source\Repos\Part4\Calendar\Calendar\Controllers" File="UserController.cs" Line="60">Cambie ''List&lt;string&gt;'' en 'UserController.GetValidUserNamesOf(List&lt;string&gt;)' para que use Collection&lt;T&gt;, ReadOnlyCollection&lt;T&gt; o KeyedCollection&lt;K,V&gt;</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+       </Types>
+      </Namespace>
+      <Namespace Name="Calendar.Interfaces">
+       <Types>
+        <Type Name="IAppointment" Kind="Interface" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#AssignGuests(System.Collections.Generic.List`1&lt;System.String&gt;)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Status="Active" Created="2020-07-02 21:08:36Z" FixCategory="Breaking">
+             <Issue Certainty="95" Level="Error">Cambie ''List&lt;string&gt;'' en 'IAppointment.AssignGuests(List&lt;string&gt;)' para que use Collection&lt;T&gt;, ReadOnlyCollection&lt;T&gt; o KeyedCollection&lt;K,V&gt;</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#GuestsUserNames" Kind="Property" Static="False" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Status="Active" Created="2020-07-02 21:08:36Z" FixCategory="Breaking">
+             <Issue Certainty="95" Level="Error">Cambie ''List&lt;string&gt;'' en 'IAppointment.GuestsUserNames' para que use Collection&lt;T&gt;, ReadOnlyCollection&lt;T&gt; o KeyedCollection&lt;K,V&gt;</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+       </Types>
+      </Namespace>
+      <Namespace Name="Calendar.Models">
+       <Types>
+        <Type Name="Appointment" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#AssignGuests(System.Collections.Generic.List`1&lt;System.String&gt;)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Status="Active" Created="2020-07-02 21:08:36Z" FixCategory="Breaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\Cristian\Source\Repos\Part4\Calendar\Calendar\Models" File="Appointment.cs" Line="124">Cambie ''List&lt;string&gt;'' en 'Appointment.AssignGuests(List&lt;string&gt;)' para que use Collection&lt;T&gt;, ReadOnlyCollection&lt;T&gt; o KeyedCollection&lt;K,V&gt;</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#GuestsUserNames" Kind="Property" Static="False" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Status="Active" Created="2020-07-02 21:08:36Z" FixCategory="Breaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\Cristian\Source\Repos\Part4\Calendar\Calendar\Models" File="Appointment.cs" Line="104">Cambie ''List&lt;string&gt;'' en 'Appointment.GuestsUserNames' para que use Collection&lt;T&gt;, ReadOnlyCollection&lt;T&gt; o KeyedCollection&lt;K,V&gt;</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+       </Types>
+      </Namespace>
+      <Namespace Name="Calendar.Windows.Partials">
+       <Types>
+        <Type Name="MonthBody" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#AssignMonthAppointments(System.Collections.Generic.List`1&lt;Calendar.Models.Appointment&gt;)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Status="Active" Created="2020-07-02 21:08:36Z" FixCategory="Breaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\Cristian\Source\Repos\Part4\Calendar\Calendar\Windows\Partials" File="MonthBody.xaml.cs" Line="56">Cambie ''List&lt;Appointment&gt;'' en 'MonthBody.AssignMonthAppointments(List&lt;Appointment&gt;)' para que use Collection&lt;T&gt;, ReadOnlyCollection&lt;T&gt; o KeyedCollection&lt;K,V&gt;</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+        <Type Name="MonthDayElement" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#AssignDayAppointments(System.Collections.Generic.List`1&lt;Calendar.Models.Appointment&gt;)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Status="Active" Created="2020-07-02 21:08:36Z" FixCategory="Breaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\Cristian\Source\Repos\Part4\Calendar\Calendar\Windows\Partials" File="MonthDayElement.xaml.cs" Line="69">Cambie ''List&lt;Appointment&gt;'' en 'MonthDayElement.AssignDayAppointments(List&lt;Appointment&gt;)' para que use Collection&lt;T&gt;, ReadOnlyCollection&lt;T&gt; o KeyedCollection&lt;K,V&gt;</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+        <Type Name="WeekBody" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#AssignMonthAppointments(System.Collections.Generic.List`1&lt;Calendar.Models.Appointment&gt;)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Status="Active" Created="2020-07-02 21:08:36Z" FixCategory="Breaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\Cristian\Source\Repos\Part4\Calendar\Calendar\Windows\Partials" File="WeekBody.xaml.cs" Line="50">Cambie ''List&lt;Appointment&gt;'' en 'WeekBody.AssignMonthAppointments(List&lt;Appointment&gt;)' para que use Collection&lt;T&gt;, ReadOnlyCollection&lt;T&gt; o KeyedCollection&lt;K,V&gt;</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+        <Type Name="WeekColumn" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#AssignDayAppointments(System.Collections.Generic.List`1&lt;Calendar.Interfaces.IAppointment&gt;)" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Status="Active" Created="2020-07-02 21:08:36Z" FixCategory="Breaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\Cristian\Source\Repos\Part4\Calendar\Calendar\Windows\Partials" File="WeekColumn.xaml.cs" Line="73">Cambie ''List&lt;IAppointment&gt;'' en 'WeekColumn.AssignDayAppointments(List&lt;IAppointment&gt;)' para que use Collection&lt;T&gt;, ReadOnlyCollection&lt;T&gt; o KeyedCollection&lt;K,V&gt;</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+       </Types>
+      </Namespace>
+     </Namespaces>
+    </Module>
+   </Modules>
+  </Target>
+ </Targets>
+ <Rules>
+  <Rule TypeName="AssembliesShouldHaveValidStrongNames" Category="Microsoft.Design" CheckId="CA2210">
+   <Name>Los ensamblados deben tener nombres seguros válidos</Name>
+   <Description>Puede que el ensamblado no tenga un nombre seguro, que no sea válido o que éste sea válido únicamente por la configuración del equipo. No se puede implementar el ensamblado en este estado. Las causas más probables son: 1) El contenido del ensamblado se modificó después de firmarlo. 2) Error en el proceso de firma. 3) El ensamblado tenía firma retardada. 4) Existía una clave del Registro que permitió que se realizara la comprobación (de lo contrario no se hubiera realizado).</Description>
+   <Resolution Name="NoStrongName">Firme {0} con una clave de nombre seguro.</Resolution>
+   <Owner />
+   <Url>http://msdn.microsoft.com/library/ms182127.aspx</Url>
+   <Email>[none]</Email>
+   <MessageLevel Certainty="95">CriticalError</MessageLevel>
+   <File Name="designrules.dll" Version="15.0.0.0" />
+  </Rule>
+  <Rule TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002">
+   <Name>No exponer listas genéricas</Name>
+   <Description>No exponga List&lt;T&gt; en modelos de objetos. Utilice Collection&lt;T&gt;, ReadOnlyCollection&lt;T&gt; o KeyedCollection&lt;K,V&gt; en su lugar. Debe utilizar List&lt;T&gt; desde la implementación, no en la API de modelo de objetos. List&lt;T&gt; está optimizado para el rendimiento de versiones a largo plazo. Por ejemplo, si devuelve List&lt;T&gt; al código del cliente, no podrá recibir notificaciones cuando el código del cliente modifique la colección.</Description>
+   <Resolution Name="Default">Cambie '{0}' en {1} para que use Collection&lt;T&gt;, ReadOnlyCollection&lt;T&gt; o KeyedCollection&lt;K,V&gt;</Resolution>
+   <Owner />
+   <Url>http://msdn.microsoft.com/library/ms182142.aspx</Url>
+   <Email>[none]</Email>
+   <MessageLevel Certainty="95">Error</MessageLevel>
+   <File Name="designrules.dll" Version="15.0.0.0" />
+  </Rule>
+  <Rule TypeName="MarkAssembliesWithClsCompliant" Category="Microsoft.Design" CheckId="CA1014">
+   <Name>Marque los ensamblados con CLSCompliantAttribute</Name>
+   <Description>Los ensamblados deben establecer explícitamente ser conformes a CLS usando el atributo CLSCompliant. Un ensamblado sin este atributo no es conforme a CLS. Los ensamblados, módulos y tipos pueden ser conformes a CLS incluso si alguna parte del ensamblado, módulo o tipo no son conformes a CLS. Se aplican las siguientes reglas: 1) Si el elemento está marcado como CLSCompliant, cualquier miembro no compatible debe tener el atributo CLSCompliant presente con el argumento establecido como false. 2) Se debe proporcionar un miembro alternativo conforme a CLS comparable con cada miembro que no sea conforme a CLS.</Description>
+   <Resolution Name="Default">Marque {0} con CLSCompliant(true) porque expone tipos visibles externamente.</Resolution>
+   <Owner />
+   <Url>http://msdn.microsoft.com/library/ms182156.aspx</Url>
+   <Email>[none]</Email>
+   <MessageLevel Certainty="95">Error</MessageLevel>
+   <File Name="designrules.dll" Version="15.0.0.0" />
+  </Rule>
+ </Rules>
+ <Localized>
+  <String Key="Category">Categoría</String>
+  <String Key="Certainty">Certeza</String>
+  <String Key="CollapseAll">Contraer todo</String>
+  <String Key="CheckId">Comprobar id.</String>
+  <String Key="Error">Error</String>
+  <String Key="Errors">errores</String>
+  <String Key="ExpandAll">Expandir todo</String>
+  <String Key="Help">Ayuda</String>
+  <String Key="Line">Línea</String>
+  <String Key="Messages">mensajes</String>
+  <String Key="LocationNotStoredInPdb">[Ubicación no almacenada en Pdb]</String>
+  <String Key="Project">Proyecto</String>
+  <String Key="Resolution">Resolución</String>
+  <String Key="Rule">Regla</String>
+  <String Key="RuleFile">Archivo de regla</String>
+  <String Key="RuleDescription">Descripción de la regla</String>
+  <String Key="Source">Origen</String>
+  <String Key="Status">Estado</String>
+  <String Key="Target">Círculos concéntricos</String>
+  <String Key="Warning">Advertencia</String>
+  <String Key="Warnings">advertencias</String>
+  <String Key="ReportTitle">Informe de análisis del código</String>
+ </Localized>
+</FxCopReport>
