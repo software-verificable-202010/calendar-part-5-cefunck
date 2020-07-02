@@ -55,7 +55,7 @@ namespace Calendar.Interfaces
 
         #region Methods
 
-        void AssignGuests(List<string> guestsUserNames);
+        void AssignGuests(List<string> userNames);
 
         bool IsCollidingWith(IAppointment otherAppointment);
 

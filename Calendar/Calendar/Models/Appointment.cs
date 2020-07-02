@@ -120,11 +120,11 @@ namespace Calendar.Models
             isInGarbage = false;
         }
 
-        public void AssignGuests(List<string> UserNames)
+        public void AssignGuests(List<string> userNames)
         {
-            List<string> distinctUsers = UserNames.Distinct().ToList();
+            userNames = userNames.Distinct().ToList();
             guestsUserNames.Clear();
-            guestsUserNames.AddRange(distinctUsers);
+            guestsUserNames.AddRange(userNames);
         }
 
         public bool IsCollidingWith(IAppointment otherAppointment)
@@ -140,22 +140,22 @@ namespace Calendar.Models
             return isColliding;
         }
 
-        public bool HasReadPermissions(string username)
+        public bool HasReadPermissions(string userName)
         {
-            return IsOwner(username) | IsGuest(username);
+            return IsOwner(userName) | IsGuest(userName);
         }
 
-        public bool IsOwner(string username) 
+        public bool IsOwner(string userName) 
         {
-            bool isNotNullUsername = username != null;
+            bool isNotNullUserName = userName != null;
             bool isOwner = false;
 
-            if (isNotNullUsername)
+            if (isNotNullUserName)
             {
-                isOwner = OwnerUserName == username;
+                isOwner = OwnerUserName == userName;
             }
 
-            return isNotNullUsername & isOwner;
+            return isNotNullUserName & isOwner;
         }
 
         public bool IsGuest(string userName)
