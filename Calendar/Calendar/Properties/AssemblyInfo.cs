@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -7,6 +8,7 @@ using System.Windows;
 // La información general de un ensamblado se controla mediante el siguiente 
 // conjunto de atributos. Cambie estos valores de atributo para modificar la información
 // asociada con un ensamblado.
+[assembly: CLSCompliant(true)]
 [assembly: AssemblyTitle("Calendar")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
