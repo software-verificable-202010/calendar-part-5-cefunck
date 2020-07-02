@@ -42,17 +42,17 @@ namespace Calendar.Tests.UnitTests
         public void SourceUsername_SomeUsername_ReturnsSameUsername()
         {
             // Arrange
-            userController.SourceUsername = validUserName;
+            userController.SourceUserName = validUserName;
 
             // Act & Assert
-            Assert.AreEqual(validUserName, userController.SourceUsername);
+            Assert.AreEqual(validUserName, userController.SourceUserName);
         }
 
         [Test]
         public void IsValid_ValidUsername_ReturnsTrue()
         {
             // Arrange
-            userController.SourceUsername = validUserName;
+            userController.SourceUserName = validUserName;
 
             // Act & Assert
             Assert.IsTrue(userController.IsValid);
@@ -66,17 +66,17 @@ namespace Calendar.Tests.UnitTests
         public void IsValid_InvalidUsername_ReturnsFalse(string invalidUsername)
         {
             // Arrange
-            userController.SourceUsername = invalidUsername;
+            userController.SourceUserName = invalidUsername;
 
             // Act & Assert
             Assert.IsFalse(userController.IsValid);
         }
 
         [Test]
-        public void GetValidUsernamesOf_UsernamesList_()
+        public void GetValidUserNamesOf_UserNamesList_()
         {
             // Arrange
-            List<string> usernames = new List<string>()
+            List<string> UserNames = new List<string>()
             {
                 nullValue,
                 empty,
@@ -86,39 +86,39 @@ namespace Calendar.Tests.UnitTests
                 invalidUsername
             };
 
-            List<string> validUsernames = new List<string>()
+            List<string> validUserNames = new List<string>()
             {
                 validUserName
             };
 
             // Act & Assert
-            Assert.AreEqual(validUsernames, userController.GetValidUsernamesOf(usernames));
+            Assert.AreEqual(validUserNames, userController.GetValidUserNamesOf(UserNames));
         }
 
         [Test]
-        public void ExistsInvalidUsername_UsernamesListWithoutInvalidUsername_ReturnsFalse()
+        public void ExistsInvalidUsername_UserNamesListWithoutInvalidUsername_ReturnsFalse()
         {
 
-            List<string> usernames = new List<string>()
+            List<string> UserNames = new List<string>()
             {
                 validUserName
             };
 
-            Assert.IsFalse(userController.ExistsInvalidUsername(usernames));
+            Assert.IsFalse(userController.ExistsInvalidUserName(UserNames));
         }
 
         [Test]
-        public void ExistsInvalidUsername_UsernamesListWithInvalidUsername_ReturnsTrue()
+        public void ExistsInvalidUsername_UserNamesListWithInvalidUsername_ReturnsTrue()
         {
             // Arrange
-            List<string> usernames = new List<string>()
+            List<string> UserNames = new List<string>()
             {
                 validUserName,
                 invalidUsername
             };
 
             // Act & Assert
-            Assert.IsTrue(userController.ExistsInvalidUsername(usernames));
+            Assert.IsTrue(userController.ExistsInvalidUserName(UserNames));
         }
 
         #endregion

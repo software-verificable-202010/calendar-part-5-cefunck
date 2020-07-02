@@ -162,7 +162,7 @@ namespace Calendar.Windows.Partials
 
             foreach (Appointment appointment in monthAppointmens)
             {
-                bool hasReadPermission = appointment.HasReadPermissions(sourceSessionController.CurrentUsername);
+                bool hasReadPermission = appointment.HasReadPermissions(sourceSessionController.CurrentUserName);
                 bool isOfTheDayElement = IsAppointmentOfDay(appointment, dayElement);
 
                 if (isOfTheDayElement & hasReadPermission)

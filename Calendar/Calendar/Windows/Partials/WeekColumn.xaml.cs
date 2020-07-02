@@ -226,7 +226,7 @@ namespace Calendar.Windows.Partials
             int appointmentMonth = this.date.Month;
             int appointmentDay = this.date.Day;
             TimeSpan rowTime = GetRowTime(sender);
-            string currentUsername = sourceSessionController.CurrentUsername;
+            string currentUsername = sourceSessionController.CurrentUserName;
             DateTime appointmentStartDate = new DateTime(appointmentYear, appointmentMonth, appointmentDay) + rowTime;
             selectedAppointment = new Appointment(appointmentStartDate,currentUsername);
         }

@@ -18,7 +18,7 @@ namespace Calendar.Test.UnitTests
         private const string aDescription = "a description";
         private const string usernameThatIsNotOwner = "a username that is not owner";
         private const string ownerUsername = "owner username";
-        private const string guestUsername = "guest username";
+        private const string guestUserName = "guest username";
         private const string emptyTitleMessage = "Debe ingresar un título";
         private const string invalidEndTimeMessage = "Debe ingresar hora de fin válida";
         #endregion
@@ -186,7 +186,7 @@ namespace Calendar.Test.UnitTests
             TimeSpan aEnd = new TimeSpan(12, 01, 00);
             List<string> aGuestsNamesList = new List<string>()
             {
-                guestUsername
+                guestUserName
             };
 
             mockAppointment.SetupSet(appointment => appointment.Title = It.IsAny<string>());
@@ -234,12 +234,12 @@ namespace Calendar.Test.UnitTests
         [TestCase(aSpace)]
         [TestCase(moreThanOneSpace)]
         [TestCase(usernameThatIsNotOwner)]
-        public void IsOwnerInvited_UsernameThatIsNotOwner_ReturnsFalse(string guestUsername)
+        public void IsOwnerInvited_UsernameThatIsNotOwner_ReturnsFalse(string guestUserName)
         {
             // Arrange
             List<string> guestsList = new List<string>()
             {
-                guestUsername
+                guestUserName
             };
 
             // Act & Assert
@@ -255,7 +255,7 @@ namespace Calendar.Test.UnitTests
                 ownerUsername
             };
             mockAppointment
-                .SetupGet(appointment => appointment.OwnerUsername)
+                .SetupGet(appointment => appointment.OwnerUserName)
                 .Returns(ownerUsername);
 
             // Act & Assert
@@ -270,7 +270,7 @@ namespace Calendar.Test.UnitTests
             TimeSpan aEnd = new TimeSpan(12, 01, 00);
             List<string> aGuestsNamesList = new List<string>()
             {
-                guestUsername
+                guestUserName
             };
             appointmentController.RefreshCandidateData(aTitle, aDescription, aGuestsNamesList, aStart, aEnd);
 
@@ -295,7 +295,7 @@ namespace Calendar.Test.UnitTests
             };
 
             mockAppointment
-                .SetupGet(appointment => appointment.OwnerUsername)
+                .SetupGet(appointment => appointment.OwnerUserName)
                 .Returns(ownerUsername);
             appointmentController.RefreshPermissions(ownerUsername);
             appointmentController.RefreshCandidateData(blankTitle, aDescription, aGuestsNamesList, aStart, aEnd);
@@ -318,7 +318,7 @@ namespace Calendar.Test.UnitTests
             };
 
             mockAppointment
-                .SetupGet(appointment => appointment.OwnerUsername)
+                .SetupGet(appointment => appointment.OwnerUserName)
                 .Returns(ownerUsername);
             appointmentController.RefreshPermissions(ownerUsername);
             appointmentController.RefreshCandidateData(aTitle, aDescription, aGuestsNamesList, aStart, aInvalidEnd);
@@ -343,7 +343,7 @@ namespace Calendar.Test.UnitTests
             };
 
             mockAppointment
-                .SetupGet(appointment => appointment.OwnerUsername)
+                .SetupGet(appointment => appointment.OwnerUserName)
                 .Returns(ownerUsername);
             appointmentController.RefreshPermissions(ownerUsername);
             appointmentController.RefreshCandidateData(aTitle, aDescription, aGuestsNamesList, aStart, aEnd);

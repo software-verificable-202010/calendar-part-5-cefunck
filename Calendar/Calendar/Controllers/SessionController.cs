@@ -16,7 +16,7 @@ namespace Calendar.Controllers
 
 
         #region Properties
-        public string CurrentUsername 
+        public string CurrentUserName 
         {
             get 
             {
@@ -41,7 +41,7 @@ namespace Calendar.Controllers
         {
             if (userController.IsValid)
             {
-                currentUsername = userController.SourceUsername;
+                currentUsername = userController.SourceUserName;
             }
         }
 

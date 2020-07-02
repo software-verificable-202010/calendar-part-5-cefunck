@@ -20,8 +20,8 @@ namespace Calendar.Models
         private bool isInGarbage;
         private DateTime start;
         private DateTime end;
-        private string ownerUsername;
-        private readonly List<string> guestsUsernames;
+        private string ownerUserName;
+        private readonly List<string> guestsUserNames;
         #endregion
 
 
@@ -86,45 +86,45 @@ namespace Calendar.Models
             }
         }
 
-        public string OwnerUsername 
+        public string OwnerUserName 
         {
             get 
             {
-                return ownerUsername;
+                return ownerUserName;
             }
             set 
             {
-                ownerUsername = value;
+                ownerUserName = value;
             }
         }
 
-        public List<string> GuestsUsernames
+        public List<string> GuestsUserNames
         {
             get
             {
-                return guestsUsernames;
+                return guestsUserNames;
             }
         }
         #endregion
 
 
         #region Methods
-        public Appointment(DateTime startTime, string ownerUsername)
+        public Appointment(DateTime startTime, string ownerUserName)
         {
             title = empty;
             description = empty;
             start = startTime;
             end = start.AddMinutes(defaultDurationInMinutes);
-            this.ownerUsername = ownerUsername;
-            guestsUsernames = new List<string>();
+            this.ownerUserName = ownerUserName;
+            guestsUserNames = new List<string>();
             isInGarbage = false;
         }
 
-        public void AssignGuests(List<string> usernames)
+        public void AssignGuests(List<string> UserNames)
         {
-            List<string> distinctUsers = usernames.Distinct().ToList();
-            guestsUsernames.Clear();
-            guestsUsernames.AddRange(distinctUsers);
+            List<string> distinctUsers = UserNames.Distinct().ToList();
+            guestsUserNames.Clear();
+            guestsUserNames.AddRange(distinctUsers);
         }
 
         public bool IsCollidingWith(IAppointment otherAppointment)
@@ -152,20 +152,21 @@ namespace Calendar.Models
 
             if (isNotNullUsername)
             {
-                isOwner = OwnerUsername == username;
+                isOwner = OwnerUserName == username;
             }
 
             return isNotNullUsername & isOwner;
         }
 
-        public bool IsGuest(string username)
+        public bool IsGuest(string userName)
         {
-            bool isNotNullUsername = username != null;
+            bool isNotNullUsername = userName != null;
+            bool isNotNullGuestsUsernames = guestsUserNames != null;
             bool isGuest = false;
 
-            if (isNotNullUsername)
+            if (isNotNullUsername && isNotNullGuestsUsernames)
             {
-                isGuest = guestsUsernames.Any(guestUsername => guestUsername == username);
+                isGuest = guestsUserNames.Any(guestUserName => guestUserName == userName);
             }
 
             return isNotNullUsername & isGuest;

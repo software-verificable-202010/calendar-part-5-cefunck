@@ -45,17 +45,17 @@ namespace Calendar.Tests
         public void CurrentUser_SomeCurrentUser_ReturnsSameCurrentUser()
         {
             // Arrange
-            sessionController.CurrentUsername = aValidUsername;
+            sessionController.CurrentUserName = aValidUsername;
 
             // Act & Assert
-            Assert.AreEqual(aValidUsername, sessionController.CurrentUsername);
+            Assert.AreEqual(aValidUsername, sessionController.CurrentUserName);
         }
 
         [Test]
         public void IsSessionLogoned_ValidCurrentUser_ReturnsTrue()
         {
             // Arrange
-            sessionController.CurrentUsername = aValidUsername;
+            sessionController.CurrentUserName = aValidUsername;
 
             // Act & Assert
             Assert.IsTrue(sessionController.IsSessionLogoned());
@@ -65,7 +65,7 @@ namespace Calendar.Tests
         public void IsSessionLogoned_NullCurrentUser_ReturnsFalse()
         {
             // Arrange
-            sessionController.CurrentUsername = null;
+            sessionController.CurrentUserName = null;
 
             // Act & Assert
             Assert.IsFalse(sessionController.IsSessionLogoned());
@@ -87,7 +87,7 @@ namespace Calendar.Tests
             sessionController.LogOn(mockUserController.Object);
 
             //Assert
-            Assert.AreEqual(nullValue, sessionController.CurrentUsername);
+            Assert.AreEqual(nullValue, sessionController.CurrentUserName);
         }
 
         [Test]
@@ -99,14 +99,14 @@ namespace Calendar.Tests
                 .Returns(true);
 
             mockUserController
-                .SetupGet(userController => userController.SourceUsername)
+                .SetupGet(userController => userController.SourceUserName)
                 .Returns(aValidUsername);
 
             // Act
             sessionController.LogOn(mockUserController.Object);
 
             //Assert
-            Assert.AreEqual(aValidUsername, sessionController.CurrentUsername);
+            Assert.AreEqual(aValidUsername, sessionController.CurrentUserName);
         }
         #endregion
     }

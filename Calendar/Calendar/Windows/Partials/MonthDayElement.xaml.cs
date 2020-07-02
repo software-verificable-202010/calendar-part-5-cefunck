@@ -142,7 +142,7 @@ namespace Calendar.Windows.Partials
             int appointmentMonth = this.date.Month;
             int appointmentDay = this.date.Day;
             TimeSpan nowTime = DateTime.Now.TimeOfDay;
-            string currentUsername = sourceSessionController.CurrentUsername;
+            string currentUsername = sourceSessionController.CurrentUserName;
             DateTime appointmentStartDate = new DateTime(appointmentYear, appointmentMonth, appointmentDay) + nowTime;
             selectedAppointment = new Appointment(appointmentStartDate, currentUsername);
         }

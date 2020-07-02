@@ -140,7 +140,7 @@ namespace Calendar.Windows.Partials
             List<IAppointment> dayElementAppointments = new List<IAppointment>();
             foreach (IAppointment appointment in monthAppointmens)
             {
-                string currentUserName = sourceSessionController.CurrentUsername;
+                string currentUserName = sourceSessionController.CurrentUserName;
                 bool hasReadPermission = appointment.HasReadPermissions(currentUserName);
                 bool isOfTheDayElement = IsAppointmentOfDay(appointment, dayElement);
                 if (isOfTheDayElement & hasReadPermission)

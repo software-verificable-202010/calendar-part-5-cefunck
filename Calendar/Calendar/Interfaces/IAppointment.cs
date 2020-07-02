@@ -40,13 +40,13 @@ namespace Calendar.Interfaces
             set;
         }
 
-        string OwnerUsername
+        string OwnerUserName
         {
             get;
             set;
         }
 
-        List<string> GuestsUsernames
+        List<string> GuestsUserNames
         {
             get;
         }
@@ -55,15 +55,15 @@ namespace Calendar.Interfaces
 
         #region Methods
 
-        void AssignGuests(List<string> guestsUsernames);
+        void AssignGuests(List<string> guestsUserNames);
 
         bool IsCollidingWith(IAppointment otherAppointment);
 
-        bool HasReadPermissions(string username);
+        bool HasReadPermissions(string userName);
 
-        bool IsOwner(string username);
+        bool IsOwner(string userName);
 
-        bool IsGuest(string username);
+        bool IsGuest(string userName);
 
         #endregion
     }

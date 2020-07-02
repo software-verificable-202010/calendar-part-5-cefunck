@@ -14,8 +14,8 @@ namespace Calendar.Controllers
 
 
         #region Fields
-        private string sourceUsername;
-        private static readonly List<string> calendarUsernames = new List<string>()
+        private string sourceUserName;
+        private static readonly List<string> calendarUserNames = new List<string>()
         {
             defaultUsername1,
             defaultUsername2
@@ -24,15 +24,15 @@ namespace Calendar.Controllers
 
 
         #region Properties
-        public virtual string SourceUsername
+        public virtual string SourceUserName
         {
             get
             {
-                return sourceUsername;
+                return sourceUserName;
             }
             set
             {
-                sourceUsername = value;
+                sourceUserName = value;
             }
         }
 
@@ -40,7 +40,7 @@ namespace Calendar.Controllers
         {
             get
             {
-                return calendarUsernames.Contains(sourceUsername);
+                return calendarUserNames.Contains(sourceUserName);
             }
         }
         #endregion
@@ -51,31 +51,31 @@ namespace Calendar.Controllers
         {
         }
 
-        public UserController(string sourceUsername)
+        public UserController(string sourceUserName)
         {
-            this.sourceUsername = sourceUsername;
+            this.sourceUserName = sourceUserName;
         }
 
-        public List<string> GetValidUsernamesOf(List<string> usernames)
+        public List<string> GetValidUserNamesOf(List<string> UserNames)
         {
-            List<string> validUsernames = calendarUsernames
-                .Where(username => usernames.Contains(username))
+            List<string> validUserNames = calendarUserNames
+                .Where(username => UserNames.Contains(username))
                 .ToList();
 
-            return validUsernames;
+            return validUserNames;
         }
 
 
-        public bool ExistsInvalidUsername(List<string> usernames)
+        public bool ExistsInvalidUserName(List<string> UserNames)
         {
-            List<UserController> userControllers = usernames
-                .Select(username => new UserController(username))
+            List<UserController> userControllers = UserNames
+                .Select(userName => new UserController(userName))
                 .ToList();
 
-            bool existsInvalidUsername = userControllers
+            bool existsInvalidUserName = userControllers
                 .Any(userController => !userController.IsValid);
 
-            return existsInvalidUsername;
+            return existsInvalidUserName;
         }
         #endregion
     }

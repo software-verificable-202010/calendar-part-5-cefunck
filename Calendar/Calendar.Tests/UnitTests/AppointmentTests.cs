@@ -112,10 +112,10 @@ namespace Calendar.Test
         {
             // Arrange
             const string aNewOwnerUsername = "a new owner username";
-            appointment.OwnerUsername = aNewOwnerUsername;
+            appointment.OwnerUserName = aNewOwnerUsername;
 
             // Act & Assert
-            Assert.AreEqual(aNewOwnerUsername, appointment.OwnerUsername);
+            Assert.AreEqual(aNewOwnerUsername, appointment.OwnerUserName);
         }
 
         [Test]
@@ -133,7 +133,7 @@ namespace Calendar.Test
             appointment.AssignGuests(aGuestList);
 
             // Act & Assert
-            Assert.AreEqual(aGuestList, appointment.GuestsUsernames);
+            Assert.AreEqual(aGuestList, appointment.GuestsUserNames);
         }
 
         [Test]
@@ -224,7 +224,7 @@ namespace Calendar.Test
         {
             // Arrange
             const string ownerName = "appointment owner name";
-            appointment.OwnerUsername = ownerName;
+            appointment.OwnerUserName = ownerName;
 
             // Act & Assert
             Assert.IsTrue(appointment.HasReadPermissions(ownerName));
@@ -236,12 +236,12 @@ namespace Calendar.Test
             // Arrange       
             const string guestName = "appointment guest name";
 
-            List<string> guestsUsernamesList = new List<string>()
+            List<string> guestsUserNamesList = new List<string>()
             {
                 guestName
             };
 
-            appointment.AssignGuests(guestsUsernamesList);
+            appointment.AssignGuests(guestsUserNamesList);
 
             // Act & Assert
             Assert.IsTrue(appointment.HasReadPermissions(guestName));
@@ -252,7 +252,7 @@ namespace Calendar.Test
         {
             // Arrange
             const string ownerUsername = "appointment owner name";
-            appointment.OwnerUsername = ownerUsername;
+            appointment.OwnerUserName = ownerUsername;
 
             // Act & Assert
             Assert.IsTrue(appointment.IsOwner(ownerUsername));
@@ -267,7 +267,7 @@ namespace Calendar.Test
         {
             // Arrange
             const string ownerUsername = "owner name";
-            appointment.OwnerUsername = ownerUsername;
+            appointment.OwnerUserName = ownerUsername;
 
             // Act & Assert
             Assert.IsFalse(appointment.IsOwner(userNameThatIsNotOwner));
@@ -277,17 +277,17 @@ namespace Calendar.Test
         public void IsGuest_GuestName_ReturnsTrue()
         {
             // Arrange
-            const string guestUsername = "appointment guest username";
+            const string guestUserName = "appointment guest username";
 
             List<string> guestList = new List<string>()
             {
-                guestUsername
+                guestUserName
             };
             appointment.AssignGuests(guestList);
 
 
             // Act & Assert
-            Assert.IsTrue(appointment.IsGuest(guestUsername));
+            Assert.IsTrue(appointment.IsGuest(guestUserName));
         }
 
         [TestCase(nullValue)]

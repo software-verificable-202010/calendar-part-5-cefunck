@@ -11,7 +11,7 @@ namespace Calendar.Controllers
     public class AppointmentController
     {
         #region Constants
-        private const string emptyTitleMessage = "Debe ingresar un título";
+        private const string invalidTitleMessage = "Debe ingresar un título";
         private const string invalidEndTimeMessage = "Debe ingresar hora de fin válida";
         private const string invalidGuestsMessage = "Los siguientes invitados no son válidos:";
         private const string appointmentCollisionMessage = "Los siguientes invitados tienen un evento que colisiona:";
@@ -26,7 +26,7 @@ namespace Calendar.Controllers
         private DateTime candidateStart;
         private DateTime candidateEnd;
         private UserController userController;
-        private List<string> candidateGuestsUsernames = new List<string>();
+        private List<string> candidateGuestsUserNames = new List<string>();
         private readonly List<string> validationMessages = new List<string>();
         private readonly IAppointment sourceAppointment;
         private static List<IAppointment> calendarAppointments = new List<IAppointment>();
@@ -94,7 +94,7 @@ namespace Calendar.Controllers
             sourceAppointment.Description = candidateDescription;
             sourceAppointment.Start = candidateStart;
             sourceAppointment.End = candidateEnd;
-            sourceAppointment.AssignGuests(candidateGuestsUsernames);
+            sourceAppointment.AssignGuests(candidateGuestsUserNames);
         }
 
         public void RefreshCandidateData(string titleFieldText, string descriptionFieldText, List<string> guestsNamesInField, TimeSpan startTimeField, TimeSpan endTimeField)
@@ -103,7 +103,7 @@ namespace Calendar.Controllers
             candidateDescription = descriptionFieldText;
             candidateStart = sourceAppointment.Start.Date + startTimeField;
             candidateEnd = sourceAppointment.End.Date + endTimeField;
-            candidateGuestsUsernames = guestsNamesInField;
+            candidateGuestsUserNames = guestsNamesInField;
         }
 
         public bool IsOwnerInvited(List<string> guestsNamesInField)
@@ -113,7 +113,7 @@ namespace Calendar.Controllers
 
             if (isNotNullGuestsNamesList)
             {
-                string ownerName = sourceAppointment.OwnerUsername;
+                string ownerName = sourceAppointment.OwnerUserName;
                 isOwnerInvited = guestsNamesInField.Contains(ownerName);
             }
 
@@ -125,7 +125,7 @@ namespace Calendar.Controllers
             return hasOwnerPermissions & 
                 IsNotBlankTitle(candidateTitle) & 
                 IsValidEndTime() & 
-                AreValidGuests(candidateGuestsUsernames) & 
+                AreValidGuests(candidateGuestsUserNames) & 
                 !ExistingAppointmentCollision();
         }
 
@@ -143,7 +143,7 @@ namespace Calendar.Controllers
             if (isNotNullGuestNamesList)
             {
                 isGuestFieldEmpty = guestsNamesInField.Count == 0;
-                existsInvalidUsername = userController.ExistsInvalidUsername(guestsNamesInField);
+                existsInvalidUsername = userController.ExistsInvalidUserName(guestsNamesInField);
             }
 
             
@@ -152,8 +152,8 @@ namespace Calendar.Controllers
 
         public bool ExistingAppointmentCollision()
         {
-            bool hasAppointmentCollision = candidateGuestsUsernames
-                .Any(guestUsername => HasAppointmentCollision(guestUsername, sourceAppointment));
+            bool hasAppointmentCollision = candidateGuestsUserNames
+                .Any(guestUserName => HasAppointmentCollision(guestUserName, sourceAppointment));
 
             return hasAppointmentCollision;
         }
@@ -164,13 +164,13 @@ namespace Calendar.Controllers
 
             if (!IsNotBlankTitle(candidateTitle))
             {
-                validationMessages.Add(emptyTitleMessage);
+                validationMessages.Add(invalidTitleMessage);
             }
             if (!IsValidEndTime())
             {
                 validationMessages.Add(invalidEndTimeMessage);
             }
-            if (!AreValidGuests(candidateGuestsUsernames))
+            if (!AreValidGuests(candidateGuestsUserNames))
             {
                 validationMessages.Add(invalidGuestsMessage);
                 AddInvalidGuestNamesToValidationMessages();
@@ -185,7 +185,7 @@ namespace Calendar.Controllers
         public void AddCollisionedGuestNamesToValidationMessages()
         {
             const string nameFormat = "- {0}";
-            foreach (string candidateGuestUsername in candidateGuestsUsernames)
+            foreach (string candidateGuestUsername in candidateGuestsUserNames)
             {
                 bool isNotOwner = !sourceAppointment.IsOwner(candidateGuestUsername);
 
@@ -200,10 +200,10 @@ namespace Calendar.Controllers
         public void AddInvalidGuestNamesToValidationMessages()
         {
             const string nameFormat = "- {0}";
-            foreach (string name in candidateGuestsUsernames)
+            foreach (string name in candidateGuestsUserNames)
             {
-                userController.SourceUsername = name;
-                bool isOwnerUser = name == sourceAppointment.OwnerUsername;
+                userController.SourceUserName = name;
+                bool isOwnerUser = name == sourceAppointment.OwnerUserName;
                 bool isInvalidUsername = !userController.IsValid;
                 bool isInvalidGuest = isOwnerUser | isInvalidUsername;
                 if (isInvalidGuest)
@@ -253,9 +253,9 @@ namespace Calendar.Controllers
             return sourceAppointment.End;
         }
 
-        public List<string> GetSourceAppointmentGuestsUsernames()
+        public List<string> GetSourceAppointmentGuestsUserNames()
         {
-            return sourceAppointment.GuestsUsernames;
+            return sourceAppointment.GuestsUserNames;
         }
 
         public static List<IAppointment> GetAppointmentsWhereIsOwner(string userName)
@@ -305,20 +305,20 @@ namespace Calendar.Controllers
             }
         }
 
-        public bool HasAppointmentCollision(string guestUsername, IAppointment appointmentThatCouldCollide)
+        public bool HasAppointmentCollision(string guestUserName, IAppointment appointmentThatCouldCollide)
         {
-            bool isNotNullGuestUsername = guestUsername != null;
+            bool isNotNullGuestUsername = guestUserName != null;
             bool hasCollisionWithHisOwnAppointments = false;
             bool hasCollisionWithAppointmentsWichThisUserIsIvited = false;
 
             if (isNotNullGuestUsername)
             {
 
-                hasCollisionWithHisOwnAppointments = AppointmentController.GetAppointmentsWhereIsOwner(guestUsername)
+                hasCollisionWithHisOwnAppointments = AppointmentController.GetAppointmentsWhereIsOwner(guestUserName)
                     .Any(appointment => appointment
                     .IsCollidingWith(appointmentThatCouldCollide));
 
-                hasCollisionWithAppointmentsWichThisUserIsIvited = AppointmentController.GetAppointmentsWhereIsGuest(guestUsername)
+                hasCollisionWithAppointmentsWichThisUserIsIvited = AppointmentController.GetAppointmentsWhereIsGuest(guestUserName)
                     .Any(appointment => appointment
                     .IsCollidingWith(appointmentThatCouldCollide) & appointment != appointmentThatCouldCollide);
             }

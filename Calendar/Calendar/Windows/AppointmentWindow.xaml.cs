@@ -89,7 +89,7 @@ namespace Calendar.Windows
         
         private void RefreshForm()
         {
-            string currentUsername = sessionController.CurrentUsername;
+            string currentUsername = sessionController.CurrentUserName;
             sourceAppointmentController.RefreshPermissions(currentUsername);
 
             RefreshUIFields();
@@ -251,11 +251,11 @@ namespace Calendar.Windows
             const string guestNamesFormat = "{0}, {1}";
             bool isFirstIteration = true;
             string guestNames = guestNamesFieldPlaceHolder;
-            List<string> sourceAppointmentGuestsUsernames = sourceAppointmentController.GetSourceAppointmentGuestsUsernames();
+            List<string> sourceAppointmentGuestsUserNames = sourceAppointmentController.GetSourceAppointmentGuestsUserNames();
 
-            for (int i = 0; i < sourceAppointmentGuestsUsernames.Count; i++)
+            for (int i = 0; i < sourceAppointmentGuestsUserNames.Count; i++)
             {
-                string guestName = sourceAppointmentGuestsUsernames[i];
+                string guestName = sourceAppointmentGuestsUserNames[i];
                 if (isFirstIteration)
                 {
                     guestNames = guestName;
