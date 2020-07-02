@@ -18,7 +18,7 @@ This is the repository corresponding to the fourth part of the project of the co
 ### How to run it
 
   - Clone the project.
-  - Open the project with Visual Studio 2017 (or newer) and .NET Framework 4.6.1 (or newer).
+  - Open the project with Visual Studio 2017 **(if you use another Visual Studio, AxoCover will not work)** and .NET Framework 4.6.1
   - Run the proyect
   - **Login with usuario1 or usuario2 as username.**
   - **Close calendar to logout.**
