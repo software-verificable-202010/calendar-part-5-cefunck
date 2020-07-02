@@ -11,7 +11,7 @@ namespace Calendar.Controllers
 
 
         #region Fields
-        private static string currentUsername;
+        private string currentUsername;
         #endregion
 
 

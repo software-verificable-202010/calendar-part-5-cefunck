@@ -230,7 +230,7 @@ namespace Calendar.Windows
             }
         }
 
-        private List<string> GetCandidateGuestNames(string guestsFieldText)
+        private static List<string> GetCandidateGuestNames(string guestsFieldText)
         {
             List<string> candidateGuestNames = guestsFieldText.Split(',').ToList();
 
@@ -270,7 +270,7 @@ namespace Calendar.Windows
             return guestNames;
         }
 
-        private bool IsGuestNamesFieldStillPlaceHolder(string guestNamesFieldText)
+        private static bool IsGuestNamesFieldStillPlaceHolder(string guestNamesFieldText)
         {
             return guestNamesFieldText == guestNamesFieldPlaceHolder;
         }

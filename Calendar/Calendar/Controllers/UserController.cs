@@ -15,7 +15,7 @@ namespace Calendar.Controllers
 
         #region Fields
         private string sourceUserName;
-        private static readonly List<string> calendarUserNames = new List<string>()
+        private readonly List<string> calendarUserNames = new List<string>()
         {
             defaultUsername1,
             defaultUsername2
@@ -40,7 +40,7 @@ namespace Calendar.Controllers
         {
             get
             {
-                return calendarUserNames.Contains(sourceUserName);
+                return this.calendarUserNames.Contains(sourceUserName);
             }
         }
         #endregion
@@ -66,16 +66,18 @@ namespace Calendar.Controllers
         }
 
 
-        public bool ExistsInvalidUserName(List<string> UserNames)
+        public bool ExistsInvalidUserName(List<string> userNames)
         {
-            List<UserController> userControllers = UserNames
-                .Select(userName => new UserController(userName))
-                .ToList();
+            bool isNotNullUserNamesList = userNames != null;
+            bool existsInvalidUserName = false;
 
-            bool existsInvalidUserName = userControllers
-                .Any(userController => !userController.IsValid);
-
-            return existsInvalidUserName;
+            if (isNotNullUserNamesList)
+            {
+                List<string> validUserNames = this.GetValidUserNamesOf(userNames);
+                existsInvalidUserName = validUserNames.Count < userNames.Count;
+            }
+            
+            return isNotNullUserNamesList && existsInvalidUserName;
         }
         #endregion
     }

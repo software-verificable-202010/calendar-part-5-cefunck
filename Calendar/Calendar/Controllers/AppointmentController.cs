@@ -253,7 +253,7 @@ namespace Calendar.Controllers
             }
         }
 
-        public bool IsNotBlankTitle(string titleFieldText)
+        public static bool IsNotBlankTitle(string titleFieldText)
         {
             bool isNotNullTitle = titleFieldText != null;
             bool isNotBlankTitle = false;
@@ -320,7 +320,7 @@ namespace Calendar.Controllers
             }
         }
 
-        public bool HasAppointmentCollision(string guestUserName, IAppointment appointmentThatCouldCollide)
+        public static bool HasAppointmentCollision(string guestUserName, IAppointment appointmentThatCouldCollide)
         {
             bool isNotNullGuestUsername = guestUserName != null;
             bool hasCollisionWithHisOwnAppointments = false;
