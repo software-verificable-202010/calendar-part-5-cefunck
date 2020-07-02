@@ -129,9 +129,9 @@ namespace Calendar.Models
 
         public bool IsCollidingWith(IAppointment otherAppointment)
         {
-            if (otherAppointment is null)
+            if (otherAppointment == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(otherAppointment));
             }
 
             bool isThisStartingBeforeOtherEnds = this.start < otherAppointment.End;
