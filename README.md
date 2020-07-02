@@ -33,8 +33,8 @@ This is the repository corresponding to the fourth part of the project of the co
 ### Tech Stack
 
   - [Visual studio 2017]
-  - [.NET Framework 4.6.1]
-  - [NUnit 3.12.0]
+  - [.NET Framework v4.6.1]
+  - [NUnit v3.12.0]
   - [NUnit3TestAdapter v3.16.1]
   - [OpenCover v4.7.992]
   - [AxoCover v1.1.7.0]
