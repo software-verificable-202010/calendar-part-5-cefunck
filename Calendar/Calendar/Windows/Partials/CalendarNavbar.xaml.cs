@@ -146,7 +146,7 @@ namespace Calendar.Windows.Partials
         private static bool IsAppointmentOfDisplayedMonth(Appointment appointment)
         {
             int displayedMonth = DateUtilities.DisplayedDate.Month;
-            int appointmentMonth = appointment.Start.Month;
+            int appointmentMonth = appointment.StartTime.Month;
             bool areTheSameMonth = appointmentMonth == displayedMonth;
             return areTheSameMonth;
         }

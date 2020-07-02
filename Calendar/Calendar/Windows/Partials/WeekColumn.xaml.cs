@@ -308,7 +308,7 @@ namespace Calendar.Windows.Partials
 
         private static int GetAppointmentRowSpan(Appointment appointment) 
         {
-            double appointmentDurationInMinutes = (appointment.End - appointment.Start).TotalMinutes;
+            double appointmentDurationInMinutes = (appointment.EndTime - appointment.StartTime).TotalMinutes;
             int appointmentRowSpan = (int)Math.Ceiling(appointmentDurationInMinutes / minutesPerRow);
             return appointmentRowSpan;
         }
@@ -320,8 +320,8 @@ namespace Calendar.Windows.Partials
 
         private static int GetAppointmentRow(Appointment appointment) 
         {
-            TimeSpan startTimeOfAppointment = appointment.Start.TimeOfDay;
-            TimeSpan startTimeOfDay = appointment.Start.Date.TimeOfDay;
+            TimeSpan startTimeOfAppointment = appointment.StartTime.TimeOfDay;
+            TimeSpan startTimeOfDay = appointment.StartTime.Date.TimeOfDay;
             int appointmentStartTimeInMinutes = (int)(startTimeOfAppointment - startTimeOfDay).TotalMinutes;
             int appointmentRow = (int)Math.Floor((double)appointmentStartTimeInMinutes / minutesPerRow) + rowOffSetByTitleRows;
             return appointmentRow;

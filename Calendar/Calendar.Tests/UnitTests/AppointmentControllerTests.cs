@@ -192,8 +192,8 @@ namespace Calendar.Test.UnitTests
 
             mockAppointment.SetupSet(appointment => appointment.Title = It.IsAny<string>());
             mockAppointment.SetupSet(appointment => appointment.Description = It.IsAny<string>());
-            mockAppointment.SetupSet(appointment => appointment.Start = It.IsAny<DateTime>());
-            mockAppointment.SetupSet(appointment => appointment.End = It.IsAny<DateTime>());
+            mockAppointment.SetupSet(appointment => appointment.StartTime = It.IsAny<DateTime>());
+            mockAppointment.SetupSet(appointment => appointment.EndTime = It.IsAny<DateTime>());
             mockAppointment.Setup(appointment => appointment.AssignGuests(It.IsAny<List<string>>()));
             appointmentController.RefreshCandidateData(aTitle, aDescription, aGuestsNamesList, aStart, aEnd);
 

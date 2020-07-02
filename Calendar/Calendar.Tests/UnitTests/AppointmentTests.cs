@@ -73,10 +73,10 @@ namespace Calendar.Test
         {
             // Arrange
             DateTime newStart = DateTime.Now;
-            appointment.Start = newStart;
+            appointment.StartTime = newStart;
 
             // Act & Assert
-            Assert.AreEqual(newStart, appointment.Start);
+            Assert.AreEqual(newStart, appointment.StartTime);
         }
 
         [Test]
@@ -84,10 +84,10 @@ namespace Calendar.Test
         {
             // Arrange
             DateTime end = DateTime.Now;
-            appointment.End = end;
+            appointment.EndTime = end;
 
             // Act & Assert
-            Assert.AreEqual(end, appointment.End);
+            Assert.AreEqual(end, appointment.EndTime);
         }
 
         [Test]
@@ -166,12 +166,12 @@ namespace Calendar.Test
             DateTime mockAppointmentStart = DateTime.Now.Date + new TimeSpan(mockAppointmentStartHour, mockAppointmentStartMinutes, mockAppointmentStartSeconds);
             DateTime mockAppointmentEnd = mockAppointmentStart.AddHours(mockAppointmentHoursDuration);
 
-            appointment.Start = appointmentStart;
-            appointment.End = appointmentEnd;
+            appointment.StartTime = appointmentStart;
+            appointment.EndTime = appointmentEnd;
 
             Mock<IAppointment> mockAppointmentThatColliding = new Mock<IAppointment>();
-            mockAppointmentThatColliding.SetupGet(appointment => appointment.Start).Returns(mockAppointmentStart);
-            mockAppointmentThatColliding.SetupGet(appointment => appointment.End).Returns(mockAppointmentEnd);
+            mockAppointmentThatColliding.SetupGet(appointment => appointment.StartTime).Returns(mockAppointmentStart);
+            mockAppointmentThatColliding.SetupGet(appointment => appointment.EndTime).Returns(mockAppointmentEnd);
 
             // Act & Assert
             Assert.IsTrue(appointment.IsCollidingWith(mockAppointmentThatColliding.Object));
@@ -197,12 +197,12 @@ namespace Calendar.Test
             DateTime mockAppointmentStart = DateTime.Now.Date + new TimeSpan(mockAppointmentStartHour, mockAppointmentStartMinutes, mockAppointmentStartSeconds);
             DateTime mockAppointmentEnd = mockAppointmentStart.AddHours(mockAppointmentHoursDuration);
 
-            appointment.Start = appointmentStart;
-            appointment.End = appointmentEnd;
+            appointment.StartTime = appointmentStart;
+            appointment.EndTime = appointmentEnd;
 
             Mock<IAppointment> mockAppointmentThatNotColliding = new Mock<IAppointment>();
-            mockAppointmentThatNotColliding.SetupGet(appointment => appointment.Start).Returns(mockAppointmentStart);
-            mockAppointmentThatNotColliding.SetupGet(appointment => appointment.End).Returns(mockAppointmentEnd);
+            mockAppointmentThatNotColliding.SetupGet(appointment => appointment.StartTime).Returns(mockAppointmentStart);
+            mockAppointmentThatNotColliding.SetupGet(appointment => appointment.EndTime).Returns(mockAppointmentEnd);
 
             // Act & Assert
             Assert.IsFalse(appointment.IsCollidingWith(mockAppointmentThatNotColliding.Object));

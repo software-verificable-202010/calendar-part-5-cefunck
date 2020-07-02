@@ -209,7 +209,7 @@ namespace Calendar.Windows.Partials
 
         private static bool IsAppointmentOfDay(Appointment appointment, MonthDayElement dayElement) 
         {
-            bool areTheSameDate = appointment.Start.Date == dayElement.Date.Date;
+            bool areTheSameDate = appointment.StartTime.Date == dayElement.Date.Date;
             return areTheSameDate;
         }
 

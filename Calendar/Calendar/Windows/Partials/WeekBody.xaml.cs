@@ -131,7 +131,7 @@ namespace Calendar.Windows.Partials
 
         private static bool IsAppointmentOfDay(IAppointment appointment, WeekColumn dayColumnElement)
         {
-            bool haveTheSameDate = appointment.Start.Date == dayColumnElement.Date.Date;
+            bool haveTheSameDate = appointment.StartTime.Date == dayColumnElement.Date.Date;
             return haveTheSameDate;
         }
 

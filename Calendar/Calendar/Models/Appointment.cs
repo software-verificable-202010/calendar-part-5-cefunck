@@ -18,8 +18,8 @@ namespace Calendar.Models
         private string title;
         private string description;
         private bool isInGarbage;
-        private DateTime start;
-        private DateTime end;
+        private DateTime startTime;
+        private DateTime endTime;
         private string ownerUserName;
         private readonly List<string> guestsUserNames;
         #endregion
@@ -50,27 +50,27 @@ namespace Calendar.Models
             }
         }
 
-        public DateTime Start
+        public DateTime StartTime
         {
             get 
             {
-                return start; 
+                return startTime; 
             }
             set 
             { 
-                start = value;
+                startTime = value;
             }
         }
 
-        public DateTime End
+        public DateTime EndTime
         {
             get 
             { 
-                return end;
+                return endTime;
             }
             set 
             { 
-                end = value;
+                endTime = value;
             }
         }
 
@@ -113,8 +113,8 @@ namespace Calendar.Models
         {
             title = empty;
             description = empty;
-            start = startTime;
-            end = start.AddMinutes(defaultDurationInMinutes);
+            this.startTime = startTime;
+            endTime = this.startTime.AddMinutes(defaultDurationInMinutes);
             this.ownerUserName = ownerUserName;
             guestsUserNames = new List<string>();
             isInGarbage = false;
@@ -134,8 +134,8 @@ namespace Calendar.Models
                 throw new ArgumentNullException(nameof(otherAppointment));
             }
 
-            bool isThisStartingBeforeOtherEnds = this.start < otherAppointment.End;
-            bool isThisEndingAfterOtherStarts = otherAppointment.Start < this.end;
+            bool isThisStartingBeforeOtherEnds = this.startTime < otherAppointment.EndTime;
+            bool isThisEndingAfterOtherStarts = otherAppointment.StartTime < this.endTime;
             bool isColliding = isThisStartingBeforeOtherEnds & isThisEndingAfterOtherStarts;
             return isColliding;
         }

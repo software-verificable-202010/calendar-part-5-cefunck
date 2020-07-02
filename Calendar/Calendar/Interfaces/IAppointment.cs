@@ -22,13 +22,13 @@ namespace Calendar.Interfaces
             set;
         }
 
-        DateTime Start
+        DateTime StartTime
         {
             get;
             set;
         }
 
-        DateTime End
+        DateTime EndTime
         {
             get;
             set;

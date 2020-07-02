@@ -62,7 +62,7 @@ namespace Calendar.Controllers
         {
             get
             {
-                return sourceAppointment.Start;
+                return sourceAppointment.StartTime;
             }
         }
 
@@ -70,7 +70,7 @@ namespace Calendar.Controllers
         {
             get
             {
-                return sourceAppointment.End;
+                return sourceAppointment.EndTime;
             }
         }
 
@@ -145,8 +145,8 @@ namespace Calendar.Controllers
         {
             sourceAppointment.Title = candidateTitle;
             sourceAppointment.Description = candidateDescription;
-            sourceAppointment.Start = candidateStart;
-            sourceAppointment.End = candidateEnd;
+            sourceAppointment.StartTime = candidateStart;
+            sourceAppointment.EndTime = candidateEnd;
             sourceAppointment.AssignGuests(candidateGuestsUserNames);
         }
 
@@ -154,8 +154,8 @@ namespace Calendar.Controllers
         {
             candidateTitle = titleFieldText;
             candidateDescription = descriptionFieldText;
-            candidateStart = sourceAppointment.Start.Date + startTimeField;
-            candidateEnd = sourceAppointment.End.Date + endTimeField;
+            candidateStart = sourceAppointment.StartTime.Date + startTimeField;
+            candidateEnd = sourceAppointment.EndTime.Date + endTimeField;
             candidateGuestsUserNames = guestsNamesInField;
         }
 
