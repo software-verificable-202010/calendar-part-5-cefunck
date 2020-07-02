@@ -1,6 +1,6 @@
-# calendar-part-3-cefunck
+# calendar-part-4-cefunck
 
-This is the repository corresponding to the third part of the project of the course "Calidad y verificación de software".
+This is the repository corresponding to the fourth part of the project of the course "Calidad y verificación de software".
 
 ### Current Features
 
@@ -18,7 +18,7 @@ This is the repository corresponding to the third part of the project of the cou
 ### How to run it
 
   - Clone the project.
-  - Open the project with Visual Studio 2019 (or newer) and .NET Framework 4.7.2 (or newer).
+  - Open the project with Visual Studio 2017 (or newer) and .NET Framework 4.6.1 (or newer).
   - Run the proyect
   - **Login with usuario1 or usuario2 as username.**
   - **Close calendar to logout.**
@@ -32,5 +32,10 @@ This is the repository corresponding to the third part of the project of the cou
 
 ### Tech Stack
 
-  - [Visual studio 2019]
-  - [.NET Framework 4.7.2]
+  - [Visual studio 2017]
+  - [.NET Framework 4.6.1]
+  - [NUnit 3.12.0]
+  - [NUnit3TestAdapter v3.16.1]
+  - [OpenCover v4.7.992]
+  - [AxoCover v1.1.7.0]
+  - [Moq v4.14.15]
