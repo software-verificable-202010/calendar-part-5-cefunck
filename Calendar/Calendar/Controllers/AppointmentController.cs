@@ -42,6 +42,46 @@ namespace Calendar.Controllers
             }
         }
 
+        public string SourceAppointmentTitle
+        {
+            get
+            {
+                return sourceAppointment.Title;
+            }
+        }
+
+        public string SourceAppointmentDescription
+        {
+            get
+            {
+                return sourceAppointment.Description;
+            }
+        }
+
+        public DateTime SourceAppointmentStart
+        {
+            get
+            {
+                return sourceAppointment.Start;
+            }
+        }
+
+        public DateTime SourceAppointmentEnd
+        {
+            get
+            {
+                return sourceAppointment.End;
+            }
+        }
+
+        public List<string> SourceAppointmentGuestsUserNames
+        {
+            get
+            {
+                return sourceAppointment.GuestsUserNames;
+            }
+        }
+
         public IAppointment SourceAppointment 
         { 
             get 
@@ -231,31 +271,6 @@ namespace Calendar.Controllers
         {
             bool isEndAfterStart = candidateEnd > candidateStart;
             return isEndAfterStart;
-        }
-
-        public string GetSourceAppointmentTitle() 
-        {
-            return sourceAppointment.Title;
-        }
-
-        public string GetSourceAppointmentDescription() 
-        {
-            return sourceAppointment.Description;
-        }
-
-        public DateTime GetSourceAppointmentStart() 
-        {
-            return sourceAppointment.Start;
-        }
-
-        public DateTime GetSourceAppointmentEnd() 
-        {
-            return sourceAppointment.End;
-        }
-
-        public List<string> GetSourceAppointmentGuestsUserNames()
-        {
-            return sourceAppointment.GuestsUserNames;
         }
 
         public static List<IAppointment> GetAppointmentsWhereIsOwner(string userName)

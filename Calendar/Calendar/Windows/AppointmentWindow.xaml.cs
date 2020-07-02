@@ -103,13 +103,13 @@ namespace Calendar.Windows
 
         private void RefreshUIFields()
         {
-            string title = sourceAppointmentController.GetSourceAppointmentTitle();
-            string description = sourceAppointmentController.GetSourceAppointmentDescription();
+            string title = sourceAppointmentController.SourceAppointmentTitle;
+            string description = sourceAppointmentController.SourceAppointmentDescription;
             string guestNames = GetAppointmentGuestNamesInFieldFormat();
-            int startHour = sourceAppointmentController.GetSourceAppointmentStart().Hour;
-            int startMinute = sourceAppointmentController.GetSourceAppointmentStart().Minute;
-            int endHour = sourceAppointmentController.GetSourceAppointmentEnd().Hour;
-            int endMinute = sourceAppointmentController.GetSourceAppointmentEnd().Minute;
+            int startHour = sourceAppointmentController.SourceAppointmentStart.Hour;
+            int startMinute = sourceAppointmentController.SourceAppointmentStart.Minute;
+            int endHour = sourceAppointmentController.SourceAppointmentEnd.Hour;
+            int endMinute = sourceAppointmentController.SourceAppointmentEnd.Minute;
 
             textBoxTitle.Text = title;
             textBoxDescription.Text = description;
@@ -251,7 +251,7 @@ namespace Calendar.Windows
             const string guestNamesFormat = "{0}, {1}";
             bool isFirstIteration = true;
             string guestNames = guestNamesFieldPlaceHolder;
-            List<string> sourceAppointmentGuestsUserNames = sourceAppointmentController.GetSourceAppointmentGuestsUserNames();
+            List<string> sourceAppointmentGuestsUserNames = sourceAppointmentController.SourceAppointmentGuestsUserNames;
 
             for (int i = 0; i < sourceAppointmentGuestsUserNames.Count; i++)
             {
