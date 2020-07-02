@@ -355,23 +355,6 @@ namespace Calendar.Controllers
             return isNotNullGuestUsername && (hasCollisionWithHisOwnAppointments || hasCollisionWithAppointmentsWichThisUserIsIvited);
         }
 
-        private bool IsValidGuest(string candidateGuestUsername)
-        {
-            UserController candidateGuestUserController = new UserController(candidateGuestUsername);
-            bool isNotNullUser = candidateGuestUserController != null;
-            bool isNotOwner = false;
-            bool hasNotAppointmentCollision = false;
-
-            if (isNotNullUser)
-            {
-                isNotOwner = !sourceAppointment.IsOwner(candidateGuestUsername);
-                hasNotAppointmentCollision = !HasAppointmentCollision(candidateGuestUsername, sourceAppointment);
-            }
-
-            return isNotNullUser & isNotOwner & hasNotAppointmentCollision;
-
-        }
-
         private void ClearOldValidationMessages()
         {
             validationMessages.Clear();
