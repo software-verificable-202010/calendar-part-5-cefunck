@@ -123,9 +123,22 @@ namespace Calendar.Controllers
 
         public bool IsEditingExistingAppointment()
         {
-            string sourceAppointmentTitle = sourceAppointment.Title.Trim();
-            bool isNotBlankTitle = sourceAppointmentTitle.Length != 0;
-            return isNotBlankTitle;
+            bool isNotNullSourceAppointment = sourceAppointment != null;
+            bool isNotNullSourceAppointmentTitle = false;
+            bool isNotBlankTitle = false;
+
+            if (isNotNullSourceAppointment)
+            {
+                isNotNullSourceAppointmentTitle = sourceAppointment.Title != null;
+            }
+
+            if (isNotNullSourceAppointmentTitle)
+            {
+                string sourceAppointmentTitle = sourceAppointment.Title.Trim();
+                isNotBlankTitle = sourceAppointmentTitle.Length != 0;
+            }
+            
+            return isNotNullSourceAppointmentTitle && isNotBlankTitle;
         }
 
         public void SaveAppointmentData()
@@ -146,26 +159,26 @@ namespace Calendar.Controllers
             candidateGuestsUserNames = guestsNamesInField;
         }
 
-        public bool IsOwnerInvited(List<string> guestsNamesInField)
+        public bool IsOwnerInvited()
         {
-            bool isNotNullGuestsNamesList = guestsNamesInField != null;
+            bool isNotNullGuestUserNames = candidateGuestsUserNames != null;
+            string ownerName = sourceAppointment.OwnerUserName;
             bool isOwnerInvited = false;
 
-            if (isNotNullGuestsNamesList)
+            if (isNotNullGuestUserNames)
             {
-                string ownerName = sourceAppointment.OwnerUserName;
-                isOwnerInvited = guestsNamesInField.Contains(ownerName);
+                isOwnerInvited = candidateGuestsUserNames.Contains(ownerName);
             }
 
-            return isNotNullGuestsNamesList & isOwnerInvited;
+            return isNotNullGuestUserNames && isOwnerInvited;
         }
 
         public bool CanSaveSourceAppointment()
         {
             return hasOwnerPermissions & 
-                IsNotBlankTitle(candidateTitle) & 
+                IsNotBlankTitle() & 
                 IsValidEndTime() & 
-                AreValidGuests(candidateGuestsUserNames) & 
+                AreValidGuests() & 
                 !ExistingAppointmentCollision();
         }
 
@@ -174,20 +187,22 @@ namespace Calendar.Controllers
             sourceAppointment.IsInGarbage = true;
         }
 
-        public bool AreValidGuests(List<string> guestsNamesInField)
+        public bool AreValidGuests()
         {
-            bool isNotNullGuestNamesList = guestsNamesInField != null;
+            bool isNotNullCandidateGuestsUserNames = candidateGuestsUserNames != null;
             bool isGuestFieldEmpty = true;
             bool existsInvalidUsername = false;
+            bool areValidGuests = false;
 
-            if (isNotNullGuestNamesList)
+            if (isNotNullCandidateGuestsUserNames)
             {
-                isGuestFieldEmpty = guestsNamesInField.Count == 0;
-                existsInvalidUsername = userController.ExistsInvalidUserName(guestsNamesInField);
+                isGuestFieldEmpty = candidateGuestsUserNames.Count == 0;
+                existsInvalidUsername = userController.ExistsInvalidUserName(candidateGuestsUserNames);
+                areValidGuests = (isGuestFieldEmpty | (!existsInvalidUsername & !IsOwnerInvited()));
             }
-
             
-            return (isGuestFieldEmpty | (!existsInvalidUsername & !IsOwnerInvited(guestsNamesInField)));
+
+            return isNotNullCandidateGuestsUserNames & areValidGuests;
         }
 
         public bool ExistingAppointmentCollision()
@@ -202,7 +217,7 @@ namespace Calendar.Controllers
         {
             ClearOldValidationMessages();
 
-            if (!IsNotBlankTitle(candidateTitle))
+            if (!IsNotBlankTitle())
             {
                 validationMessages.Add(invalidTitleMessage);
             }
@@ -210,7 +225,7 @@ namespace Calendar.Controllers
             {
                 validationMessages.Add(invalidEndTimeMessage);
             }
-            if (!AreValidGuests(candidateGuestsUserNames))
+            if (!AreValidGuests())
             {
                 validationMessages.Add(invalidGuestsMessage);
                 AddInvalidGuestNamesToValidationMessages();
@@ -244,7 +259,7 @@ namespace Calendar.Controllers
             {
                 userController.SourceUserName = name;
                 bool isOwnerUser = name == sourceAppointment.OwnerUserName;
-                bool isInvalidUsername = !userController.IsValid;
+                bool isInvalidUsername = !userController.IsValidUserName;
                 bool isInvalidGuest = isOwnerUser | isInvalidUsername;
                 if (isInvalidGuest)
                 {
@@ -253,18 +268,17 @@ namespace Calendar.Controllers
             }
         }
 
-        public static bool IsNotBlankTitle(string titleFieldText)
+        public bool IsNotBlankTitle()
         {
-            bool isNotNullTitle = titleFieldText != null;
+            bool isNotNullCandidateTitle = candidateTitle != null;
             bool isNotBlankTitle = false;
 
-            if (isNotNullTitle)
+            if (isNotNullCandidateTitle)
             {
-                string titleCandidate = titleFieldText.Trim();
-                isNotBlankTitle = titleCandidate.Length != 0;
+                isNotBlankTitle = candidateTitle.Trim().Length != 0;
             }
             
-            return isNotNullTitle & isNotBlankTitle;
+            return isNotNullCandidateTitle && isNotBlankTitle;
         }
 
         public bool IsValidEndTime()

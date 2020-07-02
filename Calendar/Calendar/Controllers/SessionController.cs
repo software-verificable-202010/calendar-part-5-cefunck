@@ -39,7 +39,12 @@ namespace Calendar.Controllers
 
         public void LogOn(UserController userController)
         {
-            if (userController.IsValid)
+            if (userController == null)
+            {
+                throw new System.ArgumentNullException(nameof(userController));
+            }
+
+            if (userController.IsValidUserName)
             {
                 currentUsername = userController.SourceUserName;
             }

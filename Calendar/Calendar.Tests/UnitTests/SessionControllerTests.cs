@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using Calendar.Controllers;
 using Moq;
+using System;
 
 namespace Calendar.Tests
 {
@@ -71,7 +72,6 @@ namespace Calendar.Tests
             Assert.IsFalse(sessionController.IsSessionLogoned());
         }
 
-        [TestCase(nullValue)]
         [TestCase(empty)]
         [TestCase(aSpace)]
         [TestCase(moreThanOneSpace)]
@@ -80,7 +80,7 @@ namespace Calendar.Tests
         {
             // Arrange
             mockUserController
-                .SetupGet(userController => userController.IsValid)
+                .SetupGet(userController => userController.IsValidUserName)
                 .Returns(false);
 
             // Act
@@ -91,11 +91,21 @@ namespace Calendar.Tests
         }
 
         [Test]
+        public void LogOn_NullUserController_ThrowArgumentNullException()
+        {
+            // Arrange
+            UserController nullUserController = null;
+
+            // Act & Assert
+            Assert.That(() => sessionController.LogOn(nullUserController), Throws.Exception.TypeOf<ArgumentNullException>());
+        }
+
+        [Test]
         public void LogOn_ValidUsername_CurrentUsernameIs()
         {
             // Arrange
             mockUserController
-                .SetupGet(userController => userController.IsValid)
+                .SetupGet(userController => userController.IsValidUserName)
                 .Returns(true);
 
             mockUserController

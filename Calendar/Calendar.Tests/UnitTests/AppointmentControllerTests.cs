@@ -155,6 +155,7 @@ namespace Calendar.Test.UnitTests
             Assert.IsTrue(appointmentController.HasOwnerPermissions);
         }
 
+        [TestCase(nullValue)]
         [TestCase(empty)]
         [TestCase(aSpace)]
         [TestCase(moreThanOneSpace)]
@@ -230,6 +231,7 @@ namespace Calendar.Test.UnitTests
             });
         }
 
+        [TestCase(nullValue)]
         [TestCase(empty)]
         [TestCase(aSpace)]
         [TestCase(moreThanOneSpace)]
@@ -243,23 +245,28 @@ namespace Calendar.Test.UnitTests
             };
 
             // Act & Assert
-            Assert.IsFalse(appointmentController.IsOwnerInvited(guestsList));
+            Assert.IsFalse(appointmentController.IsOwnerInvited());
         }
 
         [Test]
         public void IsOwnerInvited_OwnerUsername_ReturnsTrue()
         {
             // Arrange
+            TimeSpan aStart = new TimeSpan(12, 00, 00);
+            TimeSpan aEnd = new TimeSpan(12, 01, 00);
             List<string> guestsList = new List<string>()
             {
                 ownerUsername
             };
+
+            appointmentController.RefreshCandidateData(aTitle, aDescription, guestsList, aStart, aEnd);
+
             mockAppointment
                 .SetupGet(appointment => appointment.OwnerUserName)
                 .Returns(ownerUsername);
 
             // Act & Assert
-            Assert.IsTrue(appointmentController.IsOwnerInvited(guestsList));
+            Assert.IsTrue(appointmentController.IsOwnerInvited());
         }
 
         [Test]
@@ -278,7 +285,7 @@ namespace Calendar.Test.UnitTests
             Assert.IsFalse(appointmentController.CanSaveSourceAppointment());
         }
 
-        [TestCase(null)]
+        [TestCase(nullValue)]
         [TestCase(empty)]
         [TestCase(aSpace)]
         [TestCase(moreThanOneSpace)]
@@ -384,12 +391,6 @@ namespace Calendar.Test.UnitTests
             // Assert
             mockAppointment.VerifySet(appointment => appointment.IsInGarbage = true);
         }
-
-        //[Test]
-        //public void AreValidGuests__()
-       // {
-
-//        }
         #endregion
     }
 }

@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using Calendar.Controllers;
 using System.Collections.Generic;
+using System;
 
 namespace Calendar.Tests.UnitTests
 {
@@ -55,7 +56,7 @@ namespace Calendar.Tests.UnitTests
             userController.SourceUserName = validUserName;
 
             // Act & Assert
-            Assert.IsTrue(userController.IsValid);
+            Assert.IsTrue(userController.IsValidUserName);
         }
 
         [TestCase(nullValue)]
@@ -69,7 +70,7 @@ namespace Calendar.Tests.UnitTests
             userController.SourceUserName = invalidUsername;
 
             // Act & Assert
-            Assert.IsFalse(userController.IsValid);
+            Assert.IsFalse(userController.IsValidUserName);
         }
 
         [Test]
@@ -105,6 +106,16 @@ namespace Calendar.Tests.UnitTests
             };
 
             Assert.IsFalse(userController.ExistsInvalidUserName(UserNames));
+        }
+
+        [Test]
+        public void ExistsInvalidUsername_NullUserNamesList_ReturnsFalse()
+        {
+            // Arrange
+            List<string> nullUserNames = null;
+
+            // Act & Assert
+            Assert.That(() => userController.ExistsInvalidUserName(nullUserNames), Throws.Exception.TypeOf<ArgumentNullException>());
         }
 
         [Test]

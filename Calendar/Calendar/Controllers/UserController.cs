@@ -36,7 +36,7 @@ namespace Calendar.Controllers
             }
         }
 
-        public virtual bool IsValid
+        public virtual bool IsValidUserName
         {
             get
             {
@@ -68,16 +68,15 @@ namespace Calendar.Controllers
 
         public bool ExistsInvalidUserName(List<string> userNames)
         {
-            bool isNotNullUserNamesList = userNames != null;
-            bool existsInvalidUserName = false;
-
-            if (isNotNullUserNamesList)
+            if (userNames == null)
             {
-                List<string> validUserNames = this.GetValidUserNamesOf(userNames);
-                existsInvalidUserName = validUserNames.Count < userNames.Count;
+                throw new System.ArgumentNullException(nameof(userNames));
             }
+
+            List<string> validUserNames = this.GetValidUserNamesOf(userNames);
+            bool existsInvalidUserName = validUserNames.Count < userNames.Count;
             
-            return isNotNullUserNamesList && existsInvalidUserName;
+            return existsInvalidUserName;
         }
         #endregion
     }
