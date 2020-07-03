@@ -8,12 +8,12 @@ namespace Calendar.Tests
     class SessionControllerTests
     {
         #region Constants
-        const string nullValue = null;
-        const string empty = "";
-        const string aSpace = " ";
-        const string moreThanOneSpace = "   ";
-        const string anInvalidUserName = "an invalid username";
-        const string aValidUserName = "a valid username";
+        private const string nullValue = null;
+        private const string empty = "";
+        private const string aSpace = " ";
+        private const string moreThanOneSpace = "   ";
+        private const string anInvalidUserName = "an invalid username";
+        private const string aValidUserName = "a valid username";
         #endregion
 
 
@@ -43,32 +43,23 @@ namespace Calendar.Tests
         }
 
         [Test]
-        public void CurrentUser_SomeCurrentUser_ReturnsSameCurrentUser()
+        public void CurrentUserName_SomeCurrentUserName_ReturnsSameCurrentUserName()
         {
-            
             sessionController.CurrentUserName = aValidUserName;
-
-            
             Assert.AreEqual(aValidUserName, sessionController.CurrentUserName);
         }
 
         [Test]
         public void IsSessionLogoned_ValidCurrentUser_ReturnsTrue()
         {
-            
             sessionController.CurrentUserName = aValidUserName;
-
-            
             Assert.IsTrue(sessionController.IsSessionLogoned());
         }
 
         [Test]
         public void IsSessionLogoned_NullCurrentUser_ReturnsFalse()
         {
-            
             sessionController.CurrentUserName = null;
-
-            
             Assert.IsFalse(sessionController.IsSessionLogoned());
         }
 
@@ -78,31 +69,28 @@ namespace Calendar.Tests
         [TestCase(anInvalidUserName)]
         public void LogOn_InvalidUserName_CurrentUserNameIsStillNull(string invalidUserName)
         {
-            
             mockUserController
                 .SetupGet(userController => userController.IsValidUserName)
                 .Returns(false);
 
-            
             sessionController.LogOn(mockUserController.Object);
 
-            Assert.AreEqual(nullValue, sessionController.CurrentUserName);
+            Assert.IsFalse(sessionController.IsSessionLogoned());
         }
 
         [Test]
         public void LogOn_NullUserController_ThrowsArgumentNullException()
         {
-            
             UserController nullUserController = null;
 
-            
-            Assert.That(() => sessionController.LogOn(nullUserController), Throws.Exception.TypeOf<ArgumentNullException>());
+            Assert.That(
+                () => sessionController.LogOn(nullUserController),
+                Throws.Exception.TypeOf<ArgumentNullException>());
         }
 
         [Test]
         public void LogOn_ValidUserName_CurrentUserNameIs()
         {
-            
             mockUserController
                 .SetupGet(userController => userController.IsValidUserName)
                 .Returns(true);
@@ -111,7 +99,6 @@ namespace Calendar.Tests
                 .SetupGet(userController => userController.SourceUserName)
                 .Returns(aValidUserName);
 
-            
             sessionController.LogOn(mockUserController.Object);
 
             Assert.AreEqual(aValidUserName, sessionController.CurrentUserName);

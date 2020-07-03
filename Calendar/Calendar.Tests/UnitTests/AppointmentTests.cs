@@ -10,20 +10,20 @@ namespace Calendar.Test
     public class AppointmentTests
     {
         #region Constants
-        const string nullValue = null;
-        const string empty = "";
-        const string aSpace = " ";
-        const string moreThanOneSpace = "    ";
-        const string validUserNameThatHasNotPermissions = "a user name that has not permissions";
-        const string validUserNameThatIsNotOwner = "a user name that is not owner";
-        const string validUserNameThatIsNotGuest = "a user name that is not guest";
+        private const string nullUserName = null;
+        private const string empty = "";
+        private const string aSpace = " ";
+        private const string moreThanOneSpace = "    ";
+        private const string validUserNameThatHasNotPermissions = "a user name that has not permissions";
+        private const string validUserNameThatIsNotOwner = "a user name that is not owner";
+        private const string validUserNameThatIsNotGuest = "a user name that is not guest";
         #endregion
 
 
         #region Fields
         private Appointment appointment;
-        private string aOwnerName;
-        private DateTime aStart;
+        private readonly string aOwnerName = It.IsAny<string>();
+        private readonly DateTime aDate = It.IsAny<DateTime>();
         #endregion
 
 
@@ -35,9 +35,7 @@ namespace Calendar.Test
         [SetUp]
         public void Setup()
         {
-            aStart = It.IsAny<DateTime>();
-            aOwnerName = It.IsAny<string>();
-            appointment = new Appointment(aStart, aOwnerName);
+            appointment = new Appointment(aDate, aOwnerName);
         }
 
         [TearDown]
@@ -49,79 +47,57 @@ namespace Calendar.Test
         [Test]
         public void Title_SomeTitle_ReturnsSameTitle()
         {
-            
             const string aTitle = "a title";
-            appointment.Title = aTitle;
-
-            
+            appointment.Title = aTitle;   
             Assert.AreEqual(aTitle, appointment.Title);
         }
 
         [Test]
         public void Description_SomeDescription_ReturnsSameDescription()
         {
-            
             const string aDescription = "a descrption";
             appointment.Description = aDescription;
-
-            
             Assert.AreEqual(aDescription, appointment.Description);
         }
 
         [Test]
-        public void Start_SomeStart_ReturnsSameStart()
+        public void StartTime_SomeStart_ReturnsSameStart()
         {
-            
-            DateTime newStart = DateTime.Now;
-            appointment.StartTime = newStart;
-
-            
-            Assert.AreEqual(newStart, appointment.StartTime);
+            appointment.StartTime = aDate;
+            Assert.AreEqual(aDate, appointment.StartTime);
         }
 
         [Test]
-        public void End_SomeEnd_ReturnsSameEnd()
+        public void EndTime_SomeEnd_ReturnsSameEnd()
         {
-            
-            DateTime end = DateTime.Now;
-            appointment.EndTime = end;
-
-            
-            Assert.AreEqual(end, appointment.EndTime);
+            appointment.EndTime = aDate;
+            Assert.AreEqual(aDate, appointment.EndTime);
         }
 
         [Test]
-        public void IsInGarbage_DefaultValue_ReturnsDefaultValue()
+        public void IsInGarbage_DefaultValue_ReturnsFalseAsDefaultValue()
         {
-            
             Assert.IsFalse(appointment.IsInGarbage);
         }
 
         [Test]
         public void IsInGarbage_SomeValue_ReturnsSameValue()
         {
-            
-            appointment.IsInGarbage = true;
-
-            
+            appointment.IsInGarbage = true;    
             Assert.IsTrue(appointment.IsInGarbage);
         }
 
         [Test]
-        public void Owner_SomeAppointmentOwner_ReturnsSameAppointmentOwner()
+        public void OwnerUserName_SomeAppointmentOwner_ReturnsSameAppointmentOwner()
         {
-            
             const string aNewOwnerUserName = "a new owner username";
             appointment.OwnerUserName = aNewOwnerUserName;
-
-            
             Assert.AreEqual(aNewOwnerUserName, appointment.OwnerUserName);
         }
 
         [Test]
-        public void Guests_SomeAppointmentGuests_ReturnsSameAppointmentGuests()
+        public void GuestsUserNames_SomeAppointmentGuests_ReturnsSameAppointmentGuests()
         {
-            
             const string aGuestUserName = "a guest name";
             const string otherGuestUserName = "other guest username";
 
@@ -130,50 +106,46 @@ namespace Calendar.Test
                 aGuestUserName,
                 otherGuestUserName
             };
+
             appointment.AssignGuests(aGuestList);
 
-            
             Assert.AreEqual(aGuestList, appointment.GuestsUserNames);
         }
 
         [Test]
         public void IsCollidingWith_NullAppointment_ThrowsArgumentNullException()
         {
-            
             IAppointment nullAppointment = null;
 
-            
-            Assert.That(() => appointment.IsCollidingWith(nullAppointment), Throws.Exception.TypeOf<ArgumentNullException>());
+            Assert.That(
+                () => appointment.IsCollidingWith(nullAppointment),
+                Throws.Exception.TypeOf<ArgumentNullException>());
         }
 
         [Test]
         public void IsCollidingWith_AppointmentThatColliding_ReturnsTrue()
         {
-            
-            const int appointmentStartHour = 12;
-            const int appointmentStartMinutes = 00;
-            const int appointmentStartSeconds = 00;
-            const int appointmentHoursDuration = 2;
+            const int startHour = 12;
+            const int startMinutes = 00;
+            const int startSeconds = 00;
+            const int durationInHours = 1;
 
-            const int mockAppointmentStartHour = 12;
-            const int mockAppointmentStartMinutes = 00;
-            const int mockAppointmentStartSeconds = 00;
-            const int mockAppointmentHoursDuration = 1;
+            DateTime startTime = aDate.Date + new TimeSpan(startHour, startMinutes, startSeconds);
+            DateTime endTime = startTime.AddHours(durationInHours);
 
-            DateTime appointmentStart = DateTime.Now.Date + new TimeSpan(appointmentStartHour, appointmentStartMinutes, appointmentStartSeconds);
-            DateTime appointmentEnd = appointmentStart.AddHours(appointmentHoursDuration);
-
-            DateTime mockAppointmentStart = DateTime.Now.Date + new TimeSpan(mockAppointmentStartHour, mockAppointmentStartMinutes, mockAppointmentStartSeconds);
-            DateTime mockAppointmentEnd = mockAppointmentStart.AddHours(mockAppointmentHoursDuration);
-
-            appointment.StartTime = appointmentStart;
-            appointment.EndTime = appointmentEnd;
+            appointment.StartTime = startTime;
+            appointment.EndTime = endTime;
 
             Mock<IAppointment> mockAppointmentThatColliding = new Mock<IAppointment>();
-            mockAppointmentThatColliding.SetupGet(appointment => appointment.StartTime).Returns(mockAppointmentStart);
-            mockAppointmentThatColliding.SetupGet(appointment => appointment.EndTime).Returns(mockAppointmentEnd);
 
-            
+            mockAppointmentThatColliding
+                .SetupGet(appointment => appointment.StartTime)
+                .Returns(startTime);
+
+            mockAppointmentThatColliding
+                .SetupGet(appointment => appointment.EndTime)
+                .Returns(endTime);
+
             Assert.IsTrue(appointment.IsCollidingWith(mockAppointmentThatColliding.Object));
         }
 
@@ -181,59 +153,59 @@ namespace Calendar.Test
         public void IsCollidingWith_AppointmentThatNotColliding_ReturnsFalse()
         {
             
-            const int appointmentStartHour = 15;
-            const int appointmentStartMinutes = 00;
-            const int appointmentStartSeconds = 00;
-            const int appointmentHoursDuration = 1;
+            const int startHour = 15;
+            const int startMinutes = 00;
+            const int startSeconds = 00;
+            const int durationInHours = 1;
 
-            const int mockAppointmentStartHour = 8;
-            const int mockAppointmentStartMinutes = 00;
-            const int mockAppointmentStartSeconds = 00;
-            const int mockAppointmentHoursDuration = 1;
+            const int startHourThatNotColliding = 8;
+            const int startMinutesThatNotColliding = 00;
+            const int startSecondsThatNotColliding = 00;
+            const int durationThatNotColliding = 1;
 
-            DateTime appointmentStart = DateTime.Now.Date + new TimeSpan(appointmentStartHour, appointmentStartMinutes, appointmentStartSeconds);
-            DateTime appointmentEnd = appointmentStart.AddHours(appointmentHoursDuration);
+            DateTime startTime = aDate.Date + new TimeSpan(startHour, startMinutes, startSeconds);
+            DateTime endTime = startTime.AddHours(durationInHours);
 
-            DateTime mockAppointmentStart = DateTime.Now.Date + new TimeSpan(mockAppointmentStartHour, mockAppointmentStartMinutes, mockAppointmentStartSeconds);
-            DateTime mockAppointmentEnd = mockAppointmentStart.AddHours(mockAppointmentHoursDuration);
+            DateTime startTimeThatNotColliding = aDate.Date + new TimeSpan(startHourThatNotColliding, startMinutesThatNotColliding, startSecondsThatNotColliding);
+            DateTime endTimeThatNotColliding = startTimeThatNotColliding.AddHours(durationThatNotColliding);
 
-            appointment.StartTime = appointmentStart;
-            appointment.EndTime = appointmentEnd;
+            appointment.StartTime = startTime;
+            appointment.EndTime = endTime;
 
             Mock<IAppointment> mockAppointmentThatNotColliding = new Mock<IAppointment>();
-            mockAppointmentThatNotColliding.SetupGet(appointment => appointment.StartTime).Returns(mockAppointmentStart);
-            mockAppointmentThatNotColliding.SetupGet(appointment => appointment.EndTime).Returns(mockAppointmentEnd);
 
-            
+            mockAppointmentThatNotColliding
+                .SetupGet(appointment => appointment.StartTime)
+                .Returns(startTimeThatNotColliding);
+
+            mockAppointmentThatNotColliding
+                .SetupGet(appointment => appointment.EndTime)
+                .Returns(endTimeThatNotColliding);
+
             Assert.IsFalse(appointment.IsCollidingWith(mockAppointmentThatNotColliding.Object));
         }
 
-        [TestCase(nullValue)]
+        [TestCase(nullUserName)]
         [TestCase(empty)]
         [TestCase(aSpace)]
         [TestCase(moreThanOneSpace)]
         [TestCase(validUserNameThatHasNotPermissions)]
         public void HasReadPermissions_UserNameThatHasNotPermissions_ReturnsFalse(string UserNameThatHasNotPermissions)
         {
-            
             Assert.IsFalse(appointment.HasReadPermissions(UserNameThatHasNotPermissions));
         }
 
         [Test]
         public void HasReadPermissions_OwnerUserName_ReturnsTrue()
         {
-            
             const string ownerName = "appointment owner name";
             appointment.OwnerUserName = ownerName;
-
-            
             Assert.IsTrue(appointment.HasReadPermissions(ownerName));
         }
 
         [Test]
         public void HasReadPermissions_GuestUserame_ReturnsTrue()
-        {
-                   
+        {       
             const string guestName = "appointment guest name";
 
             List<string> guestsUserNamesList = new List<string>()
@@ -242,7 +214,6 @@ namespace Calendar.Test
             };
 
             appointment.AssignGuests(guestsUserNamesList);
-
             
             Assert.IsTrue(appointment.HasReadPermissions(guestName));
         }
@@ -250,54 +221,45 @@ namespace Calendar.Test
         [Test]
         public void IsOwner_OwnerUserName_ReturnsTrue()
         {
-            
             const string ownerUserName = "appointment owner name";
             appointment.OwnerUserName = ownerUserName;
-
-            
             Assert.IsTrue(appointment.IsOwner(ownerUserName));
         }
 
-        [TestCase(nullValue)]
+        [TestCase(nullUserName)]
         [TestCase(empty)]
         [TestCase(aSpace)]
         [TestCase(moreThanOneSpace)]
         [TestCase(validUserNameThatIsNotOwner)]
         public void IsOwner_UserNameThatIsNotOwner_ReturnsFalse(string userNameThatIsNotOwner)
         {
-            
             const string ownerUserName = "owner name";
             appointment.OwnerUserName = ownerUserName;
-
-            
             Assert.IsFalse(appointment.IsOwner(userNameThatIsNotOwner));
         }
 
         [Test]
         public void IsGuest_GuestName_ReturnsTrue()
         {
-            
             const string guestUserName = "appointment guest username";
 
             List<string> guestList = new List<string>()
             {
                 guestUserName
             };
+
             appointment.AssignGuests(guestList);
 
-
-            
             Assert.IsTrue(appointment.IsGuest(guestUserName));
         }
 
-        [TestCase(nullValue)]
+        [TestCase(nullUserName)]
         [TestCase(empty)]
         [TestCase(aSpace)]
         [TestCase(moreThanOneSpace)]
         [TestCase(validUserNameThatIsNotGuest)]
         public void IsGuest_UserNameThatIsNotGuest_ReturnsFalse(string userNameThatIsNotGuest)
         {
-            
             Assert.IsFalse(appointment.IsGuest(userNameThatIsNotGuest));
         }
         #endregion
