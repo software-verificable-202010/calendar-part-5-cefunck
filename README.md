@@ -26,6 +26,12 @@ This is the repository corresponding to the fourth part of the project of the co
 
   - CA1002: The classes in my project that expose generic lists are not designed for inheritance so this warning can be suppressed.
   - CA2210: The project context does not require an assembly signature so this warning can be suppressed.
+  - Screen capture in evidence folder
+  
+### Test
+  - The teacher's assistant guide was used.
+  - coverage percentage: 27.08% 
+  - Screen capture in evidence folder
   
 ### Tech Stack
 
