@@ -8,12 +8,10 @@ This is the repository corresponding to the fourth part of the project of the co
   - It highlights Saturdays and Sundays with red foreground.
   - It allows the user to navigate through the months.
   - It displays the current month at start.
-  - It allows the user to navigate through the weeks.
-  - Is allows CRUD appointmenst in monthly view.
-  - It allows save appointments persistently in monthly view.
+  - It allows the user to navigate through months and weeks.
+  - Is allows CRUD appointmenst.
+  - It allows save appointments persistently.
   - Is allows login.
-  
-
 
 ### How to run it
 
@@ -29,7 +27,6 @@ This is the repository corresponding to the fourth part of the project of the co
   - CA1002: The classes in my project that expose generic lists are not designed for inheritance so this warning can be suppressed.
   - CA2210: The project context does not require an assembly signature so this warning can be suppressed.
   
-
 ### Tech Stack
 
   - [Visual studio 2017]
