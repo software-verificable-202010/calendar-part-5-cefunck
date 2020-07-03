@@ -45,30 +45,30 @@ namespace Calendar.Tests
         [Test]
         public void CurrentUser_SomeCurrentUser_ReturnsSameCurrentUser()
         {
-            // Arrange
+            
             sessionController.CurrentUserName = aValidUsername;
 
-            // Act & Assert
+            
             Assert.AreEqual(aValidUsername, sessionController.CurrentUserName);
         }
 
         [Test]
         public void IsSessionLogoned_ValidCurrentUser_ReturnsTrue()
         {
-            // Arrange
+            
             sessionController.CurrentUserName = aValidUsername;
 
-            // Act & Assert
+            
             Assert.IsTrue(sessionController.IsSessionLogoned());
         }
 
         [Test]
         public void IsSessionLogoned_NullCurrentUser_ReturnsFalse()
         {
-            // Arrange
+            
             sessionController.CurrentUserName = null;
 
-            // Act & Assert
+            
             Assert.IsFalse(sessionController.IsSessionLogoned());
         }
 
@@ -78,32 +78,31 @@ namespace Calendar.Tests
         [TestCase(anInvalidUsername)]
         public void LogOn_InvalidUsername_CurrentUsernameIsStillNull(string invalidUsername)
         {
-            // Arrange
+            
             mockUserController
                 .SetupGet(userController => userController.IsValidUserName)
                 .Returns(false);
 
-            // Act
+            
             sessionController.LogOn(mockUserController.Object);
 
-            //Assert
             Assert.AreEqual(nullValue, sessionController.CurrentUserName);
         }
 
         [Test]
         public void LogOn_NullUserController_ThrowArgumentNullException()
         {
-            // Arrange
+            
             UserController nullUserController = null;
 
-            // Act & Assert
+            
             Assert.That(() => sessionController.LogOn(nullUserController), Throws.Exception.TypeOf<ArgumentNullException>());
         }
 
         [Test]
         public void LogOn_ValidUsername_CurrentUsernameIs()
         {
-            // Arrange
+            
             mockUserController
                 .SetupGet(userController => userController.IsValidUserName)
                 .Returns(true);
@@ -112,10 +111,9 @@ namespace Calendar.Tests
                 .SetupGet(userController => userController.SourceUserName)
                 .Returns(aValidUsername);
 
-            // Act
+            
             sessionController.LogOn(mockUserController.Object);
 
-            //Assert
             Assert.AreEqual(aValidUsername, sessionController.CurrentUserName);
         }
         #endregion

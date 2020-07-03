@@ -42,30 +42,30 @@ namespace Calendar.Tests.UnitTests
         [Test]
         public void SourceUsername_SomeUsername_ReturnsSameUsername()
         {
-            // Arrange
+            
             userController.SourceUserName = validUserName;
 
-            // Act & Assert
+            
             Assert.AreEqual(validUserName, userController.SourceUserName);
         }
 
         [Test]
         public void UserController_SomeUsername_ReturnsSameUsername()
         {
-            // Arrange
+            
             userController = new UserController(validUserName);
 
-            // Act & Assert
+            
             Assert.AreEqual(validUserName, userController.SourceUserName);
         }
 
         [Test]
         public void IsValid_ValidUsername_ReturnsTrue()
         {
-            // Arrange
+            
             userController.SourceUserName = validUserName;
 
-            // Act & Assert
+            
             Assert.IsTrue(userController.IsValidUserName);
         }
 
@@ -76,17 +76,17 @@ namespace Calendar.Tests.UnitTests
         [TestCase(invalidUsername)]
         public void IsValid_InvalidUsername_ReturnsFalse(string invalidUsername)
         {
-            // Arrange
+            
             userController.SourceUserName = invalidUsername;
 
-            // Act & Assert
+            
             Assert.IsFalse(userController.IsValidUserName);
         }
 
         [Test]
         public void GetValidUserNamesOf_UserNamesList_()
         {
-            // Arrange
+            
             List<string> UserNames = new List<string>()
             {
                 nullValue,
@@ -102,7 +102,7 @@ namespace Calendar.Tests.UnitTests
                 validUserName
             };
 
-            // Act & Assert
+            
             Assert.AreEqual(validUserNames, userController.GetValidUserNamesOf(UserNames));
         }
 
@@ -121,24 +121,24 @@ namespace Calendar.Tests.UnitTests
         [Test]
         public void ExistsInvalidUsername_NullUserNamesList_ReturnsFalse()
         {
-            // Arrange
+            
             List<string> nullUserNames = null;
 
-            // Act & Assert
+            
             Assert.That(() => userController.ExistsInvalidUserName(nullUserNames), Throws.Exception.TypeOf<ArgumentNullException>());
         }
 
         [Test]
         public void ExistsInvalidUsername_UserNamesListWithInvalidUsername_ReturnsTrue()
         {
-            // Arrange
+            
             List<string> UserNames = new List<string>()
             {
                 validUserName,
                 invalidUsername
             };
 
-            // Act & Assert
+            
             Assert.IsTrue(userController.ExistsInvalidUserName(UserNames));
         }
 
