@@ -275,3 +275,4 @@ C:\Users\Cristian\Source\Repos\Part4\Calendar\Calendar\obj\Debug\Calendar.csproj
 C:\Users\Cristian\Source\Repos\Part4\Calendar\Calendar\obj\Debug\Calendar.csproj.CopyComplete
 C:\Users\Cristian\Source\Repos\Part4\Calendar\Calendar\obj\Debug\Calendar.exe
 C:\Users\Cristian\Source\Repos\Part4\Calendar\Calendar\obj\Debug\Calendar.pdb
+C:\Users\Cristian\Source\Repos\Part4\Calendar\Calendar\obj\Debug\Calendar.csprojAssemblyReference.cache

@@ -34,12 +34,10 @@ namespace Calendar.Windows
 
         #region Methods
         
-        public AppointmentWindow(
-            AppointmentController sourceAppointmentController,
-            SessionController sourceSessionController)
+        public AppointmentWindow(AppointmentController appointmentController,SessionController sessionController)
         {
-            this.sourceAppointmentController = sourceAppointmentController;
-            this.sessionController = sourceSessionController;
+            this.sourceAppointmentController = appointmentController;
+            this.sessionController = sessionController;
             InitializeComponent();
             InsertTimeOptions();
             RefreshForm();
@@ -89,8 +87,8 @@ namespace Calendar.Windows
         
         private void RefreshForm()
         {
-            string currentUsername = sessionController.CurrentUserName;
-            sourceAppointmentController.RefreshPermissions(currentUsername);
+            string currentUserName = sessionController.CurrentUserName;
+            sourceAppointmentController.RefreshPermissions(currentUserName);
 
             RefreshUIFields();
 
@@ -171,17 +169,8 @@ namespace Calendar.Windows
         
         private void SaveButton_Click(object sender, RoutedEventArgs e) 
         {
-            // TODO: isolate in one step methods
-            const string startSymbol = "start";
-            const string endSymbol = "end";
+            RefreshCandidateData();
 
-            string candidateTitle = textBoxTitle.Text;
-            string candidateDescription = textBoxDescription.Text;
-            List<string> candidateGuestsNames = GetCandidateGuestNames(textBoxGuests.Text);
-            TimeSpan candidateStart = GetCandidateTime(startSymbol);
-            TimeSpan candidateEnd = GetCandidateTime(endSymbol);
-
-            sourceAppointmentController.RefreshCandidateData(candidateTitle, candidateDescription, candidateGuestsNames, candidateStart, candidateEnd);
             sourceAppointmentController.RefreshValidationMessages();
 
             if (sourceAppointmentController.CanSaveSourceAppointment())
@@ -194,7 +183,26 @@ namespace Calendar.Windows
                 ShowValidationMessages();
             }
         }
-        
+
+        private void RefreshCandidateData()
+        {
+            const string startSymbol = "start";
+            const string endSymbol = "end";
+
+            string candidateTitle = textBoxTitle.Text;
+            string candidateDescription = textBoxDescription.Text;
+            List<string> candidateGuestsNames = GetCandidateGuestNames(textBoxGuests.Text);
+            TimeSpan candidateStart = GetCandidateTime(startSymbol);
+            TimeSpan candidateEnd = GetCandidateTime(endSymbol);
+
+            sourceAppointmentController.RefreshCandidateData(
+                candidateTitle,
+                candidateDescription,
+                candidateGuestsNames,
+                candidateStart,
+                candidateEnd);
+        }
+
         private void ShowValidationMessages() 
         {
             const string messageFormat = "{0}{1}\n";
@@ -202,7 +210,7 @@ namespace Calendar.Windows
             
             foreach (string message in sourceAppointmentController.ValidationMessages)
             {
-                validationMessage = string.Format(CultureInfo.CurrentCulture,messageFormat, validationMessage, message);
+                validationMessage = string.Format(CultureInfo.CurrentCulture, messageFormat, validationMessage, message);
             }
 
             MessageBox.Show(validationMessage);

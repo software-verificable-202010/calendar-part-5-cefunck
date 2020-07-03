@@ -1,15 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Calendar.Interfaces;
-using Calendar.Models;
 
 namespace Calendar.Controllers
 {
     public class UserController
     {
         #region Constants
-        private const string defaultUsername1 = "usuario1";
-        private const string defaultUsername2 = "usuario2";
+        private const string firstDefaultUserName = "usuario1";
+        private const string secondDefaultUserName = "usuario2";
         #endregion
 
 
@@ -17,8 +15,8 @@ namespace Calendar.Controllers
         private string sourceUserName;
         private readonly List<string> calendarUserNames = new List<string>()
         {
-            defaultUsername1,
-            defaultUsername2
+            firstDefaultUserName,
+            secondDefaultUserName
         };
         #endregion
 
@@ -56,16 +54,6 @@ namespace Calendar.Controllers
             this.sourceUserName = sourceUserName;
         }
 
-        public List<string> GetValidUserNamesOf(List<string> userNames)
-        {
-            List<string> validUserNames = calendarUserNames
-                .Where(username => userNames.Contains(username))
-                .ToList();
-
-            return validUserNames;
-        }
-
-
         public bool ExistsInvalidUserName(List<string> userNames)
         {
             if (userNames == null)
@@ -77,6 +65,15 @@ namespace Calendar.Controllers
             bool existsInvalidUserName = validUserNames.Count < userNames.Count;
             
             return existsInvalidUserName;
+        }
+
+        public List<string> GetValidUserNamesOf(List<string> userNames)
+        {
+            List<string> validUserNames = calendarUserNames
+                .Where(username => userNames.Contains(username))
+                .ToList();
+
+            return validUserNames;
         }
         #endregion
     }

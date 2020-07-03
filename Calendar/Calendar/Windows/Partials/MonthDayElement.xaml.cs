@@ -1,5 +1,4 @@
-﻿using Calendar.Controllers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Windows;
@@ -8,7 +7,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using Calendar.Models;
 using Calendar.Interfaces;
-using Calendar.Windows;
+using Calendar.Controllers;
 
 namespace Calendar.Windows.Partials
 {
@@ -55,30 +54,18 @@ namespace Calendar.Windows.Partials
             InitializeComponent();
         }
 
-        public void Refresh() 
+        public void AssignDayAppointments(List<Appointment> appointments)
+        {
+            dayAppointments = appointments;
+        }
+
+        public void Refresh()
         {
             if (IsNotBlankDayElement())
             {
                 RefreshDayNumber();
                 RefreshAppointments();
                 AddButtonForNewAppointment();
-            }
-        }
-
-        public void AssignDayAppointments(List<Appointment> appointments)
-        {
-            dayAppointments = appointments;
-        }
-
-        private void RefreshDayNumber() 
-        {
-            int displayedDateMonth = DateUtilities.DisplayedDate.Month;
-            int dayElementMonth = date.Month;
-            bool dayElementIsOfDisplayedMonth = dayElementMonth == displayedDateMonth;
-
-            if (dayElementIsOfDisplayedMonth)
-            {
-                textBlockDayNumber.Text = date.Day.ToString(CultureInfo.CurrentCulture);
             }
         }
 
@@ -92,8 +79,8 @@ namespace Calendar.Windows.Partials
                 {
                     Source = appointment
                 };
-                Button buttonDayElementAppoinment = new Button() 
-                { 
+                Button buttonDayElementAppoinment = new Button()
+                {
                     Background = appointmentButtonBackground,
                     Foreground = appointmentButtonForeground
                 };
@@ -103,7 +90,7 @@ namespace Calendar.Windows.Partials
             }
         }
 
-        private void AddButtonForNewAppointment() 
+        private void AddButtonForNewAppointment()
         {
             const string empty = "";
             Button buttonNewDayElementAppoinment = new Button
@@ -128,6 +115,18 @@ namespace Calendar.Windows.Partials
             ShowAppointmentForm();
             SaveNewAppointment();
             Refresh();
+        }
+
+        private void RefreshDayNumber()
+        {
+            int displayedDateMonth = DateUtilities.DisplayedDate.Month;
+            int dayElementMonth = date.Month;
+            bool dayElementIsOfDisplayedMonth = dayElementMonth == displayedDateMonth;
+
+            if (dayElementIsOfDisplayedMonth)
+            {
+                textBlockDayNumber.Text = date.Day.ToString(CultureInfo.CurrentCulture);
+            }
         }
 
         private void RefreshSelectedAppointment(object sender)
@@ -164,7 +163,16 @@ namespace Calendar.Windows.Partials
             }
         }
 
-        private void UpdateDayAppointments() 
+        private void SaveNewAppointment() 
+        {
+            if (IsValidAppointment())
+            {
+                UpdateDayAppointments();
+                UpdateCalendarAppointments();
+            }
+        }
+
+        private void UpdateDayAppointments()
         {
             if (dayAppointments.Contains(selectedAppointment))
             {
@@ -172,7 +180,7 @@ namespace Calendar.Windows.Partials
                 {
                     dayAppointments.Remove(selectedAppointment);
                 }
-                else 
+                else
                 {
                     int appointmentIndexInDayAppointments = dayAppointments.IndexOf(selectedAppointment);
                     dayAppointments[appointmentIndexInDayAppointments] = selectedAppointment;
@@ -184,7 +192,7 @@ namespace Calendar.Windows.Partials
             }
         }
 
-        private void UpdateCalendarAppointments() 
+        private void UpdateCalendarAppointments()
         {
             List<IAppointment> calendarAppointments = AppointmentController.CalendarAppointments;
             if (calendarAppointments.Contains(selectedAppointment))
@@ -193,27 +201,18 @@ namespace Calendar.Windows.Partials
                 {
                     calendarAppointments.Remove(selectedAppointment);
                 }
-                else 
+                else
                 {
                     int appointmentIndexInCalendarAppointments = calendarAppointments.IndexOf(selectedAppointment);
                     calendarAppointments[appointmentIndexInCalendarAppointments] = selectedAppointment;
                 }
             }
-            else 
+            else
             {
                 calendarAppointments.Add(selectedAppointment);
             }
             AppointmentController.AssignCalendarAppointments(calendarAppointments);
             AppointmentController.SavePersistentAppointments();
-        }
-
-        private void SaveNewAppointment() 
-        {
-            if (IsValidAppointment())
-            {
-                UpdateDayAppointments();
-                UpdateCalendarAppointments();
-            }
         }
 
         private bool IsNotBlankDayElement()

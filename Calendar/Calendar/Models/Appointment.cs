@@ -111,13 +111,13 @@ namespace Calendar.Models
         #region Methods
         public Appointment(DateTime startTime, string ownerUserName)
         {
-            title = empty;
-            description = empty;
+            this.title = empty;
+            this.description = empty;
             this.startTime = startTime;
-            endTime = this.startTime.AddMinutes(defaultDurationInMinutes);
+            this.endTime = this.startTime.AddMinutes(defaultDurationInMinutes);
             this.ownerUserName = ownerUserName;
-            guestsUserNames = new List<string>();
-            isInGarbage = false;
+            this.guestsUserNames = new List<string>();
+            this.isInGarbage = false;
         }
 
         public void AssignGuests(List<string> userNames)

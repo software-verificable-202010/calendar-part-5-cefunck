@@ -150,27 +150,18 @@ namespace Calendar.Controllers
             sourceAppointment.AssignGuests(candidateGuestsUserNames);
         }
 
-        public void RefreshCandidateData(string titleFieldText, string descriptionFieldText, List<string> guestsNamesInField, TimeSpan startTimeField, TimeSpan endTimeField)
+        public void RefreshCandidateData(
+            string titleFieldText, 
+            string descriptionFieldText, 
+            List<string> guestsNamesInField, 
+            TimeSpan startTimeField, 
+            TimeSpan endTimeField)
         {
             candidateTitle = titleFieldText;
             candidateDescription = descriptionFieldText;
             candidateStart = sourceAppointment.StartTime.Date + startTimeField;
             candidateEnd = sourceAppointment.EndTime.Date + endTimeField;
             candidateGuestsUserNames = guestsNamesInField;
-        }
-
-        public bool IsOwnerInvited()
-        {
-            bool isNotNullGuestUserNames = candidateGuestsUserNames != null;
-            string ownerName = sourceAppointment.OwnerUserName;
-            bool isOwnerInvited = false;
-
-            if (isNotNullGuestUserNames)
-            {
-                isOwnerInvited = candidateGuestsUserNames.Contains(ownerName);
-            }
-
-            return isNotNullGuestUserNames && isOwnerInvited;
         }
 
         public bool CanSaveSourceAppointment()
@@ -185,32 +176,6 @@ namespace Calendar.Controllers
         public void DeleteSourceAppointment()
         {
             sourceAppointment.IsInGarbage = true;
-        }
-
-        public bool AreValidGuests()
-        {
-            bool isNotNullCandidateGuestsUserNames = candidateGuestsUserNames != null;
-            bool isGuestFieldEmpty = true;
-            bool existsInvalidUsername = false;
-            bool areValidGuests = false;
-
-            if (isNotNullCandidateGuestsUserNames)
-            {
-                isGuestFieldEmpty = candidateGuestsUserNames.Count == 0;
-                existsInvalidUsername = userController.ExistsInvalidUserName(candidateGuestsUserNames);
-                areValidGuests = (isGuestFieldEmpty | (!existsInvalidUsername & !IsOwnerInvited()));
-            }
-            
-
-            return isNotNullCandidateGuestsUserNames & areValidGuests;
-        }
-
-        public bool ExistingAppointmentCollision()
-        {
-            bool hasAppointmentCollision = candidateGuestsUserNames
-                .Any(guestUserName => HasAppointmentCollision(guestUserName, sourceAppointment));
-
-            return hasAppointmentCollision;
         }
 
         public void RefreshValidationMessages()
@@ -237,17 +202,58 @@ namespace Calendar.Controllers
             }
         }
 
+        public bool ExistingAppointmentCollision()
+        {
+            bool hasAppointmentCollision = candidateGuestsUserNames
+                .Any(guestUserName => HasAppointmentCollision(guestUserName, sourceAppointment));
+
+            return hasAppointmentCollision;
+        }
+
+        public bool AreValidGuests()
+        {
+            bool isNotNullCandidateGuestsUserNames = candidateGuestsUserNames != null;
+            bool isGuestFieldEmpty = true;
+            bool existsInvalidUsername = false;
+            bool areValidGuests = false;
+
+            if (isNotNullCandidateGuestsUserNames)
+            {
+                isGuestFieldEmpty = candidateGuestsUserNames.Count == 0;
+                existsInvalidUsername = userController.ExistsInvalidUserName(candidateGuestsUserNames);
+                areValidGuests = (isGuestFieldEmpty | (!existsInvalidUsername & !IsOwnerInvited()));
+            }
+
+
+            return isNotNullCandidateGuestsUserNames & areValidGuests;
+        }
+
+        public bool IsOwnerInvited()
+        {
+            bool isNotNullGuestUserNames = candidateGuestsUserNames != null;
+            string ownerName = sourceAppointment.OwnerUserName;
+            bool isOwnerInvited = false;
+
+            if (isNotNullGuestUserNames)
+            {
+                isOwnerInvited = candidateGuestsUserNames.Contains(ownerName);
+            }
+
+            return isNotNullGuestUserNames && isOwnerInvited;
+        }
+
         public void AddCollisionedGuestNamesToValidationMessages()
         {
             const string nameFormat = "- {0}";
-            foreach (string candidateGuestUsername in candidateGuestsUserNames)
+            foreach (string candidateGuestUserName in candidateGuestsUserNames)
             {
-                bool isNotOwner = !sourceAppointment.IsOwner(candidateGuestUsername);
+                bool isNotOwner = !sourceAppointment.IsOwner(candidateGuestUserName);
 
-                bool isColliding = HasAppointmentCollision(candidateGuestUsername, sourceAppointment);
+                bool isColliding = HasAppointmentCollision(candidateGuestUserName, sourceAppointment);
                 if (isNotOwner & isColliding)
                 {
-                    validationMessages.Add(string.Format(CultureInfo.CurrentCulture, nameFormat, candidateGuestUsername));
+                    string collidingGuestName = string.Format(CultureInfo.CurrentCulture, nameFormat, candidateGuestUserName);
+                    validationMessages.Add(collidingGuestName);
                 }
             }
         }
@@ -285,18 +291,6 @@ namespace Calendar.Controllers
         {
             bool isEndAfterStart = candidateEnd > candidateStart;
             return isEndAfterStart;
-        }
-
-        public static List<IAppointment> GetAppointmentsWhereIsOwner(string userName)
-        {
-            List<IAppointment> userAppointments = CalendarAppointments.Where(appointment => appointment.IsOwner(userName)).ToList();
-            return userAppointments;
-        }
-
-        public static List<IAppointment> GetAppointmentsWhereIsGuest(string userName)
-        {
-            List<IAppointment> appointmentsWichThisUserIsInvited = CalendarAppointments.Where(appointment => appointment.IsGuest(userName)).ToList();
-            return appointmentsWichThisUserIsInvited;
         }
 
         public static void AssignCalendarAppointments(List<IAppointment> appointments)
@@ -337,22 +331,42 @@ namespace Calendar.Controllers
         public static bool HasAppointmentCollision(string guestUserName, IAppointment appointmentThatCouldCollide)
         {
             bool isNotNullGuestUsername = guestUserName != null;
-            bool hasCollisionWithHisOwnAppointments = false;
-            bool hasCollisionWithAppointmentsWichThisUserIsIvited = false;
+            bool hasCollisionWithTheirOwns = false;
+            bool hasCollisionWithTheirInvitations = false;
 
             if (isNotNullGuestUsername)
             {
 
-                hasCollisionWithHisOwnAppointments = AppointmentController.GetAppointmentsWhereIsOwner(guestUserName)
+                hasCollisionWithTheirOwns = AppointmentController.GetAppointmentsWhereIsOwner(guestUserName)
                     .Any(appointment => appointment
                     .IsCollidingWith(appointmentThatCouldCollide));
 
-                hasCollisionWithAppointmentsWichThisUserIsIvited = AppointmentController.GetAppointmentsWhereIsGuest(guestUserName)
+                hasCollisionWithTheirInvitations = AppointmentController.GetAppointmentsWhereIsGuest(guestUserName)
                     .Any(appointment => appointment
                     .IsCollidingWith(appointmentThatCouldCollide) & appointment != appointmentThatCouldCollide);
             }
 
-            return isNotNullGuestUsername && (hasCollisionWithHisOwnAppointments || hasCollisionWithAppointmentsWichThisUserIsIvited);
+            bool hasCollision = hasCollisionWithTheirOwns || hasCollisionWithTheirInvitations;
+
+            return isNotNullGuestUsername && hasCollision;
+        }
+
+        private static List<IAppointment> GetAppointmentsWhereIsOwner(string userName)
+        {
+            List<IAppointment> userAppointments = CalendarAppointments
+                .Where(appointment => appointment.IsOwner(userName))
+                .ToList();
+
+            return userAppointments;
+        }
+
+        private static List<IAppointment> GetAppointmentsWhereIsGuest(string userName)
+        {
+            List<IAppointment> appointmentsWichThisUserIsInvited = CalendarAppointments
+                .Where(appointment => appointment.IsGuest(userName))
+                .ToList();
+
+            return appointmentsWichThisUserIsInvited;
         }
 
         private void ClearOldValidationMessages()

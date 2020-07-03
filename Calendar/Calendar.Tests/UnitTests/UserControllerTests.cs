@@ -50,6 +50,16 @@ namespace Calendar.Tests.UnitTests
         }
 
         [Test]
+        public void UserController_SomeUsername_ReturnsSameUsername()
+        {
+            // Arrange
+            userController = new UserController(validUserName);
+
+            // Act & Assert
+            Assert.AreEqual(validUserName, userController.SourceUserName);
+        }
+
+        [Test]
         public void IsValid_ValidUsername_ReturnsTrue()
         {
             // Arrange

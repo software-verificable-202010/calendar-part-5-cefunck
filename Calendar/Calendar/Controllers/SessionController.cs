@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using Calendar.Controllers;
-using Calendar.Models;
-
-namespace Calendar.Controllers
+﻿namespace Calendar.Controllers
 {
     public class SessionController
     {

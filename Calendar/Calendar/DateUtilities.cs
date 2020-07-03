@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-using Calendar.Models;
 
 namespace Calendar
 {
@@ -70,9 +66,9 @@ namespace Calendar
 
 
         #region Methods
-        public static void SetDisplayedDateTo(DateTime dateTime)
+        public static void SetDisplayedDateTo(DateTime date)
         {
-            DisplayedDate = dateTime;
+            DisplayedDate = date;
         }
 
         public static int GetDayNumberInWeek(DateTime date)

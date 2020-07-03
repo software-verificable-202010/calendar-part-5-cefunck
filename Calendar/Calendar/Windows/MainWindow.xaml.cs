@@ -1,5 +1,6 @@
 ﻿using Calendar.Controllers;
 using Calendar.Windows.Partials;
+using System;
 using System.Windows;
 
 namespace Calendar.Windows
@@ -15,6 +16,7 @@ namespace Calendar.Windows
 
 
         #region Fields
+        private SessionController sessionController = new SessionController();
         #endregion
 
 
@@ -27,20 +29,28 @@ namespace Calendar.Windows
         {
             InitializeComponent();
 
-            SessionController sessionController = new SessionController();
-
-            LogOnWindow logOnWindow = new LogOnWindow(sessionController);
-            logOnWindow.ShowDialog();
+            ShowLogOnWindow();
 
             if (sessionController.IsSessionLogoned())
             {
-                CalendarLayout calendarLayout = new CalendarLayout(sessionController);
-                gridMainWindow.Children.Add(calendarLayout);
+                InsertCalendarLayout();
             }
             else
             {
                 this.Close();
             }
+        }
+
+        private void ShowLogOnWindow()
+        {
+            LogOnWindow logOnWindow = new LogOnWindow(this.sessionController);
+            logOnWindow.ShowDialog();
+        }
+
+        private void InsertCalendarLayout()
+        {
+            CalendarLayout calendarLayout = new CalendarLayout(this.sessionController);
+            gridMainWindow.Children.Add(calendarLayout);
         }
         #endregion
     }

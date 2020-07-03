@@ -14,7 +14,7 @@ namespace Calendar.Windows
 
 
         #region Fields
-        private string usernameProvided;
+        private string userNameProvided;
         private SessionController sessionController;
         #endregion
 
@@ -32,8 +32,8 @@ namespace Calendar.Windows
 
         private void LogOnButton_Click(object sender, RoutedEventArgs e)
         {
-            usernameProvided = textBoxUsernameProvided.Text;
-            UserController userController = new UserController(usernameProvided);
+            userNameProvided = textBoxUsernameProvided.Text;
+            UserController userController = new UserController(userNameProvided);
 
             sessionController.LogOn(userController);
 

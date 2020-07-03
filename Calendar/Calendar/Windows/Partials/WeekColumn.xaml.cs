@@ -1,5 +1,4 @@
-﻿using Calendar.Controllers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -8,8 +7,8 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 using Calendar.Models;
+using Calendar.Controllers;
 using Calendar.Interfaces;
-using Calendar.Windows;
 
 namespace Calendar.Windows.Partials
 {
@@ -19,6 +18,7 @@ namespace Calendar.Windows.Partials
     public partial class WeekColumn : UserControl
     {
         #region Constants
+        private const int appointmentColumnSpan = 1;
         private const int rowOffSetByTitleRows = 2;
         private const int minutesPerRow = 30;
         #endregion
@@ -178,7 +178,6 @@ namespace Calendar.Windows.Partials
                 int rowValue = GetAppointmentRow(appointment);
                 int columnValue = GetAppointmentColumn(appointment);
                 int rowSpanValue = GetAppointmentRowSpan(appointment);
-                int columnSpanValue = GetAppointmentColumnSpan();
                 Binding appointmentBinding = new Binding(bindingPropertyName)
                 {
                     Source = appointment
@@ -189,7 +188,7 @@ namespace Calendar.Windows.Partials
                 buttonDayElementAppoinment.SetValue(Grid.RowProperty, rowValue);
                 buttonDayElementAppoinment.SetValue(Grid.ColumnProperty, columnValue);
                 buttonDayElementAppoinment.SetValue(Grid.RowSpanProperty, rowSpanValue);
-                buttonDayElementAppoinment.SetValue(Grid.ColumnSpanProperty, columnSpanValue);
+                buttonDayElementAppoinment.SetValue(Grid.ColumnSpanProperty, appointmentColumnSpan);
                 buttonDayElementAppoinment.SetValue(Button.BackgroundProperty, appointmentButtonBackground);
                 buttonDayElementAppoinment.SetValue(Button.ForegroundProperty, appointmentButtonForeground);
                 buttonDayElementAppoinment.SetValue(Button.FontSizeProperty, fontSizeAppointmentButtonValue);
@@ -311,11 +310,6 @@ namespace Calendar.Windows.Partials
             double appointmentDurationInMinutes = (appointment.EndTime - appointment.StartTime).TotalMinutes;
             int appointmentRowSpan = (int)Math.Ceiling(appointmentDurationInMinutes / minutesPerRow);
             return appointmentRowSpan;
-        }
-
-        private static int GetAppointmentColumnSpan()
-        {
-            return 1;
         }
 
         private static int GetAppointmentRow(Appointment appointment) 

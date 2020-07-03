@@ -129,12 +129,6 @@ namespace Calendar.Windows.Partials
             return isInWeekend;
         }
 
-        private static bool IsAppointmentOfDay(IAppointment appointment, WeekColumn dayColumnElement)
-        {
-            bool haveTheSameDate = appointment.StartTime.Date == dayColumnElement.Date.Date;
-            return haveTheSameDate;
-        }
-
         private List<IAppointment> GetDayAppointments(WeekColumn dayElement)
         {
             List<IAppointment> dayElementAppointments = new List<IAppointment>();
@@ -149,6 +143,12 @@ namespace Calendar.Windows.Partials
                 }
             }
             return dayElementAppointments;
+        }
+
+        private static bool IsAppointmentOfDay(IAppointment appointment, WeekColumn dayColumnElement)
+        {
+            bool haveTheSameDate = appointment.StartTime.Date == dayColumnElement.Date.Date;
+            return haveTheSameDate;
         }
 
         #endregion
