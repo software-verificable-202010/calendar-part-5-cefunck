@@ -32,7 +32,7 @@ namespace Calendar.Windows
 
         private void LogOnButton_Click(object sender, RoutedEventArgs e)
         {
-            userNameProvided = textBoxUsernameProvided.Text;
+            userNameProvided = textBoxUserNameProvided.Text;
             UserController userController = new UserController(userNameProvided);
 
             sessionController.LogOn(userController);

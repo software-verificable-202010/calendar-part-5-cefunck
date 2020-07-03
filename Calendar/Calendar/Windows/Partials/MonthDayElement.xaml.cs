@@ -141,9 +141,9 @@ namespace Calendar.Windows.Partials
             int appointmentMonth = this.date.Month;
             int appointmentDay = this.date.Day;
             TimeSpan nowTime = DateTime.Now.TimeOfDay;
-            string currentUsername = sourceSessionController.CurrentUserName;
+            string currentUserName = sourceSessionController.CurrentUserName;
             DateTime appointmentStartDate = new DateTime(appointmentYear, appointmentMonth, appointmentDay) + nowTime;
-            selectedAppointment = new Appointment(appointmentStartDate, currentUsername);
+            selectedAppointment = new Appointment(appointmentStartDate, currentUserName);
         }
 
         private void ShowAppointmentForm()

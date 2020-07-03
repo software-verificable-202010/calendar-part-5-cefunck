@@ -111,24 +111,24 @@ namespace Calendar.Test
         public void Owner_SomeAppointmentOwner_ReturnsSameAppointmentOwner()
         {
             
-            const string aNewOwnerUsername = "a new owner username";
-            appointment.OwnerUserName = aNewOwnerUsername;
+            const string aNewOwnerUserName = "a new owner username";
+            appointment.OwnerUserName = aNewOwnerUserName;
 
             
-            Assert.AreEqual(aNewOwnerUsername, appointment.OwnerUserName);
+            Assert.AreEqual(aNewOwnerUserName, appointment.OwnerUserName);
         }
 
         [Test]
         public void Guests_SomeAppointmentGuests_ReturnsSameAppointmentGuests()
         {
             
-            const string aGuestUsername = "a guest name";
-            const string otherGuestUsername = "other guest username";
+            const string aGuestUserName = "a guest name";
+            const string otherGuestUserName = "other guest username";
 
             List<string> aGuestList = new List<string>()
             {
-                aGuestUsername,
-                otherGuestUsername
+                aGuestUserName,
+                otherGuestUserName
             };
             appointment.AssignGuests(aGuestList);
 
@@ -137,7 +137,7 @@ namespace Calendar.Test
         }
 
         [Test]
-        public void IsCollidingWith_NullAppointment_ReturnsArgumentNullException()
+        public void IsCollidingWith_NullAppointment_ThrowsArgumentNullException()
         {
             
             IAppointment nullAppointment = null;
@@ -220,7 +220,7 @@ namespace Calendar.Test
         }
 
         [Test]
-        public void HasReadPermissions_OwnerUsername_ReturnsTrue()
+        public void HasReadPermissions_OwnerUserName_ReturnsTrue()
         {
             
             const string ownerName = "appointment owner name";
@@ -248,14 +248,14 @@ namespace Calendar.Test
         }
 
         [Test]
-        public void IsOwner_OwnerUsername_ReturnsTrue()
+        public void IsOwner_OwnerUserName_ReturnsTrue()
         {
             
-            const string ownerUsername = "appointment owner name";
-            appointment.OwnerUserName = ownerUsername;
+            const string ownerUserName = "appointment owner name";
+            appointment.OwnerUserName = ownerUserName;
 
             
-            Assert.IsTrue(appointment.IsOwner(ownerUsername));
+            Assert.IsTrue(appointment.IsOwner(ownerUserName));
         }
 
         [TestCase(nullValue)]
@@ -266,8 +266,8 @@ namespace Calendar.Test
         public void IsOwner_UserNameThatIsNotOwner_ReturnsFalse(string userNameThatIsNotOwner)
         {
             
-            const string ownerUsername = "owner name";
-            appointment.OwnerUserName = ownerUsername;
+            const string ownerUserName = "owner name";
+            appointment.OwnerUserName = ownerUserName;
 
             
             Assert.IsFalse(appointment.IsOwner(userNameThatIsNotOwner));

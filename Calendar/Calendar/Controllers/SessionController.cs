@@ -7,7 +7,7 @@
 
 
         #region Fields
-        private string currentUsername;
+        private string currentUserName;
         #endregion
 
 
@@ -16,11 +16,11 @@
         {
             get 
             {
-                return currentUsername;
+                return currentUserName;
             }
             set
             {
-                currentUsername = value;
+                currentUserName = value;
             }
         }
         #endregion
@@ -30,7 +30,7 @@
 
         public SessionController()
         {
-            currentUsername = null;
+            currentUserName = null;
         }
 
         public void LogOn(UserController userController)
@@ -42,13 +42,13 @@
 
             if (userController.IsValidUserName)
             {
-                currentUsername = userController.SourceUserName;
+                currentUserName = userController.SourceUserName;
             }
         }
 
         public bool IsSessionLogoned()
         {
-            bool isLogoned = currentUsername != null;
+            bool isLogoned = currentUserName != null;
             return isLogoned;
         }
         #endregion

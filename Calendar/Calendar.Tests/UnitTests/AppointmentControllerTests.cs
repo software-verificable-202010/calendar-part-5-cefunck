@@ -16,8 +16,8 @@ namespace Calendar.Test.UnitTests
         private const string moreThanOneSpace = "   ";
         private const string aTitle = "a title";
         private const string aDescription = "a description";
-        private const string usernameThatIsNotOwner = "a username that is not owner";
-        private const string ownerUsername = "owner username";
+        private const string userNameThatIsNotOwner = "a username that is not owner";
+        private const string ownerUserName = "owner username";
         private const string guestUserName = "guest username";
         private const string emptyTitleMessage = "Debe ingresar un título";
         private const string invalidEndTimeMessage = "Debe ingresar hora de fin válida";
@@ -53,21 +53,21 @@ namespace Calendar.Test.UnitTests
         }
 
         [Test]
-        public void HasOwnerPermissions_ownerUsername_ReturnsTrue()
+        public void HasOwnerPermissions_ownerUserName_ReturnsTrue()
         {
             mockAppointment
-                .Setup(appointment => appointment.IsOwner(ownerUsername))
+                .Setup(appointment => appointment.IsOwner(ownerUserName))
                 .Returns(true);
 
-            appointmentController.RefreshPermissions(ownerUsername);
+            appointmentController.RefreshPermissions(ownerUserName);
 
             Assert.IsTrue(appointmentController.HasOwnerPermissions);
         }
 
         [Test]
-        public void HasOwnerPermissions_usernameThatIsNotOwner_ReturnsFalse()
+        public void HasOwnerPermissions_userNameThatIsNotOwner_ReturnsFalse()
         {
-            appointmentController.RefreshPermissions(usernameThatIsNotOwner);
+            appointmentController.RefreshPermissions(userNameThatIsNotOwner);
 
             Assert.IsFalse(appointmentController.HasOwnerPermissions);
         }
@@ -128,8 +128,8 @@ namespace Calendar.Test.UnitTests
         [Test]
         public void RefreshPermissions_OwnerOfSelectedAppointment_HasOwnerPermissionsPropertyIsTrue()
         {
-            mockAppointment.Setup(appointment => appointment.IsOwner(ownerUsername)).Returns(true);
-            appointmentController.RefreshPermissions(ownerUsername);
+            mockAppointment.Setup(appointment => appointment.IsOwner(ownerUserName)).Returns(true);
+            appointmentController.RefreshPermissions(ownerUserName);
             Assert.IsTrue(appointmentController.HasOwnerPermissions);
         }
 
@@ -183,8 +183,8 @@ namespace Calendar.Test.UnitTests
             {
                 "usuario1"
             };
-            mockAppointment.Setup(appointment => appointment.IsOwner(ownerUsername)).Returns(true);
-            appointmentController.RefreshPermissions(ownerUsername);
+            mockAppointment.Setup(appointment => appointment.IsOwner(ownerUserName)).Returns(true);
+            appointmentController.RefreshPermissions(ownerUserName);
             bool canSaveBeforeRefresh = appointmentController.CanSaveSourceAppointment();
 
             appointmentController.RefreshCandidateData(aTitle, aDescription, aGuestsNamesList, aStart, aEnd);
@@ -201,8 +201,8 @@ namespace Calendar.Test.UnitTests
         [TestCase(empty)]
         [TestCase(aSpace)]
         [TestCase(moreThanOneSpace)]
-        [TestCase(usernameThatIsNotOwner)]
-        public void IsOwnerInvited_UsernameThatIsNotOwner_ReturnsFalse(string guestUserName)
+        [TestCase(userNameThatIsNotOwner)]
+        public void IsOwnerInvited_UserNameThatIsNotOwner_ReturnsFalse(string guestUserName)
         {
             List<string> guestsList = new List<string>()
             {
@@ -212,19 +212,19 @@ namespace Calendar.Test.UnitTests
         }
 
         [Test]
-        public void IsOwnerInvited_OwnerUsername_ReturnsTrue()
+        public void IsOwnerInvited_OwnerUserName_ReturnsTrue()
         {
             TimeSpan aStart = new TimeSpan(12, 00, 00);
             TimeSpan aEnd = new TimeSpan(12, 01, 00);
             List<string> guestsList = new List<string>()
             {
-                ownerUsername
+                ownerUserName
             };
             appointmentController.RefreshCandidateData(aTitle, aDescription, guestsList, aStart, aEnd);
 
             mockAppointment
                 .SetupGet(appointment => appointment.OwnerUserName)
-                .Returns(ownerUsername);
+                .Returns(ownerUserName);
 
             Assert.IsTrue(appointmentController.IsOwnerInvited());
         }
@@ -260,8 +260,8 @@ namespace Calendar.Test.UnitTests
 
             mockAppointment
                 .SetupGet(appointment => appointment.OwnerUserName)
-                .Returns(ownerUsername);
-            appointmentController.RefreshPermissions(ownerUsername);
+                .Returns(ownerUserName);
+            appointmentController.RefreshPermissions(ownerUserName);
             appointmentController.RefreshCandidateData(blankTitle, aDescription, aGuestsNamesList, aStart, aEnd);
 
             Assert.IsFalse(appointmentController.CanSaveSourceAppointment());
@@ -281,8 +281,8 @@ namespace Calendar.Test.UnitTests
 
             mockAppointment
                 .SetupGet(appointment => appointment.OwnerUserName)
-                .Returns(ownerUsername);
-            appointmentController.RefreshPermissions(ownerUsername);
+                .Returns(ownerUserName);
+            appointmentController.RefreshPermissions(ownerUserName);
             appointmentController.RefreshCandidateData(aTitle, aDescription, aGuestsNamesList, aStart, aInvalidEnd);
 
             Assert.IsFalse(appointmentController.CanSaveSourceAppointment());
@@ -292,20 +292,20 @@ namespace Calendar.Test.UnitTests
         [TestCase(empty)]
         [TestCase(aSpace)]
         [TestCase(moreThanOneSpace)]
-        public void CanSaveSourceAppointemt_HasInvalidGuestUsername_ReturnsFalse(string invalidGuestUsername)
+        public void CanSaveSourceAppointemt_HasInvalidGuestUserName_ReturnsFalse(string invalidGuestUserName)
         {
             TimeSpan aStart = new TimeSpan(12, 00, 00);
             TimeSpan aEnd = new TimeSpan(12, 01, 00);
             List<string> aGuestsNamesList = new List<string>()
 
             {
-                invalidGuestUsername
+                invalidGuestUserName
             };
 
             mockAppointment
                 .SetupGet(appointment => appointment.OwnerUserName)
-                .Returns(ownerUsername);
-            appointmentController.RefreshPermissions(ownerUsername);
+                .Returns(ownerUserName);
+            appointmentController.RefreshPermissions(ownerUserName);
             appointmentController.RefreshCandidateData(aTitle, aDescription, aGuestsNamesList, aStart, aEnd);
 
             Assert.IsFalse(appointmentController.CanSaveSourceAppointment());
@@ -314,19 +314,19 @@ namespace Calendar.Test.UnitTests
         [Test]
         public void CanSaveSourceAppointemt_HasValidData_ReturnsTrue()
         {
-            const string validGuestUsername = "usuario1";
+            const string validGuestUserName = "usuario1";
             TimeSpan aStart = new TimeSpan(12, 00, 00);
             TimeSpan aEnd = new TimeSpan(12, 01, 00);
             List<string> aGuestsNamesList = new List<string>()
 
             {
-                validGuestUsername
+                validGuestUserName
             };
 
             mockAppointment
-                .Setup(appointment => appointment.IsOwner(ownerUsername))
+                .Setup(appointment => appointment.IsOwner(ownerUserName))
                 .Returns(true);
-            appointmentController.RefreshPermissions(ownerUsername);
+            appointmentController.RefreshPermissions(ownerUserName);
             appointmentController.RefreshCandidateData(aTitle, aDescription, aGuestsNamesList, aStart, aEnd);
 
             Assert.IsTrue(appointmentController.CanSaveSourceAppointment());

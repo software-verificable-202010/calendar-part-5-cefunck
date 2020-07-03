@@ -70,7 +70,7 @@ namespace Calendar.Controllers
         public List<string> GetValidUserNamesOf(List<string> userNames)
         {
             List<string> validUserNames = calendarUserNames
-                .Where(username => userNames.Contains(username))
+                .Where(userName => userNames.Contains(userName))
                 .ToList();
 
             return validUserNames;

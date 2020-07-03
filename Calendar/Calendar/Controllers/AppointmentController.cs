@@ -214,14 +214,14 @@ namespace Calendar.Controllers
         {
             bool isNotNullCandidateGuestsUserNames = candidateGuestsUserNames != null;
             bool isGuestFieldEmpty = true;
-            bool existsInvalidUsername = false;
+            bool existsInvalidUserName = false;
             bool areValidGuests = false;
 
             if (isNotNullCandidateGuestsUserNames)
             {
                 isGuestFieldEmpty = candidateGuestsUserNames.Count == 0;
-                existsInvalidUsername = userController.ExistsInvalidUserName(candidateGuestsUserNames);
-                areValidGuests = (isGuestFieldEmpty | (!existsInvalidUsername & !IsOwnerInvited()));
+                existsInvalidUserName = userController.ExistsInvalidUserName(candidateGuestsUserNames);
+                areValidGuests = (isGuestFieldEmpty | (!existsInvalidUserName & !IsOwnerInvited()));
             }
 
 
@@ -265,8 +265,8 @@ namespace Calendar.Controllers
             {
                 userController.SourceUserName = name;
                 bool isOwnerUser = name == sourceAppointment.OwnerUserName;
-                bool isInvalidUsername = !userController.IsValidUserName;
-                bool isInvalidGuest = isOwnerUser | isInvalidUsername;
+                bool isInvalidUserName = !userController.IsValidUserName;
+                bool isInvalidGuest = isOwnerUser | isInvalidUserName;
                 if (isInvalidGuest)
                 {
                     validationMessages.Add(string.Format(CultureInfo.CurrentCulture, nameFormat, name));
@@ -330,11 +330,11 @@ namespace Calendar.Controllers
 
         public static bool HasAppointmentCollision(string guestUserName, IAppointment appointmentThatCouldCollide)
         {
-            bool isNotNullGuestUsername = guestUserName != null;
+            bool isNotNullGuestUserName = guestUserName != null;
             bool hasCollisionWithTheirOwns = false;
             bool hasCollisionWithTheirInvitations = false;
 
-            if (isNotNullGuestUsername)
+            if (isNotNullGuestUserName)
             {
 
                 hasCollisionWithTheirOwns = AppointmentController.GetAppointmentsWhereIsOwner(guestUserName)
@@ -348,7 +348,7 @@ namespace Calendar.Controllers
 
             bool hasCollision = hasCollisionWithTheirOwns || hasCollisionWithTheirInvitations;
 
-            return isNotNullGuestUsername && hasCollision;
+            return isNotNullGuestUserName && hasCollision;
         }
 
         private static List<IAppointment> GetAppointmentsWhereIsOwner(string userName)

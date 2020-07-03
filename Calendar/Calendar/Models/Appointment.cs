@@ -160,16 +160,16 @@ namespace Calendar.Models
 
         public bool IsGuest(string userName)
         {
-            bool isNotNullUsername = userName != null;
-            bool isNotNullGuestsUsernames = guestsUserNames != null;
+            bool isNotNullUserName = userName != null;
+            bool isNotNullGuestsUserNames = guestsUserNames != null;
             bool isGuest = false;
 
-            if (isNotNullUsername && isNotNullGuestsUsernames)
+            if (isNotNullUserName && isNotNullGuestsUserNames)
             {
                 isGuest = guestsUserNames.Any(guestUserName => guestUserName == userName);
             }
 
-            return isNotNullUsername & isGuest;
+            return isNotNullUserName & isGuest;
         }
 
         #endregion
