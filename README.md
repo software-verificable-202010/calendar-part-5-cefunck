@@ -9,7 +9,7 @@ This is the repository corresponding to the fifth part of the project of the cou
   - It allows the user to navigate through the months.
   - It displays the current month at start.
   - It allows the user to navigate through months and weeks.
-  - Is allows CRUD appointmenst.
+  - Is allows CRUD appointments.
   - It allows save appointments persistently.
   - Is allows login.
 
