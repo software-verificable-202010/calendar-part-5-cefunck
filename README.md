@@ -1,6 +1,6 @@
 # calendar-part-5-cefunck
 
-This is the repository corresponding to the fourth part of the project of the course "Calidad y verificación de software".
+This is the repository corresponding to the fifth part of the project of the course "Calidad y verificación de software".
 
 ### Current Features
 
