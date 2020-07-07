@@ -2,9 +2,8 @@
   "ExpandedNodes": [
     "",
     "\\Calendar",
-    "\\Calendar\\Calendar",
-    "\\Calendar\\Calendar\\Controllers"
+    "\\evidence"
   ],
-  "SelectedNode": "\\Calendar\\Calendar\\Controllers\\AppointmentController.cs",
+  "SelectedNode": "\\Calendar\\Calendar",
   "PreviewInSolutionExplorer": false
 }

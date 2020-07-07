@@ -30,7 +30,7 @@ This is the repository corresponding to the fifth part of the project of the cou
   
 ### Test
   - The teacher's assistant guide was used.
-  - coverage percentage: 27.08% 
+  - coverage percentage: 26.65% 
   - Screen capture in evidence folder
   
 ### Tech Stack
