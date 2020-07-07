@@ -71,8 +71,13 @@ namespace Calendar.Windows.Partials
             switch (currentSelectedCalendarViewOption)
             {
                 case weekViewOption:
+                    while (DateUtilities.GetNameOfDayInSpanish(newDisplayedDate) != DateUtilities.MondayName)
+                    {
+                        newDisplayedDate = newDisplayedDate.AddDays(numberToGoBack);
+                    }
                     newDisplayedDate = newDisplayedDate.AddDays(amountToMove * DateUtilities.DaysInWeek);
                     break;
+
                 default:
                     newDisplayedDate = newDisplayedDate.AddMonths(amountToMove);
                     break;
@@ -118,7 +123,7 @@ namespace Calendar.Windows.Partials
         private void RefreshWeekBody() 
         {
             weekBody = new WeekBody(sourceSessionController);
-            weekBody.AssignMonthAppointments(GetMonthAppointmentsFromCalendarAppointments());
+            weekBody.AssignWeekAppointments(GetWeekAppointmentsFromCalendarAppointments());
             weekBody.Refresh();
             App.Current.Resources[currentBodyContentResourceName] = weekBody;
         }
@@ -143,12 +148,36 @@ namespace Calendar.Windows.Partials
             return monthAppointmens;
         }
 
+        private List<Appointment> GetWeekAppointmentsFromCalendarAppointments()
+        {
+            List<Appointment> weekAppointments = new List<Appointment>();
+            foreach (Appointment appointment in calendarAppointments)
+            {
+                bool isOfDisplayedWeek = IsAppointmentOfDisplayedWeek(appointment);
+                if (isOfDisplayedWeek)
+                {
+                    weekAppointments.Add(appointment);
+                }
+            }
+            return weekAppointments;
+        }
+
         private static bool IsAppointmentOfDisplayedMonth(Appointment appointment)
         {
             int displayedMonth = DateUtilities.DisplayedDate.Month;
             int appointmentMonth = appointment.StartTime.Month;
             bool areTheSameMonth = appointmentMonth == displayedMonth;
             return areTheSameMonth;
+        }
+
+        private static bool IsAppointmentOfDisplayedWeek(Appointment appointment)
+        {
+            DateTime mondayOfDisplayedWeek = DateUtilities.DisplayedDate.Date;
+            DateTime sundayOfDisplayedWeek = mondayOfDisplayedWeek.AddDays(DateUtilities.DaysInWeek);
+            bool isOnMondayOrAfter = appointment.StartTime >= mondayOfDisplayedWeek;
+            bool isOnSundayOrBefore = appointment.EndTime <= sundayOfDisplayedWeek;
+            bool isInDisplayedWeek = isOnMondayOrAfter && isOnSundayOrBefore;
+            return isInDisplayedWeek;
         }
 
         private string GetSelectedCalendarView()

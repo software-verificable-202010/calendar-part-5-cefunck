@@ -46,7 +46,7 @@ namespace Calendar.Windows.Partials
             HighLightWeekends();
         }
 
-        public void AssignMonthAppointments(List<Appointment> appointments)
+        public void AssignWeekAppointments(List<Appointment> appointments)
         {
             monthAppointmens = appointments;
         }

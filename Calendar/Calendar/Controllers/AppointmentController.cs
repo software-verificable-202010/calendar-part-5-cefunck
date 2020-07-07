@@ -202,36 +202,6 @@ namespace Calendar.Controllers
             }
         }
 
-        public bool IsOwnerInvited()
-        {
-            bool isNotNullGuestUserNames = candidateGuestsUserNames != null;
-            string ownerName = sourceAppointment.OwnerUserName;
-            bool isOwnerInvited = false;
-
-            if (isNotNullGuestUserNames)
-            {
-                isOwnerInvited = candidateGuestsUserNames.Contains(ownerName);
-            }
-
-            return isNotNullGuestUserNames && isOwnerInvited;
-        }
-
-        public void AddInvalidGuestNamesToValidationMessages()
-        {
-            const string nameFormat = "- {0}";
-            foreach (string name in candidateGuestsUserNames)
-            {
-                userController.SourceUserName = name;
-                bool isOwnerUser = name == sourceAppointment.OwnerUserName;
-                bool isInvalidUserName = !userController.IsValidUserName;
-                bool isInvalidGuest = isOwnerUser | isInvalidUserName;
-                if (isInvalidGuest)
-                {
-                    validationMessages.Add(string.Format(CultureInfo.CurrentCulture, nameFormat, name));
-                }
-            }
-        }
-
         public static void AssignCalendarAppointments(List<IAppointment> appointments)
         {
             calendarAppointments = appointments;
@@ -265,6 +235,20 @@ namespace Calendar.Controllers
                 bf.Serialize(file, calendarAppointments);
                 file.Flush();
             }
+        }
+
+        public bool IsOwnerInvited()
+        {
+            bool isNotNullGuestUserNames = candidateGuestsUserNames != null;
+            string ownerName = sourceAppointment.OwnerUserName;
+            bool isOwnerInvited = false;
+
+            if (isNotNullGuestUserNames)
+            {
+                isOwnerInvited = candidateGuestsUserNames.Contains(ownerName);
+            }
+
+            return isNotNullGuestUserNames && isOwnerInvited;
         }
 
         private bool ExistingAppointmentCollision()
@@ -305,6 +289,22 @@ namespace Calendar.Controllers
                 {
                     string collidingGuestName = string.Format(CultureInfo.CurrentCulture, nameFormat, candidateGuestUserName);
                     validationMessages.Add(collidingGuestName);
+                }
+            }
+        }
+
+        private void AddInvalidGuestNamesToValidationMessages()
+        {
+            const string nameFormat = "- {0}";
+            foreach (string name in candidateGuestsUserNames)
+            {
+                userController.SourceUserName = name;
+                bool isOwnerUser = name == sourceAppointment.OwnerUserName;
+                bool isInvalidUserName = !userController.IsValidUserName;
+                bool isInvalidGuest = isOwnerUser | isInvalidUserName;
+                if (isInvalidGuest)
+                {
+                    validationMessages.Add(string.Format(CultureInfo.CurrentCulture, nameFormat, name));
                 }
             }
         }
