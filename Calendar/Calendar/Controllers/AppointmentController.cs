@@ -202,32 +202,6 @@ namespace Calendar.Controllers
             }
         }
 
-        public bool ExistingAppointmentCollision()
-        {
-            bool hasAppointmentCollision = candidateGuestsUserNames
-                .Any(guestUserName => HasAppointmentCollision(guestUserName, sourceAppointment));
-
-            return hasAppointmentCollision;
-        }
-
-        public bool AreValidGuests()
-        {
-            bool isNotNullCandidateGuestsUserNames = candidateGuestsUserNames != null;
-            bool isGuestFieldEmpty = true;
-            bool existsInvalidUserName = false;
-            bool areValidGuests = false;
-
-            if (isNotNullCandidateGuestsUserNames)
-            {
-                isGuestFieldEmpty = candidateGuestsUserNames.Count == 0;
-                existsInvalidUserName = userController.ExistsInvalidUserName(candidateGuestsUserNames);
-                areValidGuests = (isGuestFieldEmpty | (!existsInvalidUserName & !IsOwnerInvited()));
-            }
-
-
-            return isNotNullCandidateGuestsUserNames & areValidGuests;
-        }
-
         public bool IsOwnerInvited()
         {
             bool isNotNullGuestUserNames = candidateGuestsUserNames != null;
@@ -240,22 +214,6 @@ namespace Calendar.Controllers
             }
 
             return isNotNullGuestUserNames && isOwnerInvited;
-        }
-
-        public void AddCollisionedGuestNamesToValidationMessages()
-        {
-            const string nameFormat = "- {0}";
-            foreach (string candidateGuestUserName in candidateGuestsUserNames)
-            {
-                bool isNotOwner = !sourceAppointment.IsOwner(candidateGuestUserName);
-
-                bool isColliding = HasAppointmentCollision(candidateGuestUserName, sourceAppointment);
-                if (isNotOwner & isColliding)
-                {
-                    string collidingGuestName = string.Format(CultureInfo.CurrentCulture, nameFormat, candidateGuestUserName);
-                    validationMessages.Add(collidingGuestName);
-                }
-            }
         }
 
         public void AddInvalidGuestNamesToValidationMessages()
@@ -272,25 +230,6 @@ namespace Calendar.Controllers
                     validationMessages.Add(string.Format(CultureInfo.CurrentCulture, nameFormat, name));
                 }
             }
-        }
-
-        public bool IsNotBlankTitle()
-        {
-            bool isNotNullCandidateTitle = candidateTitle != null;
-            bool isNotBlankTitle = false;
-
-            if (isNotNullCandidateTitle)
-            {
-                isNotBlankTitle = candidateTitle.Trim().Length != 0;
-            }
-            
-            return isNotNullCandidateTitle && isNotBlankTitle;
-        }
-
-        public bool IsValidEndTime()
-        {
-            bool isEndAfterStart = candidateEnd > candidateStart;
-            return isEndAfterStart;
         }
 
         public static void AssignCalendarAppointments(List<IAppointment> appointments)
@@ -328,7 +267,68 @@ namespace Calendar.Controllers
             }
         }
 
-        public static bool HasAppointmentCollision(string guestUserName, IAppointment appointmentThatCouldCollide)
+        private bool ExistingAppointmentCollision()
+        {
+            bool hasAppointmentCollision = candidateGuestsUserNames
+                .Any(guestUserName => HasAppointmentCollision(guestUserName, sourceAppointment));
+
+            return hasAppointmentCollision;
+        }
+
+        private bool AreValidGuests()
+        {
+            bool isNotNullCandidateGuestsUserNames = candidateGuestsUserNames != null;
+            bool isGuestFieldEmpty = true;
+            bool existsInvalidUserName = false;
+            bool areValidGuests = false;
+
+            if (isNotNullCandidateGuestsUserNames)
+            {
+                isGuestFieldEmpty = candidateGuestsUserNames.Count == 0;
+                existsInvalidUserName = userController.ExistsInvalidUserName(candidateGuestsUserNames);
+                areValidGuests = (isGuestFieldEmpty | (!existsInvalidUserName & !IsOwnerInvited()));
+            }
+
+
+            return isNotNullCandidateGuestsUserNames & areValidGuests;
+        }
+
+        private void AddCollisionedGuestNamesToValidationMessages()
+        {
+            const string nameFormat = "- {0}";
+            foreach (string candidateGuestUserName in candidateGuestsUserNames)
+            {
+                bool isNotOwner = !sourceAppointment.IsOwner(candidateGuestUserName);
+
+                bool isColliding = HasAppointmentCollision(candidateGuestUserName, sourceAppointment);
+                if (isNotOwner & isColliding)
+                {
+                    string collidingGuestName = string.Format(CultureInfo.CurrentCulture, nameFormat, candidateGuestUserName);
+                    validationMessages.Add(collidingGuestName);
+                }
+            }
+        }
+
+        private bool IsNotBlankTitle()
+        {
+            bool isNotNullCandidateTitle = candidateTitle != null;
+            bool isNotBlankTitle = false;
+
+            if (isNotNullCandidateTitle)
+            {
+                isNotBlankTitle = candidateTitle.Trim().Length != 0;
+            }
+            
+            return isNotNullCandidateTitle && isNotBlankTitle;
+        }
+
+        private bool IsValidEndTime()
+        {
+            bool isEndAfterStart = candidateEnd > candidateStart;
+            return isEndAfterStart;
+        }
+
+        private static bool HasAppointmentCollision(string guestUserName, IAppointment appointmentThatCouldCollide)
         {
             bool isNotNullGuestUserName = guestUserName != null;
             bool hasCollisionWithTheirOwns = false;
